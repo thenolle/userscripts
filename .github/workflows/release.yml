@@ -18,7 +18,7 @@ jobs:
     outputs:
       scripts: ${{ steps.find.outputs.scripts }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - id: find
@@ -43,7 +43,7 @@ jobs:
       matrix:
         script: ${{ fromJson(needs.detect.outputs.scripts) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
 
       - name: Build
@@ -61,7 +61,7 @@ jobs:
           if [ ! -s "$RUNNER_TEMP/notes.md" ]; then echo "Release ${{ matrix.script.version }}" > "$RUNNER_TEMP/notes.md"; fi
 
       - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ matrix.script.dir }}-v${{ matrix.script.version }}
           name: ${{ matrix.script.dir }} v${{ matrix.script.version }}
