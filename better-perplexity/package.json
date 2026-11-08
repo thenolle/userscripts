@@ -4,11 +4,19 @@
   "private": true,
   "type": "module",
   "license": "PolyForm-Strict-1.0.0",
-  "repository": { "type": "git", "url": "git+https://github.com/thenolle/userscripts.git", "directory": "better-perplexity" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thenolle/userscripts.git",
+    "directory": "better-perplexity"
+  },
   "scripts": {
     "build": "bun run scripts/build.ts",
     "dev": "bun run scripts/build.ts --watch",
     "typecheck": "tsc --noEmit",
     "validate:prompts": "bun run scripts/validate-prompts.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.4",
+    "typescript": "^7.0.2"
   }
 }
