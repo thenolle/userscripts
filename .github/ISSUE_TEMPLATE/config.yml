@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and discussion
+    url: https://github.com/thenolle/userscripts/discussions
+    about: Ask how something works or share how you use it.
+  - name: Security vulnerability
+    url: https://github.com/thenolle/userscripts/security/advisories/new
+    about: Report security problems privately, not as a public issue.

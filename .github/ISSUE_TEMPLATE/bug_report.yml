@@ -1,0 +1,69 @@
+name: Bug report
+description: Something does not work as expected
+title: '[Bug]: '
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting. Searching existing issues first saves everyone time.
+  - type: dropdown
+    id: script
+    attributes:
+      label: Userscript
+      options: [Better Perplexity]
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Script version
+      description: Shown in the settings dialog (the sliders button in the header).
+      placeholder: '1.0.0'
+    validations:
+      required: true
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      options: [Firefox, Chrome, Edge, Safari, Brave, Other]
+    validations:
+      required: true
+  - type: dropdown
+    id: manager
+    attributes:
+      label: Userscript manager
+      options: [Violentmonkey, Tampermonkey, Greasemonkey, Userscripts (Safari), Other]
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you see, and what did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open …
+        2. Click …
+        3. See …
+    validations:
+      required: true
+  - type: textarea
+    id: console
+    attributes:
+      label: Console output
+      description: Lines starting with [Better Perplexity] from the browser console (F12). Remove anything private.
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues
+          required: true
+        - label: I am on the latest version
+          required: true

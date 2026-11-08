@@ -1,0 +1,38 @@
+name: Prompt submission
+description: Suggest a prompt for the community library
+title: '[Prompt]: '
+labels: [prompt]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Prompts are shown to everyone in the prompt picker. Use `{{name}}` for blanks; users are asked to fill them in.
+        Built-ins: `{{clipboard}}`, `{{selection}}`, `{{date}}`, `{{time}}`, `{{url}}`, `{{title}}`.
+  - type: input
+    id: title
+    attributes:
+      label: Title
+      description: Up to 80 characters.
+    validations:
+      required: true
+  - type: textarea
+    id: body
+    attributes:
+      label: Prompt text
+      description: Up to 4000 characters.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: When is it useful?
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Confirmation
+      options:
+        - label: I wrote this prompt or have the right to share it, and I agree to the terms in CONTRIBUTING.md
+          required: true
+        - label: It contains no personal data, secrets or copyrighted text
+          required: true

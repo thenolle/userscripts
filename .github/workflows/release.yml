@@ -1,0 +1,99 @@
+name: Release
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      scripts: ${{ steps.find.outputs.scripts }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: find
+        run: |
+          scripts='[]'
+          for file in */package.json; do
+            dir=$(dirname "$file")
+            version=$(jq -r .version "$file")
+            if ! git rev-parse -q --verify "refs/tags/${dir}-v${version}" >/dev/null; then
+              scripts=$(jq -c --arg dir "$dir" --arg version "$version" '. + [{dir: $dir, version: $version}]' <<<"$scripts")
+            fi
+          done
+          echo "scripts=$scripts" >> "$GITHUB_OUTPUT"
+
+  release:
+    needs: detect
+    if: needs.detect.outputs.scripts != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        script: ${{ fromJson(needs.detect.outputs.scripts) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Build
+        working-directory: ${{ matrix.script.dir }}
+        run: |
+          bun install --frozen-lockfile
+          bun run typecheck
+          if [ -f prompts/library.json ]; then bun run validate:prompts; fi
+          bun run build
+
+      - name: Extract release notes
+        working-directory: ${{ matrix.script.dir }}
+        run: |
+          awk -v v="${{ matrix.script.version }}" '/^## \[/{ if (found) exit; if (index($0, "[" v "]")) found=1; next } found' CHANGELOG.md > "$RUNNER_TEMP/notes.md"
+          if [ ! -s "$RUNNER_TEMP/notes.md" ]; then echo "Release ${{ matrix.script.version }}" > "$RUNNER_TEMP/notes.md"; fi
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ matrix.script.dir }}-v${{ matrix.script.version }}
+          name: ${{ matrix.script.dir }} v${{ matrix.script.version }}
+          body_path: ${{ runner.temp }}/notes.md
+          target_commitish: ${{ github.sha }}
+          files: |
+            ${{ matrix.script.dir }}/dist/*.user.js
+            ${{ matrix.script.dir }}/dist/*.meta.js
+
+      - name: Publish to the dist branch
+        run: |
+          set -euo pipefail
+          dir='${{ matrix.script.dir }}'
+          version='${{ matrix.script.version }}'
+          out="$RUNNER_TEMP/dist-out"
+          mkdir -p "$out"
+          cp "$dir"/dist/*.user.js "$dir"/dist/*.meta.js "$out"/
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if git ls-remote --exit-code --heads origin dist >/dev/null 2>&1; then
+            git fetch origin dist
+            git checkout -B dist origin/dist
+          else
+            git checkout --orphan dist
+            git rm -rf . >/dev/null 2>&1 || true
+          fi
+          mkdir -p "$dir"
+          cp "$out"/* "$dir"/
+          git add "$dir"
+          if git diff --cached --quiet; then
+            echo 'Nothing new to publish.'
+          else
+            git commit -m "release($dir): v$version"
+            git push origin dist
+          fi

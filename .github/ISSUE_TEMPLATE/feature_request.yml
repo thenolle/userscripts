@@ -1,0 +1,36 @@
+name: Feature request
+description: Suggest an idea or improvement
+title: '[Feature]: '
+labels: [enhancement]
+body:
+  - type: dropdown
+    id: script
+    attributes:
+      label: Userscript
+      options: [Better Perplexity, A new userscript]
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      description: Describe the situation, not only the solution.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and the changelog
+          required: true
