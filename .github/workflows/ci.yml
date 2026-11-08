@@ -18,7 +18,7 @@ jobs:
     outputs:
       scripts: ${{ steps.find.outputs.scripts }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: find
         run: |
           scripts=$(find . -mindepth 2 -maxdepth 2 -name package.json -printf '%h\n' | sed 's|^\./||' | sort | jq -R -s -c 'split("\n")[:-1]')
@@ -36,14 +36,14 @@ jobs:
       run:
         working-directory: ${{ matrix.script }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: bun run typecheck
       - run: bun run validate:prompts
         if: hashFiles(format('{0}/prompts/library.json', matrix.script)) != ''
       - run: bun run build
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.script }}
           path: ${{ matrix.script }}/dist/*
