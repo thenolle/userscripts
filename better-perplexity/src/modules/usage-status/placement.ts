@@ -1,22 +1,37 @@
-import { getElement } from '@nolly/core'
-import { HEADER } from '../../selectors'
+import { injectStyle } from '@nolly/core'
+import { findAvatar } from '../../locate'
 
 export interface Placement {
   readonly anchor: Element
-  readonly position: 'afterend' | 'beforebegin'
-  readonly mode: 'avatar' | 'fallback'
+  readonly position: 'afterend' | 'beforebegin' | 'beforeend'
+  readonly mode: 'avatar' | 'floating'
 }
 
-export const resolvePlacement = (): Placement | null => {
-  const avatar = getElement(HEADER.avatar)
+const FLOATING_CSS = `
+.bp-usage-indicator[data-placement="floating"] {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 2147483000;
+  padding: 2px 6px;
+  color: CanvasText;
+  background: color-mix(in srgb, Canvas 92%, transparent);
+  border: 1px solid color-mix(in srgb, CanvasText 18%, transparent);
+  border-radius: 999px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(6px);
+}
+`
+
+export const resolvePlacement = (): Placement => {
+  const avatar = findAvatar()
   if (avatar?.isConnected) return { anchor: avatar, position: 'afterend', mode: 'avatar' }
-  const next = getElement(HEADER.next)
-  if (next) return { anchor: next, position: 'beforebegin', mode: 'fallback' }
-  const previous = getElement(HEADER.previous)
-  if (previous) return { anchor: previous, position: 'afterend', mode: 'fallback' }
-  return null
+  injectStyle('better-perplexity-usage-floating', FLOATING_CSS)
+  return { anchor: document.body, position: 'beforeend', mode: 'floating' }
 }
 
 export const isPlaced = (element: Element, { anchor, position }: Placement): boolean => {
-  return position === 'afterend' ? anchor.nextElementSibling === element : anchor.previousElementSibling === element
+  if (position === 'afterend') return anchor.nextElementSibling === element
+  if (position === 'beforebegin') return anchor.previousElementSibling === element
+  return element.parentElement === anchor
 }

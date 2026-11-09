@@ -1,18 +1,33 @@
 import { CONFIG } from '../../config'
-import { getElement } from '@nolly/core'
 import { logger } from '../../core/logger'
-import { HEADER } from '../../selectors'
+import { storage } from '../../core/storage'
+import { hasSignInPrompt } from '../../locate'
 import { UsageApi } from './api'
 import { findCap } from './caps'
 import { LIMITS, LIMIT_KEYS } from './definitions'
 import { formatDuration, getStatus } from './format'
 import { ModeDetector } from './mode'
+import type { Send } from './model'
 import { resolvePlan } from './plan'
 import { findResetTimestamp } from './server-reset'
 import { ResetTracker } from './tracker'
 import type { ActiveUsage, ApiDiagnostics, Forecast, FreeQueriesInfo, LimitKey, Plan, RateLimitResponse, SettingsResponse } from './types'
 
 type Listener = () => void
+
+const SENDS_KEY = 'usage-status:sends'
+const LAST_KEY = 'usage-status:last-key'
+const SEND_TTL = 14 * 86_400_000
+const MAX_SENDS = 50
+const LEARN_WINDOW = 120_000
+const DEDUPE_WINDOW = 1_500
+
+const loadSends = (): Send[] => {
+  const now = Date.now()
+  const stored = storage.get<Send[]>(SENDS_KEY, [])
+  if (!Array.isArray(stored)) return []
+  return stored.filter((send) => typeof send?.at === 'number' && now - send.at <= SEND_TTL).slice(-MAX_SENDS)
+}
 
 export class UsageService {
   rate: RateLimitResponse | null = null
@@ -25,29 +40,59 @@ export class UsageService {
   initialized = false
 
   private lastAttemptAt = 0
+  private sends: Send[] = loadSends()
+  private lastUsedKey: LimitKey | null = storage.get<LimitKey | null>(LAST_KEY, null)
   private readonly listeners = new Set<Listener>()
 
   constructor(
     private readonly api = new UsageApi(),
     private readonly tracker = new ResetTracker(),
     private readonly modes = new ModeDetector()
-  ) { }
+  ) {
+    this.modes.setFallback(() => this.lastUsedKey)
+  }
 
   subscribe(listener: Listener): () => void {
     this.listeners.add(listener)
     return () => this.listeners.delete(listener)
   }
 
+  noteSend(at = Date.now(), confirmed = false): void {
+    this.lastSentAt = at
+    const near = this.sends.findIndex((send) => Math.abs(send.at - at) < DEDUPE_WINDOW)
+    if (near >= 0) {
+      const existing = this.sends[near]!
+      if (!confirmed || existing.confirmed) return
+      this.sends[near] = { at: existing.at, confirmed: true }
+    } else {
+      this.sends = [...this.sends.filter((send) => at - send.at <= SEND_TTL), { at, confirmed }].slice(-MAX_SENDS)
+    }
+    storage.set(SENDS_KEY, this.sends)
+  }
+
   markSent(): void {
-    this.lastSentAt = Date.now()
+    this.noteSend(Date.now(), false)
   }
 
   shouldAutoFetch(): boolean {
     return !this.initialized && !this.fetching && Date.now() - this.lastAttemptAt > CONFIG.usage.retryCooldown
   }
 
+  refreshIfStale(maxAge: number): void {
+    if (!this.fetching && Date.now() - this.lastFetchedAt >= maxAge) void this.refresh()
+  }
+
+  pollIfDue(now = Date.now()): void {
+    if (this.fetching || document.visibilityState === 'hidden') return
+    if (now - this.lastFetchedAt >= this.pollInterval(now)) void this.refresh()
+  }
+
   resetLearning(): void {
     this.tracker.reset()
+    this.sends = []
+    this.lastUsedKey = null
+    storage.set(SENDS_KEY, this.sends)
+    storage.set(LAST_KEY, null)
     this.emit()
   }
 
@@ -90,8 +135,9 @@ export class UsageService {
 
   getNotice(): string | null {
     if (!this.initialized || this.getPlan() !== 'free') return null
-    const pageSignedIn = Boolean(getElement(HEADER.avatar))
-    return pageSignedIn ? 'Perplexity reports no subscription tier or status for this session, even though the page looks signed in. Open "Raw API data" to see which request variants were tried.' : 'Not signed in: Perplexity returned anonymous limits. Sign in to see your plan.'
+    return hasSignInPrompt()
+      ? 'Not signed in: Perplexity returned anonymous limits. Sign in to see your plan.'
+      : 'Perplexity reports no subscription tier or status for this session, even though the page looks signed in. Open "Raw API data" to see which request variants were tried.'
   }
 
   getRemaining(key: LimitKey | null): number | null {
@@ -122,12 +168,7 @@ export class UsageService {
 
   getForecast(key: LimitKey | null): Forecast | null {
     if (!key) return null
-    return this.tracker.forecast(key, {
-      now: Date.now(),
-      prior: LIMITS[key].window,
-      bias: CONFIG.usage.refreshInterval / 2,
-      serverReset: findResetTimestamp(this.rate)
-    })
+    return this.tracker.forecast(key, { now: Date.now(), prior: LIMITS[key].window, serverReset: findResetTimestamp(this.rate) })
   }
 
   formatForecast(key: LimitKey | null): string {
@@ -139,11 +180,14 @@ export class UsageService {
       const total = this.resolveTotal(key)
       return total && remaining >= total ? 'Full allowance available' : 'Learning: needs a use and a refill to measure'
     }
-    if (forecast.source === 'server') return `Resets in ${formatDuration(forecast.next - Date.now())}`
+    const now = Date.now()
+    if (forecast.source === 'server') return `Resets in ${formatDuration(forecast.next - now)}`
     const confidence = `${Math.round(forecast.confidence * 100)}% conf.`
     if (forecast.overdue) return `Next unit due any moment · ${confidence}`
-    const now = Date.now()
-    return `Next +1 in ${formatDuration(forecast.next - now)} · full in ${formatDuration(forecast.full - now)} · ${confidence}`
+    const margin = forecast.margin >= 60_000 ? ` ±${formatDuration(forecast.margin)}` : ''
+    if (forecast.regime === 'reset') return `Full reset in ${formatDuration(forecast.next - now)}${margin} · ${confidence}`
+    const lead = forecast.complete ? 'Next +1 in' : 'Next +1 within'
+    return `${lead} ${formatDuration(forecast.next - now)}${margin} · full in ${formatDuration(forecast.full - now)} · ${confidence}`
   }
 
   getFreeQueries(): FreeQueriesInfo | null {
@@ -161,14 +205,15 @@ export class UsageService {
     return free.count !== null ? String(free.count) : 'Available'
   }
 
-  getActive(): ActiveUsage | null {
+  getActive(): ActiveUsage {
     const mode = this.modes.detect()
-    if (!mode) return null
     const remaining = this.getRemaining(mode.key)
     const total = this.resolveTotal(mode.key)
     const freeFallback = mode.key === 'remaining_pro' && remaining === 0 && Boolean(this.getFreeQueries()?.available) && this.getPlan() !== 'paid'
+    const assumed = mode.source === 'learned' || mode.source === 'default'
     return {
       ...mode,
+      label: assumed ? `${mode.label} (assumed)` : mode.label,
       remaining,
       total,
       freeFallback,
@@ -176,6 +221,17 @@ export class UsageService {
       reset: this.formatForecast(mode.key),
       status: freeFallback ? 'low' : getStatus(remaining, total)
     }
+  }
+
+  private pollInterval(now: number): number {
+    const span = CONFIG.usage.focusSpan
+    const expected = LIMIT_KEYS.some((key) => {
+      const forecast = this.getForecast(key)
+      if (!forecast || forecast.source === 'server') return false
+      const distance = forecast.next - now
+      return distance <= Math.min(2 * forecast.margin + 60_000, span) && distance >= -span
+    })
+    return expected ? CONFIG.usage.focusInterval : CONFIG.usage.refreshInterval
   }
 
   private namespace(): string {
@@ -189,7 +245,12 @@ export class UsageService {
     const now = Date.now()
     for (const key of LIMIT_KEYS) {
       const value = rate[key]
-      if (typeof value === 'number' && Number.isFinite(value)) this.tracker.observe(key, value, { now, sentAt: this.lastSentAt })
+      if (typeof value !== 'number' || !Number.isFinite(value)) continue
+      const { drop } = this.tracker.observe(key, value, now, this.sends)
+      if (drop > 0 && now - this.lastSentAt < LEARN_WINDOW) {
+        this.lastUsedKey = key
+        storage.set(LAST_KEY, key)
+      }
     }
   }
 

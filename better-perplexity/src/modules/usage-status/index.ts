@@ -1,16 +1,16 @@
+import { Feature, type MenuEntry, type ScriptContext } from '@nolly/core'
 import { CONFIG } from '../../config'
 import { fetchSpy } from '../../core/fetch-spy'
-import { Feature, type MenuEntry, type ScriptContext } from '@nolly/core'
+import { logger } from '../../core/logger'
+import { isAskRequest } from '../../core/requests'
+import { describePage } from '../../locate'
+import { showToast } from '../../ui/toast'
 import { UsageDialog } from './dialog'
 import { UsageIndicator } from './indicator'
 import { updateLive } from './live'
 import { resolvePlacement } from './placement'
 import { SendDetector } from './send-detector'
 import { UsageService } from './service'
-
-const isMessageRequest = (method: string, url: string): boolean => {
-  return method === 'POST' && url.includes('/rest/') && !url.includes('/rest/rate-limit') && !url.includes('/rest/user/settings')
-}
 
 export class UsageStatusModule extends Feature {
   readonly id = 'usage-status'
@@ -19,10 +19,8 @@ export class UsageStatusModule extends Feature {
 
   private readonly service = new UsageService()
   private readonly dialog = new UsageDialog(this.service, () => this.context.openSettings())
-  private readonly sendDetector = new SendDetector(() => this.handleSend())
+  private readonly sendDetector = new SendDetector(() => this.handleSend(false))
   private indicator: UsageIndicator | null = null
-  private pollTimer = 0
-  private tickTimer = 0
   private sendTimers: number[] = []
 
   constructor(context: ScriptContext) {
@@ -33,20 +31,26 @@ export class UsageStatusModule extends Feature {
     })
     fetchSpy.subscribe(({ accountId, method, url }) => {
       if (accountId) this.service.setAccountId(accountId, 'captured')
-      if (this.enabled && isMessageRequest(method, url)) this.handleSend()
+      if (this.enabled && isAskRequest(method, url)) this.handleSend(true)
+    })
+  }
+
+  override onEnable(): void {
+    this.sendDetector.attach()
+    this.scope.add(() => this.sendDetector.detach())
+    this.scope.add(() => this.clearSendTimers())
+    this.scope.add(() => this.removeUi())
+    this.scope.interval(() => this.service.pollIfDue(), CONFIG.usage.pollTick)
+    this.scope.interval(() => updateLive(this.service), CONFIG.usage.tickInterval)
+    this.scope.listen(document, 'visibilitychange', () => {
+      if (document.visibilityState === 'visible') this.service.refreshIfStale(CONFIG.usage.visibleStaleAfter)
     })
   }
 
   run(): void {
-    if (!this.enabled) {
-      this.teardown()
-      return
-    }
+    if (!this.enabled) return
     this.ensureIndicator()
-    this.sendDetector.attach()
     if (this.service.shouldAutoFetch()) void this.service.refresh()
-    this.pollTimer ||= window.setInterval(() => void this.service.refresh(), CONFIG.usage.refreshInterval)
-    this.tickTimer ||= window.setInterval(() => updateLive(this.service), CONFIG.usage.tickInterval)
     this.indicator?.render()
   }
 
@@ -54,7 +58,8 @@ export class UsageStatusModule extends Feature {
     return [
       { label: 'Open Usage Dialog', action: () => this.dialog.open() },
       { label: 'Set Perplexity Account ID', action: () => this.promptAccountId() },
-      { label: 'Reset Learned Usage Data', action: () => this.service.resetLearning() }
+      { label: 'Reset Learned Usage Data', action: () => this.service.resetLearning() },
+      { label: 'Copy Page Diagnostics', action: () => void this.copyDiagnostics() }
     ]
   }
 
@@ -65,20 +70,26 @@ export class UsageStatusModule extends Feature {
     void this.service.refresh()
   }
 
+  private async copyDiagnostics(): Promise<void> {
+    const report = JSON.stringify({ version: __VERSION__, page: describePage(), mode: this.service.getActive(), counters: this.service.rate, api: this.service.diagnostics }, null, 2)
+    try {
+      await navigator.clipboard.writeText(report)
+      showToast('Diagnostics copied to the clipboard.')
+    } catch {
+      logger.info('Page diagnostics', report)
+      showToast('Could not copy; the diagnostics are in the console.')
+    }
+  }
+
   private ensureIndicator(): void {
     const placement = resolvePlacement()
-    if (!placement) {
-      this.indicator?.destroy()
-      this.indicator = null
-      return
-    }
     this.indicator ??= new UsageIndicator(this.service, () => this.dialog.open())
     this.indicator.mount(placement)
   }
 
-  private handleSend(): void {
-    this.service.markSent()
-    for (const timer of this.sendTimers) window.clearTimeout(timer)
+  private handleSend(confirmed: boolean): void {
+    this.service.noteSend(Date.now(), confirmed)
+    this.clearSendTimers()
     const refreshes = CONFIG.usage.refreshDelays.map((delay) =>
       window.setTimeout(() => {
         void this.service.refresh()
@@ -89,14 +100,14 @@ export class UsageStatusModule extends Feature {
     this.sendTimers = [...refreshes, ...updates]
   }
 
-  private teardown(): void {
+  private clearSendTimers(): void {
+    for (const timer of this.sendTimers) window.clearTimeout(timer)
+    this.sendTimers = []
+  }
+
+  private removeUi(): void {
     this.indicator?.destroy()
     this.indicator = null
     this.dialog.close()
-    this.sendDetector.detach()
-    window.clearInterval(this.pollTimer)
-    window.clearInterval(this.tickTimer)
-    this.pollTimer = 0
-    this.tickTimer = 0
   }
 }

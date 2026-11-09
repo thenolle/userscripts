@@ -1,6 +1,7 @@
 export type LimitKey = 'remaining_pro' | 'remaining_research' | 'remaining_agentic_research' | 'remaining_labs'
 export type Status = 'healthy' | 'low' | 'critical' | 'empty' | 'unavailable'
 export type Plan = 'paid' | 'free' | 'unknown'
+export type ModeSource = 'dom' | 'url' | 'learned' | 'default'
 
 export interface LimitDefinition {
   readonly label: string
@@ -36,6 +37,7 @@ export interface SettingField {
 export interface ModeInfo {
   label: string
   key: LimitKey | null
+  source: ModeSource
 }
 
 export interface ActiveUsage extends ModeInfo {
@@ -55,6 +57,7 @@ export interface FreeQueriesInfo {
 
 export interface Forecast {
   source: 'server' | 'learned'
+  regime: 'server' | 'rolling' | 'reset'
   next: number
   full: number
   anchor: number
@@ -62,6 +65,8 @@ export interface Forecast {
   confidence: number
   samples: number
   overdue: boolean
+  margin: number
+  complete: boolean
 }
 
 export interface AttemptDiagnostic {

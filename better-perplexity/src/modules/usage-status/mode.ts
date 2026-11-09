@@ -1,57 +1,71 @@
-import { getElement } from '@nolly/core'
 import { logger } from '../../core/logger'
-import { MODE_ITEMS } from '../../selectors'
-import { MODE_MAP } from './definitions'
-import type { ModeInfo } from './types'
+import { findModeControls, STATE_ATTRIBUTES, type ModeControl } from '../../locate'
+import { LIMITS, MODE_MAP } from './definitions'
+import type { LimitKey, ModeInfo, ModeSource } from './types'
 
-const STATE_ATTRIBUTES = ['aria-pressed', 'aria-checked', 'aria-selected', 'aria-current', 'data-state', 'data-active', 'data-selected'] as const
 const ACTIVE_VALUES = new Set(['true', 'on', 'checked', 'active', 'selected'])
 const ACTIVE_CLASS = /\b(active|selected|checked)\b|(?:bg|text|border)-super/
 
-interface Candidate {
-  id: string
-  label: string
-  element: HTMLElement
-  score: number
+interface Found {
+  readonly label: string
+  readonly selected: boolean
 }
+
+const score = (element: HTMLElement): number => {
+  let total = 0
+  for (const attribute of STATE_ATTRIBUTES) {
+    const value = element.getAttribute(attribute)?.toLowerCase()
+    if (value && ACTIVE_VALUES.has(value)) total += 2
+  }
+  if (ACTIVE_CLASS.test(element.getAttribute('class') ?? '')) total += 1
+  return total
+}
+
+const keyOf = (label: string): LimitKey | null => MODE_MAP.find(({ match }) => match.test(label))?.key ?? null
+
+const describe = (label: string, source: ModeSource): ModeInfo => ({ label, key: keyOf(label), source })
 
 export class ModeDetector {
   private readonly reported = new Set<string>()
+  private fallback: () => LimitKey | null = () => null
 
-  detect(): ModeInfo | null {
-    const candidates = MODE_ITEMS.flatMap(({ id, button, label }): Candidate[] => {
-      const element = getElement(button)
-      if (!element) return []
-      const text = (getElement(label)?.textContent ?? element.textContent ?? '').trim()
-      return text ? [{ id, label: text, element, score: this.score(element) }] : []
-    })
-    if (!candidates.length) return null
-    const ranked = [...candidates].sort((a, b) => b.score - a.score)
-    if (ranked.length > 1 && ranked[0]!.score === ranked[1]!.score) this.reportAmbiguity(candidates)
-    const selected = ranked[0]!
-    return { label: selected.label, key: MODE_MAP.find(({ match }) => match.test(selected.label))?.key ?? null }
+  setFallback(provider: () => LimitKey | null): void {
+    this.fallback = provider
   }
 
-  private score(element: HTMLElement): number {
-    let score = 0
-    for (const attribute of STATE_ATTRIBUTES) {
-      const value = element.getAttribute(attribute)?.toLowerCase()
-      if (value && ACTIVE_VALUES.has(value)) score += 2
+  detect(): ModeInfo {
+    const found = this.fromDom()
+    if (found?.selected) return describe(found.label, 'dom')
+    if (location.pathname.startsWith('/computer')) return describe('Computer', 'url')
+    if (found) return describe(found.label, 'dom')
+    const learned = this.fallback()
+    if (learned) return { label: LIMITS[learned].label, key: learned, source: 'learned' }
+    return describe('Pro Search', 'default')
+  }
+
+  private fromDom(): Found | null {
+    const controls = findModeControls()
+    if (!controls.length) return null
+    const ranked = controls.map((control) => ({ control, score: score(control.element) })).sort((a, b) => b.score - a.score)
+    const top = ranked[0]!
+    const runnerUp = ranked.find((row) => row.control.label.toLowerCase() !== top.control.label.toLowerCase())
+    if (top.score > 0) {
+      if (runnerUp && runnerUp.score === top.score) {
+        this.reportAmbiguity(controls)
+        return null
+      }
+      return { label: top.control.label, selected: true }
     }
-    if (ACTIVE_CLASS.test(element.getAttribute('class') ?? '')) score += 1
-    return score
+    if (!runnerUp && !/^search$/i.test(top.control.label)) return { label: top.control.label, selected: false }
+    this.reportAmbiguity(controls)
+    return null
   }
 
-  private reportAmbiguity(candidates: readonly Candidate[]): void {
-    const details = candidates.map(({ id, label, element }) => ({
-      id,
-      label,
-      class: element.getAttribute('class'),
-      attributes: Object.fromEntries(STATE_ATTRIBUTES.map((attribute) => [attribute, element.getAttribute(attribute)]))
-    }))
+  private reportAmbiguity(controls: readonly ModeControl[]): void {
+    const details = controls.map(({ element, label }) => ({ label, class: element.getAttribute('class'), state: Object.fromEntries(STATE_ATTRIBUTES.map((attribute) => [attribute, element.getAttribute(attribute)])) }))
     const signature = JSON.stringify(details)
     if (this.reported.has(signature)) return
     this.reported.add(signature)
-    logger.debug('Mode buttons look identical, defaulting to the first one.', details)
+    logger.debug('Mode buttons look identical; using the URL, the last used counter or the default.', details)
   }
 }
