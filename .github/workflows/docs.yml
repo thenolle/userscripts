@@ -1,0 +1,90 @@
+name: Docs
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - '*/README.md'
+      - '*/CHANGELOG.md'
+      - '*/docs/**'
+      - '*/prompts/**'
+      - '*/package.json'
+      - '.github/workflows/docs.yml'
+  repository_dispatch:
+    types: [website-updated]
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: master
+          path: source
+      - uses: actions/checkout@v7
+        with:
+          ref: website
+          path: site
+      - uses: actions/checkout@v7
+        with:
+          repository: thenolle/gambrel
+          path: site/.gambrel
+          token: ${{ secrets.GAMBREL_TOKEN || github.token }}
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install
+        working-directory: site
+        run: bun install
+
+      - name: Type-check
+        working-directory: site
+        run: bun run typecheck
+
+      - name: Build
+        working-directory: site
+        env:
+          SOURCE_DIR: ../source
+          SITE_URL: https://thenolle.github.io/userscripts/
+        run: bun run build
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: site/dist
+
+      - name: Refresh the generated README
+        continue-on-error: true
+        working-directory: site
+        env:
+          SOURCE_DIR: ../source
+          SITE_URL: https://thenolle.github.io/userscripts/
+        run: |
+          bun run readme
+          cd ../source
+          if ! git diff --quiet -- README.md; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add README.md
+            git commit -m 'docs: refresh README [skip ci]'
+            git push origin master
+          fi
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
