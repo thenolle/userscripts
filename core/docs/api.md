@@ -29,6 +29,9 @@ order: 20
 - Network: `request`, `getText`, `getJson`.
 - Page: `getPageWindow`, `FetchSpy`.
 - Misc: `injectStyle`, `removeStyle`, `MenuController`, `Scope`, `Emitter`, `repoUrls`.
+- Updates: `Updater`, `compareVersions`, `isNewerVersion`, `parseVersion`.
+- Scheduling: `Poller`, `retry`, `withTimeout`, `debounce`, `throttle`, `once`, `memoizeFor`.
+- Browser: `notify`, `notifyPermission`, `requestNotifyPermission`, `waitForElement`, `observe`.
 
 ## Build
 
