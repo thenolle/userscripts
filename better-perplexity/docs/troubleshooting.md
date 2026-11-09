@@ -25,6 +25,10 @@ Use Raw JSON, and include the HTTP status when you report it.
 
 Use **Check for Updates** from the userscript menu. If your manager shows an older version, re-open the Install link.
 
+## The build cannot find @nolly/core
+
+Run `bun install` at the repository root, not inside `better-perplexity`. The core is a workspace package, so the root install links it.
+
 ## Reporting a bug
 
 Use the [bug report form](https://github.com/thenolle/userscripts/issues/new?template=bug_report.yml) with your script version, browser and manager.

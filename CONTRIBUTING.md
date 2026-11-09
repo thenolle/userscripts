@@ -15,20 +15,20 @@ By submitting a pull request, issue attachment or prompt, you confirm that you w
 ## Development setup
 
 ```bash
+bun install        # at the repository root (Bun workspace)
 cd better-perplexity
-bun install
 bun run dev        # unminified, rebuilds on change
 bun run typecheck
 bun run validate:prompts
 bun run build      # minified output in dist/
 ```
 
-Install `dist/better-perplexity.user.js` in your userscript manager to test.
+Install `dist/better-perplexity.user.js` in your userscript manager to test. Shared code lives in `core/` and is published as the workspace package `@nolly/core`; script-specific code stays in the script's own folder. Start a new script with `bun scripts/new-userscript.ts <slug> "<Name>"`.
 
 ## Code style
 
 - TypeScript, no semicolons, single quotes, no inline comments, TSDoc on public APIs.
-- One module per folder under `src/modules`, extending `FeatureModule`.
+- One module per folder under `src/modules`, extending `Feature` from `@nolly/core`.
 - No runtime dependencies.
 
 ## Releasing

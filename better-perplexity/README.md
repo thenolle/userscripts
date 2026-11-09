@@ -53,16 +53,25 @@ No analytics and no server of its own. The script talks to Perplexity from your 
 - **Usage shows free-tier numbers:** make sure you are signed in on the same browser profile; open “Raw API data” in the usage dialog and attach it to a bug report.
 - **Export fails with an HTTP error:** the export relies on Perplexity's own export endpoint. Choose “Raw thread JSON” as a fallback and report it.
 
+## Built on the shared core
+
+Better Perplexity is built on [`@nolly/core`](../core/README.md), the shared runtime used by every userscript in this repository. The core provides the feature lifecycle, storage, logging, DOM helpers, HTTP, menus, style injection and the page request observer. Better Perplexity keeps only what is specific to Perplexity: the modules, the composer and selector logic, and the UI.
+
+You do not install the core separately. It is bundled into `better-perplexity.user.js` at build time, so the installed script has no extra dependencies. See [Architecture](docs/architecture/) for details.
+
 ## Development
 
+The repository is a Bun workspace. Install once at the repository root, then work inside the script folder.
+
 ```bash
-bun install
+bun install          # at the repository root
+cd better-perplexity
 bun run dev          # unminified, rebuilds on change
 bun run typecheck
 bun run build        # minified userscript in dist/
 ```
 
-See [CONTRIBUTING.md](../CONTRIBUTING.md).
+Building needs the `core/` folder next to `better-perplexity/`. See [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 ## License
 
