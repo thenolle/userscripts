@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs'
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { parseBlocks, parseFrontMatter, plain } from '../src/markdown.ts'
-import type { Heading, LoadedPage, Manifest, PageKind, PageMeta, Prompt, ScriptMeta } from '../src/types.ts'
+import type { ScriptKind, Heading, LoadedPage, Manifest, PageKind, PageMeta, Prompt, ScriptMeta } from '../src/types.ts'
 
 const REPO = 'thenolle/userscripts'
 const BRANCH = 'master'
@@ -38,7 +38,8 @@ const readOptional = async (path: string): Promise<string | null> => (existsSync
 
 const loadScript = async (sourceDir: string, slug: string, site: Manifest['site']): Promise<{ script: ScriptMeta; pages: Map<string, LoadedPage> } | null> => {
   const root = join(sourceDir, slug)
-  const pkg = JSON.parse((await readOptional(join(root, 'package.json'))) ?? 'null') as { version?: string; license?: string } | null
+  const pkg = JSON.parse((await readOptional(join(root, 'package.json'))) ?? 'null') as { version?: string; license?: string; userscript?: { kind?: ScriptKind } } | null
+  const kind: ScriptKind = pkg?.userscript?.kind === 'library' ? 'library' : 'script'
   const readme = await readOptional(join(root, 'README.md'))
   if (!pkg?.version || readme === null) return null
   const pages = new Map<string, LoadedPage>()
@@ -81,9 +82,20 @@ const loadScript = async (sourceDir: string, slug: string, site: Manifest['site'
   metas.sort((a, b) => a.order - b.order || a.title.localeCompare(b.title))
   const raw = `https://raw.githubusercontent.com/${site.repo}/dist/${slug}`
   return {
-    script: { slug, name, version: pkg.version, description, license: pkg.license ?? 'See LICENSE', installUrl: `${raw}/${slug}.user.js`, metaUrl: `${raw}/${slug}.meta.js`, folderUrl: `https://github.com/${site.repo}/tree/${site.branch}/${slug}`, pages: metas },
-    pages
-  }
+  script: {
+    slug,
+    kind,
+    name,
+    version: pkg.version,
+    description,
+    license: pkg.license ?? 'See LICENSE',
+    installUrl: kind === 'library' ? '' : `${raw}/${slug}.user.js`,
+    metaUrl: kind === 'library' ? '' : `${raw}/${slug}.meta.js`,
+    folderUrl: `https://github.com/${site.repo}/tree/${site.branch}/${slug}`,
+    pages: metas
+  },
+  pages
+}
 }
 
 export const loadContent = async (sourceDir: string): Promise<Content> => {

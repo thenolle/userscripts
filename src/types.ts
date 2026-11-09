@@ -11,6 +11,7 @@ export interface Heading {
 }
 
 export type PageKind = 'overview' | 'guide' | 'changelog' | 'prompts'
+export type ScriptKind = 'script' | 'library'
 
 export interface PageMeta {
   slug: string
@@ -28,6 +29,7 @@ export interface PageMeta {
 
 export interface ScriptMeta {
   slug: string
+  kind: ScriptKind
   name: string
   version: string
   description: string
