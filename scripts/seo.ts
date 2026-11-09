@@ -28,15 +28,14 @@ const graph = (site: Manifest['site'], page: SeoPage, url: string): unknown[] =>
   if (!page.script) return []
   const list = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: crumbs(site, page) }
   if (page.kind === 'overview') {
-    return [
-      { '@context': 'https://schema.org', '@type': 'SoftwareApplication', name: page.script.name, description: page.script.description, applicationCategory: 'BrowserApplication', operatingSystem: 'Any', softwareVersion: page.script.version, downloadUrl: page.script.installUrl, license: `https://github.com/${site.repo}/blob/${site.branch}/LICENSE`, url, author, offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } },
-      list
-    ]
+    const entity = page.script.kind === 'library'
+      ? { '@context': 'https://schema.org', '@type': 'SoftwareSourceCode', name: page.script.name, description: page.script.description, codeRepository: page.script.folderUrl, programmingLanguage: 'TypeScript', license: `https://github.com/${site.repo}/blob/${site.branch}/LICENSE`, url, author }
+      : { '@context': 'https://schema.org', '@type': 'SoftwareApplication', name: page.script.name, description: page.script.description, applicationCategory: 'BrowserApplication', operatingSystem: 'Any', softwareVersion: page.script.version, downloadUrl: page.script.installUrl, license: `https://github.com/${site.repo}/blob/${site.branch}/LICENSE`, url, author, offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } }
+    return [entity, list]
   }
   return [{ '@context': 'https://schema.org', '@type': 'TechArticle', headline: page.title, description: page.description, url, image: page.image, dateModified: site.generated, author, isPartOf: { '@type': 'SoftwareApplication', name: page.script.name } }, list]
 }
 
-/** Title, description, canonical, Open Graph, Twitter and JSON-LD tags for one page. */
 export const headTags = (page: SeoPage, site: Manifest['site']): string => {
   const url = `${site.url}${page.path}`
   const image = `${site.url}${page.image}`
@@ -67,10 +66,6 @@ export const headTags = (page: SeoPage, site: Manifest['site']): string => {
   return lines.join('\n')
 }
 
-export const sitemap = (site: Manifest['site'], paths: readonly string[]): string =>
-  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${paths.map((path) => `  <url><loc>${esc(site.url + path)}</loc><lastmod>${site.generated.slice(0, 10)}</lastmod></url>`).join('\n')}\n</urlset>\n`
-
+export const sitemap = (site: Manifest['site'], paths: readonly string[]): string => `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${paths.map((path) => `  <url><loc>${esc(site.url + path)}</loc><lastmod>${site.generated.slice(0, 10)}</lastmod></url>`).join('\n')}\n</urlset>\n`
 export const robots = (site: Manifest['site']): string => `User-agent: *\nAllow: /\n\nSitemap: ${site.url}sitemap.xml\n`
-
-export const webManifest = (site: Manifest['site']): string =>
-  JSON.stringify({ name: site.title, short_name: 'Userscripts', start_url: site.base, scope: site.base, display: 'standalone', background_color: '#ffffff', theme_color: '#18181b', icons: [{ src: `${site.base}favicon.svg`, sizes: 'any', type: 'image/svg+xml', purpose: 'any' }] })
+export const webManifest = (site: Manifest['site']): string => JSON.stringify({ name: site.title, short_name: 'Userscripts', start_url: site.base, scope: site.base, display: 'standalone', background_color: '#ffffff', theme_color: '#18181b', icons: [{ src: `${site.base}favicon.svg`, sizes: 'any', type: 'image/svg+xml', purpose: 'any' }] })

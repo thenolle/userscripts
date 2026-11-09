@@ -148,13 +148,14 @@ const DocPage = (props: { store: Store; script: ScriptMeta; page: PageMeta }): C
           <p class="lead">{page.description}</p>
           <div class="doc-meta">
             <Badge variant="secondary">v{script.version}</Badge>
+            {script.kind === 'library' ? <Badge variant="outline">Library</Badge> : null}
             <Badge variant="outline">{script.license}</Badge>
             <span>{page.minutes} min read</span>
           </div>
           {page.kind === 'overview' ? (
             <div class="install-row">
-              <a class={buttonVariants({ variant: 'default' })} href={script.installUrl}><Download size={16} /> Install</a>
-              <CopyButton text={script.installUrl} />
+              {script.kind === 'script' ? <a class={buttonVariants({ variant: 'default' })} href={script.installUrl}><Download size={16} /> Install</a> : null}
+              {script.kind === 'script' ? <CopyButton text={script.installUrl} /> : null}
               <a class={buttonVariants({ variant: 'outline' })} href={script.folderUrl} target="_blank" rel="noopener noreferrer"><ExternalLink size={16} /> Source</a>
             </div>
           ) : null}
@@ -192,7 +193,7 @@ const Home = (props: { store: Store }): Child => {
             <CardContent><span class="muted">{script.pages.length} pages · {script.license}</span></CardContent>
             <CardFooter>
               <Link store={store} path={`${script.slug}/`} class={buttonVariants({ variant: 'default', size: 'sm' })}>Read the docs</Link>
-              <a class={buttonVariants({ variant: 'outline', size: 'sm' })} href={script.installUrl}>Install</a>
+              {script.kind === 'script' ? <a class={buttonVariants({ variant: 'outline', size: 'sm' })} href={script.installUrl}>Install</a> : null}
             </CardFooter>
           </Card>
         ))}

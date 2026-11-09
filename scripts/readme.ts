@@ -6,20 +6,23 @@ const source = resolve(import.meta.dir, '..', process.env['SOURCE_DIR'] ?? '../s
 const { manifest } = await loadContent(source)
 const { site } = manifest
 
+const links = (script: (typeof manifest.scripts)[number]): string => script.kind === 'library' ? `[Docs](${site.url}${script.slug}/) · [Source](${script.folderUrl})` : `[Install](${script.installUrl}) · [Docs](${site.url}${script.slug}/)`
+
 const table = [
   '| Script | Version | What it does | Links |',
   '| --- | --- | --- | --- |',
-  ...manifest.scripts.map((script) => `| **${script.name}** | ${script.version} | ${script.description} | [Install](${script.installUrl}) · [Docs](${site.url}${script.slug}/) |`)
+  ...manifest.scripts.map((script) => `| **${script.name}** | ${script.version} | ${script.description} | ${links(script)} |`)
 ]
 
 const sections = manifest.scripts.flatMap((script) => {
   const guides = script.pages.filter((page) => page.kind === 'guide')
+  const install = script.kind === 'script' ? `[Install](${script.installUrl}) · ` : ''
   return [
     `### ${script.name}`,
     '',
     script.description,
     '',
-    `[Install](${script.installUrl}) · [Documentation](${site.url}${script.slug}/) · [Changelog](${site.url}${script.slug}/changelog/) · [Source](${script.folderUrl})`,
+    `${install}[Documentation](${site.url}${script.slug}/) · [Changelog](${site.url}${script.slug}/changelog/) · [Source](${script.folderUrl})`,
     '',
     ...(guides.length ? ['Guides:', '', ...guides.map((page) => `- [${page.title}](${site.url}${page.path}): ${page.description}`), ''] : [])
   ]
