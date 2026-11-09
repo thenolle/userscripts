@@ -1,6 +1,6 @@
-import { createElement, getElement } from '@nolly/core'
+import { createElement } from '@nolly/core'
 import { markUi } from '../core/dom'
-import { COMPOSER_ACTIONS } from '../selectors'
+import { findComposerActions } from '../locate'
 import { createIcon, type IconName } from './icons'
 import { ensureUiStyles } from './styles'
 import { Tooltip } from './tooltip'
@@ -32,10 +32,10 @@ export class ComposerButton {
   }
 
   mount(): void {
-    const first = getElement(COMPOSER_ACTIONS.first)
+    const { first, submit } = findComposerActions()
     const chained = (this.options.after ?? []).map((id) => document.querySelector<HTMLElement>(`.bp-cb-${id}`)).find(Boolean)
     const anchor = chained ?? document.querySelector<HTMLElement>(CONFIG_BUTTON) ?? first
-    if (!anchor) {
+    if (!anchor && !submit) {
       this.unmount()
       return
     }
@@ -44,7 +44,11 @@ export class ComposerButton {
       this.element.className = className
       this.appliedClass = className
     }
-    if (anchor.nextElementSibling !== this.element) anchor.insertAdjacentElement('afterend', this.element)
+    if (anchor) {
+      if (anchor.nextElementSibling !== this.element) anchor.insertAdjacentElement('afterend', this.element)
+      return
+    }
+    if (submit && submit.previousElementSibling !== this.element) submit.insertAdjacentElement('beforebegin', this.element)
   }
 
   unmount(): void {
