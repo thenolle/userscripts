@@ -11,7 +11,7 @@ Small, focused userscripts by [Nolly](https://github.com/thenolle). Each lives i
 | Script | Version | What it does | Links |
 | --- | --- | --- | --- |
 | **Better Perplexity** | 1.0.1 | A modular userscript that adds the missing parts of the Perplexity web app: reliable usage tracking, better code blocks, long-message handling, a prompt library, batch runs and real exports. | [Install](https://raw.githubusercontent.com/thenolle/userscripts/dist/better-perplexity/better-perplexity.user.js) · [Docs](https://thenolle.github.io/userscripts/better-perplexity/) |
-| **Userscript Core** | 0.1.1 | Shared runtime, utilities and build tooling for every userscript in this repository. Write features, not plumbing. | [Install]() · [Docs](https://thenolle.github.io/userscripts/core/) |
+| **Userscript Core** | 0.1.1 | Shared runtime, utilities and build tooling for every userscript in this repository. Write features, not plumbing. | [Docs](https://thenolle.github.io/userscripts/core/) · [Source](https://github.com/thenolle/userscripts/tree/master/core) |
 
 ## Installing
 
@@ -42,7 +42,7 @@ Guides:
 
 Shared runtime, utilities and build tooling for every userscript in this repository. Write features, not plumbing.
 
-[Install]() · [Documentation](https://thenolle.github.io/userscripts/core/) · [Changelog](https://thenolle.github.io/userscripts/core/changelog/) · [Source](https://github.com/thenolle/userscripts/tree/master/core)
+[Documentation](https://thenolle.github.io/userscripts/core/) · [Changelog](https://thenolle.github.io/userscripts/core/changelog/) · [Source](https://github.com/thenolle/userscripts/tree/master/core)
 
 Guides:
 
