@@ -2,6 +2,13 @@
 
 All notable changes to Better Perplexity are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [1.0.4] - 2026-11-09
+
+### Changed
+
+- **Usage badge:** redesigned as an outline button with a status ring, count, progress meter and mode name, matching the rest of the interface.
+- **Placement:** the badge goes next to the profile button or inline in the header row, so it no longer covers other buttons. Pages without a header use a dock that picks the emptiest corner, can be dragged anywhere (position is remembered) and resets with a double-click.
+
 ## [1.0.3] - 2026-11-09
 
 ### Fixed
@@ -55,7 +62,10 @@ First public release.
 - **Interactive tutorial:** guided tours for every feature, started from the “?” button.
 - **Updates:** automatic updates through the userscript manager plus an in-script update check.
 
+---
+
 [1.0.0]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.0
 [1.0.1]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.1
 [1.0.2]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.2
 [1.0.3]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.3
+[1.0.4]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.4
