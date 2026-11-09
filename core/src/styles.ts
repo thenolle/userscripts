@@ -1,11 +1,13 @@
 import { createElement } from './dom'
-import type { Teardown } from './scope'
 
-export const injectStyle = (id: string, css: string): Teardown => {
+export const injectStyle = (id: string, css: string): void => {
   const existing = document.getElementById(id)
   const style = existing ?? createElement('style')
   style.id = id
   style.textContent = css
   if (!existing) document.head.appendChild(style)
-  return () => style.remove()
+}
+
+export const removeStyle = (id: string): void => {
+  document.getElementById(id)?.remove()
 }

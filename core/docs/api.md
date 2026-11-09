@@ -28,7 +28,7 @@ order: 20
 - Async: `sleep`, `waitFor`, `isAbort`.
 - Network: `request`, `getText`, `getJson`.
 - Page: `getPageWindow`, `FetchSpy`.
-- Misc: `injectStyle`, `MenuController`, `Scope`, `Emitter`, `repoUrls`.
+- Misc: `injectStyle`, `removeStyle`, `MenuController`, `Scope`, `Emitter`, `repoUrls`.
 
 ## Build
 
