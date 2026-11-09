@@ -1,6 +1,4 @@
-import type { Command, FeatureCommand, ScriptContext } from '@nolly/core'
+import type { ScriptContext } from '@nolly/core'
 
-export { Feature as FeatureModule, type MenuEntry } from '@nolly/core'
-export type { Command }
-export type ModuleCommand = FeatureCommand
-export type AppContext = ScriptContext & { readonly getModules: () => ReturnType<ScriptContext['getFeatures']> }
+export { Feature as FeatureModule, type Command, type FeatureCommand as ModuleCommand, type MenuEntry } from '@nolly/core'
+export type AppContext = ScriptContext
