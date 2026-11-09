@@ -6,12 +6,15 @@ All notable changes to Better Perplexity are documented here. The format follows
 
 ### Added
 
+- **Message Queue:** type ahead while an answer generates. Queue follow-ups with `Alt + Shift + Q`, and they send one by one after the current answer finishes. The queue survives reloads, stays in its thread, and pauses instead of sending into the wrong conversation.
+- **Recall:** search everything you sent, reuse it in one key, and walk back through it with `ArrowUp` / `ArrowDown` in an empty box.
 - **Usage alerts and pace:** refill, low and used-up alerts (desktop notifications when the tab is in the background and permission is granted), and a daily pace with an estimate of how long a counter lasts.
 
 ### Changed
 
 - **Update checker:** checks on load and every five minutes, shares results between tabs, announces each version once, and "Skip this version" silences it until a newer one is published. The menu shows "Update to vX".
 - **Shared core:** updates, version comparison, polling and notifications now come from `@nolly/core` 1.0.2.
+- **Docs:** added Message Queue and Recall guides, and updated the shortcuts list.
 
 ## [1.0.4] - 2026-11-09
 
@@ -80,4 +83,4 @@ First public release.
 [1.0.2]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.2  
 [1.0.3]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.3  
 [1.0.4]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.4  
-[1.0.5]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.5
+[1.0.5]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.5  

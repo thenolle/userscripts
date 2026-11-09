@@ -7,13 +7,16 @@ order: 60
 
 ## Default shortcuts
 
-| Action                          | Shortcut                        |
-| ------------------------------- | ------------------------------- |
-| Command palette                 | `Alt + Shift + P`               |
-| Prompt library                  | `Alt + Shift + L`               |
-| Send a message                  | `Ctrl + Enter` or `Cmd + Enter` |
-| New line                        | `Enter`                         |
-| Run a selection action and send | Shift-click the action          |
+| Action                          | Shortcut                                |
+| ------------------------------- | --------------------------------------- |
+| Command palette                 | `Alt + Shift + P`                       |
+| Prompt library                  | `Alt + Shift + L`                       |
+| Send a message                  | `Ctrl + Enter` or `Cmd + Enter`         |
+| New line                        | `Enter`                                 |
+| Run a selection action and send | Shift-click the action                  |
+| Queue the current message       | `Alt + Shift + Q`                       |
+| Open Recall                     | `Alt + Shift + H`                       |
+| Previous / next sent message    | `ArrowUp` / `ArrowDown` in an empty box |
 
 Change them from the userscript menu or the settings dialog.
 

@@ -29,6 +29,8 @@ Updates arrive automatically. The script also checks on its own and offers to up
 | Max Width         | Full-width layout, optional sidebar removal                                                          |
 | Usage alerts      | Refill, low and used-up alerts (desktop notifications in the background), plus your daily pace       |
 | Update checker    | Checks on load and every few minutes, tells you once per version, remembers skipped versions         |
+| Message Queue     | Type ahead: queue follow-ups while an answer generates; they send one by one                         |
+| Recall            | Search everything you sent, reuse it in one key, walk back through it with the arrow keys            |
 
 ## Shortcuts
 
