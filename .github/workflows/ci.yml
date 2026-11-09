@@ -42,8 +42,11 @@ jobs:
       - run: bun run typecheck
       - run: bun run validate:prompts
         if: hashFiles(format('{0}/prompts/library.json', matrix.script)) != ''
-      - run: bun run build
+      - name: Build
+        run: |
+          if jq -e '.scripts.build' package.json >/dev/null; then bun run build; fi
       - uses: actions/upload-artifact@v7
+        if: hashFiles(format('{0}/dist/*', matrix.script)) != ''
         with:
           name: ${{ matrix.script }}
           path: ${{ matrix.script }}/dist/*

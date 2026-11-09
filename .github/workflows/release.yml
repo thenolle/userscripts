@@ -26,6 +26,8 @@ jobs:
           scripts='[]'
           for file in */package.json; do
             dir=$(dirname "$file")
+            kind=$(jq -r '.userscript.kind // "script"' "$file")
+            if [ "$kind" = "library" ]; then continue; fi
             version=$(jq -r .version "$file")
             if ! git rev-parse -q --verify "refs/tags/${dir}-v${version}" >/dev/null; then
               scripts=$(jq -c --arg dir "$dir" --arg version "$version" '. + [{dir: $dir, version: $version}]' <<<"$scripts")
