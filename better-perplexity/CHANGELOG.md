@@ -2,6 +2,12 @@
 
 All notable changes to Better Perplexity are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [1.0.5-hotfix.1] - 2026-11-09
+
+### Fixed
+
+- Prevented modules from being registered multiple times.
+
 ## [1.0.5] - 2026-11-09
 
 ### Added
@@ -84,3 +90,4 @@ First public release.
 [1.0.3]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.3  
 [1.0.4]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.4  
 [1.0.5]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.5  
+[1.0.5-hotfix.1]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.5-hotfix.1
