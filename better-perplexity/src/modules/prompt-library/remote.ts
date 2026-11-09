@@ -1,4 +1,4 @@
-import { httpGet } from '../../core/http'
+import { getText } from '@nolly/core'
 import { logger } from '../../core/logger'
 import { storage } from '../../core/storage'
 import { URLS } from '../../repo'
@@ -21,7 +21,7 @@ export const loadCommunity = async (force = false): Promise<Prompt[]> => {
   const cached = storage.get<Cache | null>(KEY, null)
   if (cached && !force && Date.now() - cached.at < TTL) return cached.prompts
   try {
-    const parsed = JSON.parse(await httpGet(`${URLS.prompts}?t=${Date.now()}`)) as { prompts?: unknown[] }
+    const parsed = JSON.parse(await getText(`${URLS.prompts}?t=${Date.now()}`)) as { prompts?: unknown[] }
     const prompts = (parsed.prompts ?? []).filter(isPrompt)
     storage.set<Cache>(KEY, { at: Date.now(), prompts })
     return prompts

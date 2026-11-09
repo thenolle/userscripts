@@ -1,4 +1,4 @@
-import { getElement } from '../../core/dom'
+import { getElement } from '@nolly/core'
 import { HEADER } from '../../selectors'
 
 export interface Placement {

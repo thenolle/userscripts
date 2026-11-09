@@ -1,4 +1,4 @@
-import { injectStyle } from '../../core/styles'
+import { injectStyle } from '@nolly/core'
 
 const CSS = `
 .bp-palette { max-height: min(70vh, 480px); }

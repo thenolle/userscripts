@@ -1,13 +1,12 @@
-import { getElement } from '../../core/dom'
+import { Feature, getElement, type MenuEntry } from '@nolly/core'
 import { logger } from '../../core/logger'
-import { FeatureModule, type MenuEntry } from '../../core/module'
 import { storage } from '../../core/storage'
 import { ALWAYS_HIDDEN, LAYOUT_RULES, RIGHT_SIDEBAR, type HideRule } from './rules'
 import { StyleManager } from './style-manager'
 
 const SIDEBAR_KEY = 'max-width:remove-sidebar'
 
-export class MaxWidthModule extends FeatureModule {
+export class MaxWidthModule extends Feature {
   readonly id = 'max-width'
   readonly name = 'Max Width'
   readonly description = 'Remove width restrictions and expand the interface.'

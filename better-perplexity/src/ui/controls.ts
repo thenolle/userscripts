@@ -1,4 +1,4 @@
-import { createElement } from '../core/dom'
+import { createElement } from '@nolly/core'
 
 export interface ButtonOptions {
   primary?: boolean

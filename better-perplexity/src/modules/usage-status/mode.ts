@@ -1,4 +1,4 @@
-import { getElement } from '../../core/dom'
+import { getElement } from '@nolly/core'
 import { logger } from '../../core/logger'
 import { MODE_ITEMS } from '../../selectors'
 import { MODE_MAP } from './definitions'

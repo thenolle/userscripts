@@ -1,4 +1,4 @@
-import { createElement } from '../../core/dom'
+import { createElement } from '@nolly/core'
 import { estimateTokens } from '../../core/tokens'
 import { createButton, createNumberField, createSelectField, createTextArea } from '../../ui/controls'
 import { createDialog } from '../../ui/dialog'

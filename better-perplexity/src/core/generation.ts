@@ -1,6 +1,6 @@
+import { sleep, waitFor } from '@nolly/core'
 import { isOwnUi } from './dom'
 import { logger } from './logger'
-import { sleep, waitFor } from './wait'
 
 const STOP_SELECTOR = 'button[aria-label*="stop" i], button[title*="stop" i], [data-testid*="stop" i]'
 

@@ -1,4 +1,4 @@
-import { injectStyle } from '../../core/styles'
+import { injectStyle } from '@nolly/core'
 
 const CSS = `
 .bp-tour { position: fixed; inset: 0; z-index: 2147483647; pointer-events: none; }

@@ -1,4 +1,4 @@
-import { createElement } from '../../core/dom'
+import { createElement } from '@nolly/core'
 import type { UsageService } from './service'
 import type { LimitKey, Status } from './types'
 

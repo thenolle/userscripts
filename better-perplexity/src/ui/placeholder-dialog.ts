@@ -1,5 +1,5 @@
 import type { Field } from '../core/placeholders'
-import { createElement } from '../core/dom'
+import { createElement } from '@nolly/core'
 import { createButton } from './controls'
 import { createDialog } from './dialog'
 

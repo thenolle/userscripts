@@ -1,4 +1,4 @@
-import { getPageWindow } from '../../core/page-window'
+import { getPageWindow } from '@nolly/core'
 import { storage } from '../../core/storage'
 import { readCookieAccountId } from './account-cookie'
 import { looksAuthenticated } from './plan'

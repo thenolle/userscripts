@@ -1,5 +1,5 @@
 import { CONFIG } from '../../config'
-import { getElement } from '../../core/dom'
+import { getElement } from '@nolly/core'
 import { logger } from '../../core/logger'
 import { HEADER } from '../../selectors'
 import { UsageApi } from './api'

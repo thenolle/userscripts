@@ -1,5 +1,5 @@
-import { createElement, markUi } from '../core/dom'
-import { injectStyle } from '../core/styles'
+import { createElement, injectStyle } from '@nolly/core'
+import { markUi } from '../core/dom'
 import { createButton } from './controls'
 import { ensureUiStyles } from './styles'
 

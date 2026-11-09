@@ -1,4 +1,5 @@
-import { createElement, markUi } from '../../core/dom'
+import { createElement } from '@nolly/core'
+import { markUi } from '../../core/dom'
 import { estimateTokens } from '../../core/tokens'
 import { createButton, createNumberField, createSelectField, createSwitch, createTextArea } from '../../ui/controls'
 import { createDialog } from '../../ui/dialog'

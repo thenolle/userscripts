@@ -1,5 +1,6 @@
 import { copyText } from '../../core/clipboard'
-import { createElement, markUi } from '../../core/dom'
+import { createElement } from '@nolly/core'
+import { markUi } from '../../core/dom'
 import { createIcon, type IconName } from '../../ui/icons'
 import type { BlockInfo } from './detect'
 import { highlightLines } from './highlight'

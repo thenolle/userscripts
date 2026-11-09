@@ -1,4 +1,4 @@
-import { toElement } from '../../core/dom'
+import { toElement } from '@nolly/core'
 
 const SEND_HINTS = ['send', 'submit', 'search']
 const EDITABLE_SELECTOR = 'textarea, [contenteditable="true"], [contenteditable="plaintext-only"]'

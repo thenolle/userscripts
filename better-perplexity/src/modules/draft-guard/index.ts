@@ -1,7 +1,6 @@
 import { findComposer, isSendButton, readComposer, writeComposer } from '../../core/composer'
-import { toElement } from '../../core/dom'
+import { Feature, type MenuEntry, type ScriptContext, toElement } from '@nolly/core'
 import { fetchSpy } from '../../core/fetch-spy'
-import { FeatureModule, type AppContext, type MenuEntry } from '../../core/module'
 import { storage } from '../../core/storage'
 import { loadSplitterSettings } from '../message-splitter/settings'
 import { DraftOverlay } from './overlay'
@@ -15,7 +14,7 @@ const SPLIT_COMMAND = 'message-splitter:split'
 const threadKey = (): string => location.pathname || '/'
 const meaningful = (text: string): boolean => text.replace(/[\s\u200b]/g, '') !== ''
 
-export class DraftGuardModule extends FeatureModule {
+export class DraftGuardModule extends Feature {
   readonly id = 'draft-guard'
   readonly name = 'Draft Guard'
   readonly description = 'Autosaves drafts, shows a size meter and warns about unsent text.'
@@ -33,7 +32,7 @@ export class DraftGuardModule extends FeatureModule {
   private guardAttached = false
   private composer: HTMLElement | null = null
 
-  constructor(context: AppContext) {
+  constructor(context: ScriptContext) {
     super(context)
     this.overlay.onSplit(() => this.context.runCommand(SPLIT_COMMAND))
     fetchSpy.subscribe(({ method, url }) => {

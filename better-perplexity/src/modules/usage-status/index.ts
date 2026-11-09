@@ -1,6 +1,6 @@
 import { CONFIG } from '../../config'
 import { fetchSpy } from '../../core/fetch-spy'
-import { FeatureModule, type AppContext, type MenuEntry } from '../../core/module'
+import { Feature, type MenuEntry, type ScriptContext } from '@nolly/core'
 import { UsageDialog } from './dialog'
 import { UsageIndicator } from './indicator'
 import { updateLive } from './live'
@@ -12,7 +12,7 @@ const isMessageRequest = (method: string, url: string): boolean => {
   return method === 'POST' && url.includes('/rest/') && !url.includes('/rest/rate-limit') && !url.includes('/rest/user/settings')
 }
 
-export class UsageStatusModule extends FeatureModule {
+export class UsageStatusModule extends Feature {
   readonly id = 'usage-status'
   readonly name = 'Usage Status'
   readonly description = 'Display account usage and limits directly in the Perplexity header.'
@@ -25,7 +25,7 @@ export class UsageStatusModule extends FeatureModule {
   private tickTimer = 0
   private sendTimers: number[] = []
 
-  constructor(context: AppContext) {
+  constructor(context: ScriptContext) {
     super(context)
     this.service.subscribe(() => {
       this.indicator?.render()

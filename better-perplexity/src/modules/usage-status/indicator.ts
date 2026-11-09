@@ -1,4 +1,5 @@
-import { createElement, markUi } from '../../core/dom'
+import { createElement } from '@nolly/core'
+import { markUi } from '../../core/dom'
 import { Tooltip } from '../../ui/tooltip'
 import { ensureUiStyles } from '../../ui/styles'
 import { isPlaced, type Placement } from './placement'

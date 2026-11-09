@@ -1,4 +1,4 @@
-import { createElement } from '../../core/dom'
+import { createElement } from '@nolly/core'
 import { createIcon } from '../../ui/icons'
 
 type Badge = readonly [label: string, background: string, color: string]

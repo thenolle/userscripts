@@ -1,4 +1,5 @@
-import { createElement, markUi } from '../core/dom'
+import { createElement } from '@nolly/core'
+import { markUi } from '../core/dom'
 import { ensureUiStyles } from './styles'
 
 export type TooltipRenderer = (container: HTMLElement) => void

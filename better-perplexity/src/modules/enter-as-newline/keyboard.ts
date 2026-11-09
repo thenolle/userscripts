@@ -1,4 +1,4 @@
-import { toElement } from '../../core/dom'
+import { toElement } from '@nolly/core'
 import { dispatchEnter, findSendButton } from '../../core/synthetic-keys'
 
 export { isSynthetic } from '../../core/synthetic-keys'

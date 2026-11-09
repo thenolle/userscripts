@@ -1,4 +1,4 @@
-import { createElement } from '../../core/dom'
+import { createElement } from '@nolly/core'
 import { createButton, createDataRow, createSection } from '../../ui/controls'
 import { createDialog } from '../../ui/dialog'
 import { createStatusBar, createTimerBlock } from './components'

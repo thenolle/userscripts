@@ -1,6 +1,5 @@
-import { httpGet } from '../../core/http'
+import { Feature, getText, type MenuEntry } from '@nolly/core'
 import { logger } from '../../core/logger'
-import { FeatureModule, type MenuEntry } from '../../core/module'
 import { storage } from '../../core/storage'
 import { URLS } from '../../repo'
 import { showToast } from '../../ui/toast'
@@ -22,7 +21,7 @@ export const isNewer = (candidate: string, current: string): boolean => {
   return false
 }
 
-export class UpdatesModule extends FeatureModule {
+export class UpdatesModule extends Feature {
   readonly id = 'updates'
   readonly name = 'Update Checker'
   readonly description = 'Checks GitHub for new versions of this userscript.'
@@ -42,7 +41,7 @@ export class UpdatesModule extends FeatureModule {
 
   private async check(manual: boolean): Promise<void> {
     try {
-      const meta = await httpGet(`${URLS.meta}?t=${Date.now()}`)
+      const meta = await getText(`${URLS.meta}?t=${Date.now()}`)
       storage.set(LAST_CHECK, Date.now())
       const latest = /@version\s+(\S+)/.exec(meta)?.[1]
       if (!latest) throw new Error('No version found in the published metadata.')

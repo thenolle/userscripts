@@ -1,4 +1,4 @@
-import { injectStyle } from '../../core/styles'
+import { injectStyle } from '@nolly/core'
 
 const CSS = `
 .bp-prompt-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px; border: 1px solid var(--bp-border); border-radius: 10px; }

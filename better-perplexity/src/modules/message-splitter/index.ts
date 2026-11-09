@@ -1,16 +1,15 @@
 import { attachFile, editableFrom, findComposer, isSendButton, readComposer, writeComposer } from '../../core/composer'
-import { isOwnUi, toElement } from '../../core/dom'
-import { FeatureModule, type MenuEntry } from '../../core/module'
+import { Feature, type MenuEntry, toElement, waitFor } from '@nolly/core'
+import { isOwnUi } from '../../core/dom'
 import { estimateTokens } from '../../core/tokens'
 import { ProgressPanel, openSplitDialog, type SplitChoice } from './dialog'
 import { SendRunner } from './runner'
 import { loadSplitterSettings, saveSplitterSettings, type SplitterSettings } from './settings'
-import { waitFor } from '../../core/wait'
 import { ComposerButton } from '../../ui/composer-button'
 import { openBigTextDialog } from './big-text'
 import { isAutomating } from '../../core/automation'
 
-export class MessageSplitterModule extends FeatureModule {
+export class MessageSplitterModule extends Feature {
   readonly id = 'message-splitter'
   readonly name = 'Message Splitter'
   readonly description = 'Splits oversized prompts into ordered parts, or attaches them as a file.'

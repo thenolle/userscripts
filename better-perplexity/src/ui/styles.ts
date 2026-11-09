@@ -1,4 +1,4 @@
-import { injectStyle } from '../core/styles'
+import { injectStyle } from '@nolly/core'
 import { CONTROLS_CSS } from './css/controls'
 import { DIALOG_CSS } from './css/dialog'
 import { THEME_CSS } from './css/theme'

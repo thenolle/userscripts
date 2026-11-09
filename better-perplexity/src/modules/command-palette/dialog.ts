@@ -1,4 +1,4 @@
-import { createElement } from '../../core/dom'
+import { createElement } from '@nolly/core'
 import { createButton } from '../../ui/controls'
 import { createDialog } from '../../ui/dialog'
 import { DEFAULT_SHORTCUT, formatShortcut, shortcutFromEvent, type Shortcut } from './shortcut'

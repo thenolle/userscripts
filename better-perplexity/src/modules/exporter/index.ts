@@ -1,5 +1,5 @@
-import { createElement, markUi } from '../../core/dom'
-import { FeatureModule, type AppContext, type MenuEntry } from '../../core/module'
+import { createElement, Feature, type MenuEntry, type ScriptContext } from '@nolly/core'
+import { markUi } from '../../core/dom'
 import { createIcon } from '../../ui/icons'
 import { ensureUiStyles } from '../../ui/styles'
 import { Tooltip } from '../../ui/tooltip'
@@ -10,7 +10,7 @@ import { loadExportSettings, saveExportSettings, type ExportSettings } from './s
 const INDICATOR_SELECTOR = '.bp-usage-indicator'
 const GEAR_SELECTOR = '.bp-gear'
 
-export class ExporterModule extends FeatureModule {
+export class ExporterModule extends Feature {
   readonly id = 'exporter'
   readonly name = 'Conversation Exporter'
   readonly description = 'Exports threads with configurable citation styles.'
@@ -19,7 +19,7 @@ export class ExporterModule extends FeatureModule {
   private readonly button = markUi(createElement('button', 'bp-header-btn bp-export'))
   private readonly tooltip: Tooltip
 
-  constructor(context: AppContext) {
+  constructor(context: ScriptContext) {
     super(context)
     ensureUiStyles()
     this.button.type = 'button'

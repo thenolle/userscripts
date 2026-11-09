@@ -1,7 +1,7 @@
 import { findComposer, sendComposer, writeComposer } from '../../core/composer'
 import { waitForResponse } from '../../core/generation'
 import { logger } from '../../core/logger'
-import { isAbort, waitFor } from '../../core/wait'
+import { isAbort, waitFor } from '@nolly/core'
 
 export type PartStatus = 'sending' | 'waiting' | 'done'
 export type RunResult = 'done' | 'cancelled' | 'failed'

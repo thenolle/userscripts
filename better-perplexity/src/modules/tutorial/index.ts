@@ -1,5 +1,5 @@
-import { createElement, markUi } from '../../core/dom'
-import { FeatureModule, type AppContext, type MenuEntry } from '../../core/module'
+import { createElement, Feature, type MenuEntry, type ScriptContext } from '@nolly/core'
+import { markUi } from '../../core/dom'
 import { storage } from '../../core/storage'
 import { createButton } from '../../ui/controls'
 import { createDialog } from '../../ui/dialog'
@@ -14,7 +14,7 @@ const SEEN_KEY = 'tutorial:seen'
 const CHOOSER_ID = 'better-perplexity-tour-chooser'
 const FIRST_RUN_DELAY = 5_000
 
-export class TutorialModule extends FeatureModule {
+export class TutorialModule extends Feature {
   readonly id = 'tutorial'
   readonly name = 'Tutorial'
   readonly description = 'Interactive guided tours of every feature.'
@@ -24,7 +24,7 @@ export class TutorialModule extends FeatureModule {
   private readonly tooltip: Tooltip
   private offered = false
 
-  constructor(context: AppContext) {
+  constructor(context: ScriptContext) {
     super(context)
     ensureUiStyles()
     this.button.type = 'button'

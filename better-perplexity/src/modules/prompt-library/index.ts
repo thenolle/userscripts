@@ -1,5 +1,5 @@
 import { findComposer, writeComposer } from '../../core/composer'
-import { FeatureModule, type AppContext, type MenuEntry } from '../../core/module'
+import { Feature, type MenuEntry, type ScriptContext } from '@nolly/core'
 import { storage } from '../../core/storage'
 import { ComposerButton } from '../../ui/composer-button'
 import { toggleShortcutDialog } from '../command-palette/dialog'
@@ -11,7 +11,7 @@ import { loadPromptShortcut, PROMPT_SHORTCUT_KEY } from './shortcut'
 import { PromptStore, type Prompt } from './store'
 import { expandPrompt } from './variables'
 
-export class PromptLibraryModule extends FeatureModule {
+export class PromptLibraryModule extends Feature {
   readonly id = 'prompt-library'
   readonly name = 'Prompt Library'
   readonly description = 'Insert saved and community prompts from a button or shortcut.'
@@ -20,7 +20,7 @@ export class PromptLibraryModule extends FeatureModule {
   private shortcut: Shortcut = loadPromptShortcut()
   private readonly button = new ComposerButton('Prompt library', 'book', 'Insert a saved or community prompt', () => this.pick(), { id: 'prompts', after: ['big'] })
 
-  constructor(context: AppContext) {
+  constructor(context: ScriptContext) {
     super(context)
     window.addEventListener('keydown', this.handleKeydown, true)
   }

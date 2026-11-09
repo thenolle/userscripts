@@ -1,5 +1,4 @@
-import { createElement } from '../../core/dom'
-import type { Command } from '../../core/module'
+import { type Command, createElement } from '@nolly/core'
 import { storage } from '../../core/storage'
 import { createDialog } from '../../ui/dialog'
 import { fuzzyScore } from './fuzzy'

@@ -1,4 +1,4 @@
-import { createElement } from '../../core/dom'
+import { createElement } from '@nolly/core'
 import { createDialog } from '../../ui/dialog'
 import { fuzzyScore } from '../command-palette/fuzzy'
 import { ensurePaletteStyles } from '../command-palette/styles'

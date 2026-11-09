@@ -1,4 +1,4 @@
-import { FeatureModule, type AppContext, type MenuEntry } from '../../core/module'
+import { Feature, type MenuEntry, type ScriptContext } from '@nolly/core'
 import { ComposerButton } from '../../ui/composer-button'
 import { applyValues, findFields } from '../../core/placeholders'
 import { askFields } from '../../ui/placeholder-dialog'
@@ -7,7 +7,7 @@ import { renderTemplate } from './template'
 import { BatchPanel } from './panel'
 import { BatchRunner, clearState, loadState, type BatchState } from './runner'
 
-export class BatchRunnerModule extends FeatureModule {
+export class BatchRunnerModule extends Feature {
   readonly id = 'batch-runner'
   readonly name = 'Batch Runner'
   readonly description = 'Send one templated message per item, one after another.'
@@ -17,7 +17,7 @@ export class BatchRunnerModule extends FeatureModule {
   private readonly button = new ComposerButton('Batch runner', 'layers', 'Run a template over a list of items', () => this.open(), { id: 'batch', after: ['prompts', 'big'] })
   private offered = false
 
-  constructor(context: AppContext) {
+  constructor(context: ScriptContext) {
     super(context)
   }
 

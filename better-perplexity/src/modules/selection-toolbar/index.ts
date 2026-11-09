@@ -1,8 +1,7 @@
 import { findComposer, readComposer, sendComposer, writeComposer } from '../../core/composer'
-import { createElement, isOwnUi, markUi } from '../../core/dom'
-import { FeatureModule, type MenuEntry } from '../../core/module'
+import { createElement, Feature, injectStyle, type MenuEntry } from '@nolly/core'
+import { isOwnUi, markUi } from '../../core/dom'
 import { rememberSelection } from '../../core/selection'
-import { injectStyle } from '../../core/styles'
 import { ensureUiStyles } from '../../ui/styles'
 import { askFields } from '../../ui/placeholder-dialog'
 
@@ -39,7 +38,7 @@ const ACTIONS: readonly Action[] = [
   { id: 'quote', label: 'Quote', title: 'Quote in the message box', compose: async (selected) => `${quote(selected)}\n\n` }
 ]
 
-export class SelectionToolbarModule extends FeatureModule {
+export class SelectionToolbarModule extends Feature {
   readonly id = 'selection-toolbar'
   readonly name = 'Selection Toolbar'
   readonly description = 'Ask, explain, summarize or quote any selected text.'
@@ -48,7 +47,7 @@ export class SelectionToolbarModule extends FeatureModule {
   private selected = ''
   private timer = 0
 
-  constructor(context: ConstructorParameters<typeof FeatureModule>[0]) {
+  constructor(context: ConstructorParameters<typeof Feature>[0]) {
     super(context)
     ensureUiStyles()
     injectStyle('better-perplexity-selection-styles', CSS)

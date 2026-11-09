@@ -1,11 +1,11 @@
 import { findComposer, writeComposer } from '../../core/composer'
 import { copyText } from '../../core/clipboard'
-import { FeatureModule, type MenuEntry, type ModuleCommand } from '../../core/module'
+import { Feature, type FeatureCommand, type MenuEntry } from '@nolly/core'
 import { toggleShortcutDialog } from './dialog'
 import { togglePalette } from './palette'
 import { loadShortcut, matchesShortcut, saveShortcut, type Shortcut } from './shortcut'
 
-export class CommandPaletteModule extends FeatureModule {
+export class CommandPaletteModule extends Feature {
   readonly id = 'command-palette'
   readonly name = 'Command Palette'
   readonly description = 'Search and run any action with a keyboard shortcut.'
@@ -32,7 +32,7 @@ export class CommandPaletteModule extends FeatureModule {
     ]
   }
 
-  override commands(): ModuleCommand[] {
+  override commands(): FeatureCommand[] {
     return [
       { id: 'focus-input', title: 'Focus message input', run: () => findComposer()?.focus() },
       { id: 'clear-input', title: 'Clear message input', run: () => void this.clearInput() },

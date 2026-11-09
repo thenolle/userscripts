@@ -1,4 +1,4 @@
-import { createElement } from '../../core/dom'
+import { createElement } from '@nolly/core'
 import { createLine } from './lines'
 
 type TokenType = 'comment' | 'string' | 'number' | 'keyword' | 'fn' | 'type' | 'tag' | 'attr' | 'key'

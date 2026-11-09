@@ -1,5 +1,5 @@
-import { createElement, markUi } from '../../core/dom'
-import { FeatureModule, type AppContext, type MenuEntry } from '../../core/module'
+import { createElement, Feature, type MenuEntry, type ScriptContext } from '@nolly/core'
+import { markUi } from '../../core/dom'
 import { createIcon } from '../../ui/icons'
 import { ensureUiStyles } from '../../ui/styles'
 import { Tooltip } from '../../ui/tooltip'
@@ -8,7 +8,7 @@ import { ensureGearStyles } from './styles'
 
 const INDICATOR_SELECTOR = '.bp-usage-indicator'
 
-export class GlobalSettingsModule extends FeatureModule {
+export class GlobalSettingsModule extends Feature {
   readonly id = 'global-settings'
   readonly name = 'Settings Button'
   readonly description = 'Adds a settings button next to the usage badge.'
@@ -16,7 +16,7 @@ export class GlobalSettingsModule extends FeatureModule {
   private readonly button = markUi(createElement('button', 'bp-header-btn bp-gear'))
   private readonly tooltip: Tooltip
 
-  constructor(context: AppContext) {
+  constructor(context: ScriptContext) {
     super(context)
     ensureUiStyles()
     ensureGearStyles()

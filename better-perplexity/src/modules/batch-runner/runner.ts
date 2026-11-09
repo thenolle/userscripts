@@ -3,7 +3,7 @@ import { findComposer, readComposer, sendComposer, writeComposer } from '../../c
 import { waitForResponse } from '../../core/generation'
 import { logger } from '../../core/logger'
 import { storage } from '../../core/storage'
-import { isAbort, sleep, waitFor } from '../../core/wait'
+import { isAbort, sleep, waitFor } from '@nolly/core'
 
 export interface BatchState {
   prompts: string[]

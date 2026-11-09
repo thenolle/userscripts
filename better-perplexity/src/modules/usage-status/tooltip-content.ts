@@ -1,4 +1,4 @@
-import { createElement } from '../../core/dom'
+import { createElement } from '@nolly/core'
 import { createStatusBar } from './components'
 import { LIMITS, LIMIT_KEYS, STATUS_LABELS } from './definitions'
 import { formatAgo } from './format'

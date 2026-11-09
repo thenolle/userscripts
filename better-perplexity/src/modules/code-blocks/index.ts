@@ -1,8 +1,8 @@
 import { copyText } from '../../core/clipboard'
+import { Feature, type MenuEntry } from '@nolly/core'
 import { isOwnUi } from '../../core/dom'
 import { isGenerating } from '../../core/generation'
 import { logger } from '../../core/logger'
-import { FeatureModule, type MenuEntry } from '../../core/module'
 import { EnhancedBlock } from './block'
 import { toggleCodeSettingsDialog } from './dialog'
 import { analyze, findBlockRoot, readCode } from './detect'
@@ -12,7 +12,7 @@ const STABLE_MS = 900
 const FORCE_MS = 6_000
 const RESCAN_MS = 500
 
-export class CodeBlocksModule extends FeatureModule {
+export class CodeBlocksModule extends Feature {
   readonly id = 'code-blocks'
   readonly name = 'Code Block Pro'
   readonly description = 'Replaces code blocks with copy, wrap, line numbers, folding and download.'

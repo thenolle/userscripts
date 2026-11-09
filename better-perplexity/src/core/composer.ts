@@ -1,6 +1,6 @@
-import { isOwnUi, toElement } from './dom'
+import { sleep, toElement } from '@nolly/core'
+import { isOwnUi } from './dom'
 import { dispatchEnter, findSendButton } from './synthetic-keys'
-import { sleep } from './wait'
 
 export const EDITABLE_SELECTOR = [
   'textarea',

@@ -1,4 +1,4 @@
-import { injectStyle } from '../../core/styles'
+import { injectStyle } from '@nolly/core'
 
 const CSS = `
 .bp-split-summary { margin-bottom: 12px; color: var(--bp-muted); font-size: 12px; }

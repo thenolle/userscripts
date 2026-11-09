@@ -1,4 +1,4 @@
-import { createElement } from '../../core/dom'
+import { createElement } from '@nolly/core'
 import { createButton, createSelectField, createSwitch } from '../../ui/controls'
 import { createDialog } from '../../ui/dialog'
 import type { CitationStyle } from './citations'

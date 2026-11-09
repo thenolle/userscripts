@@ -1,4 +1,5 @@
-import { createElement, getElement, markUi } from '../core/dom'
+import { createElement, getElement } from '@nolly/core'
+import { markUi } from '../core/dom'
 import { COMPOSER_ACTIONS } from '../selectors'
 import { createIcon, type IconName } from './icons'
 import { ensureUiStyles } from './styles'

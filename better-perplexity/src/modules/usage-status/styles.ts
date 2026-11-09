@@ -1,4 +1,4 @@
-import { injectStyle } from '../../core/styles'
+import { injectStyle } from '@nolly/core'
 
 const USAGE_CSS = `
 .bp-usage-indicator { position: relative; display: inline-flex; align-items: center; margin-left: 8px; font-family: inherit; vertical-align: middle; z-index: 1000; }

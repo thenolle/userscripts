@@ -1,4 +1,4 @@
-import { createElement } from '../../core/dom'
+import { createElement } from '@nolly/core'
 import { createButton, createNumberField, createSelectField, createSwitch } from '../../ui/controls'
 import { createDialog } from '../../ui/dialog'
 import { DEFAULT_CODE_SETTINGS, type CodeBlockSettings } from './settings'

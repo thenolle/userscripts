@@ -1,11 +1,11 @@
 import { logger } from '../../core/logger'
-import { FeatureModule, type MenuEntry } from '../../core/module'
+import { Feature, type MenuEntry } from '@nolly/core'
 import { ConfigButton } from './config-button'
 import { toggleShortcutsDialog } from './dialog'
 import { getEditableTarget, insertNewline, isComposing, isSynthetic, sendMessage } from './keyboard'
 import { describeShortcuts, hasModifier, loadShortcuts, matchesShortcut, saveShortcuts, type ShortcutSettings } from './shortcuts'
 
-export class EnterAsNewlineModule extends FeatureModule {
+export class EnterAsNewlineModule extends Feature {
   readonly id = 'enter-as-newline'
   readonly name = 'Enter as Newline'
   readonly description = 'Use Enter for newlines and configurable shortcuts to send messages.'

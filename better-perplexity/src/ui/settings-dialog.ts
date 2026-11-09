@@ -1,11 +1,10 @@
-import { createElement } from '../core/dom'
-import type { FeatureModule } from '../core/module'
+import { createElement, type Feature } from '@nolly/core'
 import { createButton, createSection, createSwitch } from './controls'
 import { createDialog } from './dialog'
 
 const DIALOG_ID = 'better-perplexity-settings-dialog'
 
-export const toggleSettingsDialog = (modules: readonly FeatureModule[], onChange: () => void): void => {
+export const toggleSettingsDialog = (modules: readonly Feature[], onChange: () => void): void => {
   const existing = document.getElementById(DIALOG_ID)
   if (existing instanceof HTMLDialogElement) {
     existing.close()
