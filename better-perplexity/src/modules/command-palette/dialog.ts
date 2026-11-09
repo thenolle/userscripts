@@ -6,7 +6,7 @@ import { ensurePaletteStyles } from './styles'
 
 const DIALOG_ID = 'better-perplexity-shortcut-dialog'
 
-export const toggleShortcutDialog = (current: Shortcut, onSave: (shortcut: Shortcut) => void, title = 'Palette shortcut'): void => {
+export const toggleShortcutDialog = (current: Shortcut, onSave: (shortcut: Shortcut) => void, title = 'Palette shortcut', defaults: Shortcut = DEFAULT_SHORTCUT): void => {
   const existing = document.getElementById(DIALOG_ID)
   if (existing instanceof HTMLDialogElement) {
     existing.close()
@@ -46,7 +46,7 @@ export const toggleShortcutDialog = (current: Shortcut, onSave: (shortcut: Short
     record,
     createButton('Reset', {
       onClick: () => {
-        draft = { ...DEFAULT_SHORTCUT }
+        draft = { ...defaults }
         stopRecording()
       }
     }),

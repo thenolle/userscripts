@@ -14,22 +14,27 @@ import { SelectionToolbarModule } from './modules/selection-toolbar'
 import { TutorialModule } from './modules/tutorial'
 import { UpdatesModule } from './modules/updates'
 import { UsageStatusModule } from './modules/usage-status'
+import { PromptQueueModule } from './modules/prompt-queue'
+import { RecallModule } from './modules/recall'
 
 fetchSpy.install()
 
 new App()
-  .register((context) => new PromptLibraryModule(context))
-  .register((context) => new SelectionToolbarModule(context))
-  .register((context) => new MaxWidthModule(context))
-  .register((context) => new EnterAsNewlineModule(context))
-  .register((context) => new CodeBlocksModule(context))
-  .register((context) => new MessageSplitterModule(context))
-  .register((context) => new BatchRunnerModule(context))
-  .register((context) => new DraftGuardModule(context))
-  .register((context) => new CommandPaletteModule(context))
-  .register((context) => new ExporterModule(context))
-  .register((context) => new UsageStatusModule(context))
-  .register((context) => new GlobalSettingsModule(context))
-  .register((context) => new TutorialModule(context))
-  .register((context) => new UpdatesModule(context))
-  .start()
+	.register((context) => new PromptLibraryModule(context))
+	.register((context) => new SelectionToolbarModule(context))
+	.register((context) => new MaxWidthModule(context))
+	.register((context) => new EnterAsNewlineModule(context))
+	.register((context) => new CodeBlocksModule(context))
+	.register((context) => new MessageSplitterModule(context))
+	.register((context) => new BatchRunnerModule(context))
+	.register((context) => new DraftGuardModule(context))
+	.register((context) => new CommandPaletteModule(context))
+	.register((context) => new ExporterModule(context))
+	.register((context) => new UsageStatusModule(context))
+	.register((context) => new GlobalSettingsModule(context))
+	.register((context) => new TutorialModule(context))
+	.register((context) => new UpdatesModule(context))
+	.register((context) => new BatchRunnerModule(context))
+	.register((context) => new PromptQueueModule(context))
+	.register((context) => new RecallModule(context))
+	.start()
