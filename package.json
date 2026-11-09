@@ -1,0 +1,26 @@
+{
+  "name": "userscripts-website",
+  "private": true,
+  "type": "module",
+  "license": "PolyForm-Strict-1.0.0",
+  "workspaces": [
+    ".gambrel/packages/*"
+  ],
+  "scripts": {
+    "dev": "SOURCE_DIR=../userscripts SITE_URL=http://localhost:4173 NODE_ENV=development bun scripts/build.ts && bun --eval \"Bun.serve({port:4173,fetch:async(r)=>{const p=new URL(r.url).pathname;for(const f of ['dist'+p,'dist'+p+'index.html','dist/404.html']){const x=Bun.file(f);if(await x.exists()&&!f.endsWith('/'))return new Response(x)}return new Response('Not found',{status:404})}});console.log('http://localhost:4173')\"",
+    "build": "bun scripts/build.ts",
+    "readme": "bun scripts/readme.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@gambrel/browser": "^0.2.3",
+    "@gambrel/components": "^0.2.3",
+    "@gambrel/icons": "^0.2.3",
+    "@gambrel/reactivity": "^0.2.3",
+    "@gambrel/view": "^0.2.3"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.4",
+    "typescript": "^7.0.2"
+  }
+}

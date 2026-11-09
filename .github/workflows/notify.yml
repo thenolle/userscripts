@@ -1,0 +1,17 @@
+name: Notify
+
+on:
+  push:
+    branches: [website]
+
+permissions:
+  contents: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ask master to rebuild the site
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api "repos/${{ github.repository }}/dispatches" -f event_type=website-updated
