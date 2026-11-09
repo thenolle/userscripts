@@ -2,6 +2,18 @@
 
 All notable changes to Better Perplexity are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [1.0.1] - 2026-11-09
+
+### Changed
+
+- **Shared core:** the runtime, feature lifecycle, storage, logger, DOM helpers, HTTP, menu, styles and page request observer now come from the shared `@nolly/core` package, which is bundled into the script. Behavior, settings and stored data are unchanged.
+- **Build:** the userscript header and bundling use the shared build helper.
+- **Docs:** added an Architecture page and updated the development instructions for the Bun workspace.
+
+### Fixed
+
+- Type errors introduced while moving to the shared core.
+
 ## [1.0.0] - 2026-11-08
 
 First public release.
@@ -23,3 +35,4 @@ First public release.
 - **Updates:** automatic updates through the userscript manager plus an in-script update check.
 
 [1.0.0]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.0
+[1.0.1]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.1
