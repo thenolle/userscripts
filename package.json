@@ -1,0 +1,5 @@
+{
+  "name": "userscripts",
+  "private": true,
+  "workspaces": ["core", "better-perplexity"]
+}

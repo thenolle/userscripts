@@ -1,17 +1,15 @@
-const OWNER = 'thenolle'
-const REPO = 'userscripts'
-const BRANCH = 'master'
+import { repoUrls } from '@nolly/core'
+
 export const SLUG = 'better-perplexity'
 
-const RAW = `https://raw.githubusercontent.com/${OWNER}/${REPO}`
-const SITE = `https://github.com/${OWNER}/${REPO}`
+const urls = repoUrls({ owner: 'thenolle', repo: 'userscripts', branch: 'master', slug: SLUG })
 
 export const URLS = {
-  home: `${SITE}/tree/${BRANCH}/${SLUG}`,
-  issues: `${SITE}/issues`,
-  releases: `${SITE}/releases`,
-  sponsor: `https://github.com/sponsors/${OWNER}`,
-  meta: `${RAW}/dist/${SLUG}/${SLUG}.meta.js`,
-  install: `${RAW}/dist/${SLUG}/${SLUG}.user.js`,
-  prompts: `${RAW}/${BRANCH}/${SLUG}/prompts/library.json`
+  home: urls.home,
+  issues: urls.issues,
+  releases: urls.releases,
+  sponsor: urls.sponsor,
+  meta: urls.meta,
+  install: urls.install,
+  prompts: urls.rawFile('prompts/library.json')
 } as const
