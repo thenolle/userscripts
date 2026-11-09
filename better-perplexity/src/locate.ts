@@ -120,3 +120,20 @@ export const describePage = (): Record<string, unknown> => {
 		modeControls: findModeControls().map(({ element }) => brief(element))
 	}
 }
+
+export const findHeaderSlot = (): HTMLElement | null => {
+  const buttons = actionable(document, 'button, [role="button"], a[href]').filter((element) => {
+    const rect = element.getBoundingClientRect()
+    return rect.top >= 0 && rect.bottom <= 96 && rect.left > window.innerWidth * 0.35 && rect.width <= 220 && rect.height <= 64
+  })
+  if (!buttons.length) return null
+  const sorted = buttons.sort((a, b) => b.getBoundingClientRect().left - a.getBoundingClientRect().left)
+  let leftmost = sorted[0]!
+  for (const button of sorted.slice(1)) {
+    if (leftmost.getBoundingClientRect().left - button.getBoundingClientRect().right > 120) break
+    leftmost = button
+  }
+  let node: HTMLElement = leftmost
+  while (node.parentElement && node.parentElement.children.length === 1 && node.parentElement.getBoundingClientRect().width < 260) node = node.parentElement
+  return node
+}

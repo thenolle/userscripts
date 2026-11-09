@@ -1,34 +1,82 @@
 import { injectStyle } from '@nolly/core'
 
 const USAGE_CSS = `
-.bp-usage-indicator { position: relative; display: inline-flex; align-items: center; margin-left: 8px; font-family: inherit; vertical-align: middle; z-index: 1000; }
-.bp-usage-indicator[data-placement='fallback'] { flex: 0 0 auto; align-self: center; margin: 0 8px 0 0; max-width: 100%; }
+.bp-usage-indicator {
+  --bp-dot: var(--bp-muted);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
+  font-family: inherit;
+  vertical-align: middle;
+  z-index: 1000;
+}
+.bp-usage-indicator[data-status='healthy'] { --bp-dot: var(--bp-green); }
+.bp-usage-indicator[data-status='low'] { --bp-dot: var(--bp-yellow); }
+.bp-usage-indicator[data-status='critical'],
+.bp-usage-indicator[data-status='empty'] { --bp-dot: var(--bp-red); }
+
+.bp-usage-indicator[data-placement='header'] { flex: 0 0 auto; margin: 0 8px 0 0; }
+
+.bp-usage-indicator[data-placement='dock'] {
+  position: fixed;
+  z-index: 2147483000;
+  margin: 0;
+  padding: 4px;
+  border: 1px solid var(--bp-border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--bp-bg) 88%, transparent);
+  box-shadow: 0 8px 24px -8px rgb(0 0 0 / 35%), 0 1px 2px rgb(0 0 0 / 12%);
+  backdrop-filter: blur(10px);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.bp-usage-indicator[data-placement='dock']:active { cursor: grabbing; }
+.bp-usage-indicator[data-placement='dock'] .bp-usage-trigger { border-color: transparent; background: transparent; box-shadow: none; }
 
 .bp-usage-trigger {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  min-height: 30px;
-  padding: 0 10px;
+  gap: 8px;
+  height: 32px;
+  padding: 0 12px;
   border: 1px solid var(--bp-border);
-  border-radius: 999px;
+  border-radius: 8px;
   background: var(--bp-bg);
   color: var(--bp-fg);
   font: inherit;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
+  line-height: 1;
   white-space: nowrap;
   cursor: pointer;
-  transition: background 120ms ease;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
+  transition: background 120ms ease, border-color 120ms ease;
 }
-
 .bp-usage-trigger:hover { background: var(--bp-accent); }
 .bp-usage-trigger:focus-visible { outline: 2px solid var(--bp-fg); outline-offset: 2px; }
-.bp-usage-dot { width: 7px; height: 7px; flex-shrink: 0; border-radius: 50%; background: var(--bp-muted); }
-.bp-usage-indicator[data-status='healthy'] .bp-usage-dot { background: var(--bp-green); }
-.bp-usage-indicator[data-status='low'] .bp-usage-dot { background: var(--bp-yellow); }
-.bp-usage-indicator[data-status='critical'] .bp-usage-dot,
-.bp-usage-indicator[data-status='empty'] .bp-usage-dot { background: var(--bp-red); }
+
+.bp-usage-dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--bp-dot);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bp-dot) 22%, transparent);
+}
+.bp-usage-count { font-weight: 600; font-variant-numeric: tabular-nums; }
+.bp-usage-unit { margin-left: -3px; color: var(--bp-muted); font-weight: 400; }
+.bp-usage-meter { width: 28px; height: 4px; flex-shrink: 0; overflow: hidden; border-radius: 999px; background: var(--bp-border); }
+.bp-usage-meter[hidden] { display: none; }
+.bp-usage-meter-fill { height: 100%; border-radius: inherit; background: var(--bp-dot); transition: width 240ms ease; }
+.bp-usage-mode { max-width: 16ch; padding-left: 8px; overflow: hidden; border-left: 1px solid var(--bp-border); color: var(--bp-muted); font-weight: 400; text-overflow: ellipsis; }
+.bp-usage-mode[hidden] { display: none; }
+
+@media (max-width: 520px) {
+  .bp-usage-mode, .bp-usage-unit { display: none; }
+}
 
 .bp-tooltip .bp-tip-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .bp-tooltip .bp-tip-mode { font-size: 13px; font-weight: 600; }
