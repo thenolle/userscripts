@@ -27,6 +27,8 @@ Updates arrive automatically. The script also checks on its own and offers to up
 | Command palette   | Search every action                                                                                  |
 | Enter as Newline  | Enter adds a line, a shortcut sends                                                                  |
 | Max Width         | Full-width layout, optional sidebar removal                                                          |
+| Usage alerts      | Refill, low and used-up alerts (desktop notifications in the background), plus your daily pace       |
+| Update checker    | Checks on load and every few minutes, tells you once per version, remembers skipped versions         |
 
 ## Shortcuts
 
