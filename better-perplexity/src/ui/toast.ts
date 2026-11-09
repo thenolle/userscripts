@@ -6,6 +6,7 @@ import { ensureUiStyles } from './styles'
 export interface ToastAction {
   label: string
   primary?: boolean
+  keepOpen?: boolean
   onClick: () => void
 }
 
@@ -26,10 +27,10 @@ export const showToast = (message: string, actions: readonly ToastAction[] = [],
       row.appendChild(
         createButton(action.label, {
           primary: action.primary,
-          onClick: () => {
-            dismiss()
-            action.onClick()
-          }
+					onClick: () => {
+						if (!action.keepOpen) dismiss()
+						action.onClick()
+					}
         })
       )
     }

@@ -84,3 +84,9 @@ export interface ApiDiagnostics {
   accountPreview: string | null
   attempts: AttemptDiagnostic[]
 }
+
+export interface Pace {
+  perDay: number
+  days: number
+  emptyInMs: number | null
+}
