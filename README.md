@@ -11,6 +11,7 @@ Small, focused userscripts by [Nolly](https://github.com/thenolle). Each lives i
 | Script | Version | What it does | Links |
 | --- | --- | --- | --- |
 | **Better Perplexity** | 1.0.0 | A modular userscript that adds the missing parts of the Perplexity web app: reliable usage tracking, better code blocks, long-message handling, a prompt library, batch runs and real exports. | [Install](https://raw.githubusercontent.com/thenolle/userscripts/dist/better-perplexity/better-perplexity.user.js) · [Docs](https://thenolle.github.io/userscripts/better-perplexity/) |
+| **Userscript Core** | 0.1.0 | Shared runtime, utilities and build tooling for every userscript in this repository. Write features, not plumbing. | [Install]() · [Docs](https://thenolle.github.io/userscripts/core/) |
 
 ## Installing
 
@@ -35,6 +36,18 @@ Guides:
 - [Code blocks and export](https://thenolle.github.io/userscripts/better-perplexity/code-and-export/): Better code blocks with language badges, and exporting threads as Markdown, Word, PDF or plain text.
 - [Shortcuts and settings](https://thenolle.github.io/userscripts/better-perplexity/shortcuts/): Every keyboard shortcut, how Enter works, the command palette and the selection toolbar.
 - [Troubleshooting](https://thenolle.github.io/userscripts/better-perplexity/troubleshooting/): Fixes for missing buttons, wrong usage numbers, failed exports and update problems.
+
+### Userscript Core
+
+Shared runtime, utilities and build tooling for every userscript in this repository. Write features, not plumbing.
+
+[Install]() · [Documentation](https://thenolle.github.io/userscripts/core/) · [Changelog](https://thenolle.github.io/userscripts/core/changelog/) · [Source](https://github.com/thenolle/userscripts/tree/master/core)
+
+Guides:
+
+- [Getting started](https://thenolle.github.io/userscripts/core/getting-started/): Create a userscript on top of the core in a few minutes.
+- [API reference](https://thenolle.github.io/userscripts/core/api/): Every export of the core package.
+- [Build and release](https://thenolle.github.io/userscripts/core/build/): How headers, bundling and dist output work.
 
 ## How this repository works
 
