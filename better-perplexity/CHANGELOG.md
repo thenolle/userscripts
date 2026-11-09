@@ -2,6 +2,20 @@
 
 All notable changes to Better Perplexity are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [1.0.3] - 2026-11-09
+
+### Fixed
+
+- **Home page and Computer mode:** the usage badge, composer buttons, mode detection and Max Width no longer depend on the conversation page layout. The badge falls back to a floating pill when no profile button is found.
+- **Mode detection:** reads the selected control in the composer, then the URL (Computer), then the counter that dropped on your last send, and labels the result "(assumed)" when it is a guess.
+- **Draft Guard:** no longer discards a draft when an unrelated background request fires.
+
+### Changed
+
+- **Refill forecasts:** rebuilt around interval measurements. Sends are matched to counter drops and kept across reloads, full resets are recognized, and refreshes speed up to every 15 seconds near an expected refill. The forecast now shows a margin (for example "±12m").
+- **Polling:** hidden tabs no longer poll, and returning to the tab refreshes immediately.
+- **Diagnostics:** new "Copy Page Diagnostics" menu entry for bug reports.
+
 ## [1.0.2] - 2026-11-09
 
 ### Changed
@@ -44,3 +58,4 @@ First public release.
 [1.0.0]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.0
 [1.0.1]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.1
 [1.0.2]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.2
+[1.0.3]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.3
