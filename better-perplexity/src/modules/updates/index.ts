@@ -7,6 +7,7 @@ import { showToast } from '../../ui/toast'
 const LAST_CHECK = 'updates:last-check'
 const DISMISSED = 'updates:dismissed'
 const INTERVAL = 12 * 3_600_000
+const RECHECK_EVERY = 3_600_000
 const STARTUP_DELAY = 6_000
 
 const versionParts = (version: string): number[] => version.split('.').map((part) => Number.parseInt(part, 10) || 0)
@@ -26,17 +27,19 @@ export class UpdatesModule extends Feature {
   readonly name = 'Update Checker'
   readonly description = 'Checks GitHub for new versions of this userscript.'
 
-  private scheduled = false
+  run(): void {}
 
-  run(): void {
-    if (!this.enabled || this.scheduled) return
-    this.scheduled = true
-    if (Date.now() - storage.get(LAST_CHECK, 0) < INTERVAL) return
-    window.setTimeout(() => void this.check(false), STARTUP_DELAY)
+  override onEnable(): void {
+    this.scope.timeout(() => void this.checkIfDue(), STARTUP_DELAY)
+    this.scope.interval(() => void this.checkIfDue(), RECHECK_EVERY)
   }
 
   override menuEntries(): MenuEntry[] {
     return [{ id: 'check', label: 'Check for Updates', action: () => void this.check(true) }]
+  }
+
+  private async checkIfDue(): Promise<void> {
+    if (Date.now() - storage.get(LAST_CHECK, 0) >= INTERVAL) await this.check(false)
   }
 
   private async check(manual: boolean): Promise<void> {
