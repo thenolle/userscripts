@@ -10,8 +10,8 @@ Small, focused userscripts by [Nolly](https://github.com/thenolle). Each lives i
 
 | Script | Version | What it does | Links |
 | --- | --- | --- | --- |
-| **Better Perplexity** | 1.0.4 | A modular userscript that adds the missing parts of the Perplexity web app: reliable usage tracking, better code blocks, long-message handling, a prompt library, batch runs and real exports. | [Install](https://raw.githubusercontent.com/thenolle/userscripts/dist/better-perplexity/better-perplexity.user.js) · [Docs](https://thenolle.github.io/userscripts/better-perplexity/) |
-| **Userscript Core** | 0.1.1 | Shared runtime, utilities and build tooling for every userscript in this repository. Write features, not plumbing. | [Docs](https://thenolle.github.io/userscripts/core/) · [Source](https://github.com/thenolle/userscripts/tree/master/core) |
+| **Better Perplexity** | 1.0.5 | A modular userscript that adds the missing parts of the Perplexity web app: reliable usage tracking, better code blocks, long-message handling, a prompt library, batch runs and real exports. | [Install](https://raw.githubusercontent.com/thenolle/userscripts/dist/better-perplexity/better-perplexity.user.js) · [Docs](https://thenolle.github.io/userscripts/better-perplexity/) |
+| **Userscript Core** | 1.0.2 | Shared runtime, utilities and build tooling for every userscript in this repository. Write features, not plumbing. | [Docs](https://thenolle.github.io/userscripts/core/) · [Source](https://github.com/thenolle/userscripts/tree/master/core) |
 
 ## Installing
 
@@ -31,6 +31,9 @@ Guides:
 
 - [Getting started](https://thenolle.github.io/userscripts/better-perplexity/getting-started/): Install Better Perplexity, take the built-in tour and learn where everything lives.
 - [Usage tracking](https://thenolle.github.io/userscripts/better-perplexity/usage-tracking/): How remaining queries, totals and refill estimates are calculated, and what to do when they look wrong.
+- [Updates and alerts](https://thenolle.github.io/userscripts/better-perplexity/updates-and-alerts/): How update checks work, how to skip a version, and how refill alerts and pace work.
+- [Message queue](https://thenolle.github.io/userscripts/better-perplexity/message-queue/): Queue follow-up messages while an answer is generating and let them send themselves.
+- [Recall](https://thenolle.github.io/userscripts/better-perplexity/recall/): Search everything you sent, reuse it in one key, and walk back through it with the arrow keys.
 - [Long messages](https://thenolle.github.io/userscripts/better-perplexity/long-messages/): Paste any amount of text, see the size as you type, and split or attach it only when it is too big.
 - [Prompts and batches](https://thenolle.github.io/userscripts/better-perplexity/prompts-and-batches/): Reusable prompts with placeholders, community prompts from GitHub, and running one message over a whole list.
 - [Code blocks and export](https://thenolle.github.io/userscripts/better-perplexity/code-and-export/): Better code blocks with language badges, and exporting threads as Markdown, Word, PDF or plain text.
@@ -49,6 +52,7 @@ Guides:
 - [Getting started](https://thenolle.github.io/userscripts/core/getting-started/): Create a userscript on top of the core in a few minutes.
 - [API reference](https://thenolle.github.io/userscripts/core/api/): Every export of the core package.
 - [Build and release](https://thenolle.github.io/userscripts/core/build/): How headers, bundling and dist output work.
+- [Keeping scripts updated](https://thenolle.github.io/userscripts/core/updates/): Add update checks, skip handling and notifications to any userscript in a few lines.
 
 ## How this repository works
 
