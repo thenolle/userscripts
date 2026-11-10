@@ -16,6 +16,7 @@ import {
 	UpdatesFeature,
 	configurePlatform,
 	configureUi,
+	AnswerDiffFeature,
 } from '@nolly/ai'
 import { App } from './app'
 import { fileBudget } from './budget'
@@ -79,19 +80,20 @@ whenReady(() => {
 		.register((context) => new PromptLibraryFeature(context))
 		.register((context) => new SelectionToolbarFeature(context))
 		.register((context) => new MaxWidthFeature(context, { storage, sidebar: { rule: { id: 'left-sidebar', selector: 'aside' }, label: 'Left Sidebar', defaultRemoved: false } }))
-		.register((context) => new CodeBlocksFeature(context))
+		.register((context) => new UsageFeature(context))
+		.register((context) => new DiagnosticsFeature(context))
 		.register((context) => new EnterAsNewlineFeature(context))
+		.register((context) => new CodeBlocksFeature(context))
 		.register((context) => new MessageSplitterFeature(context))
 		.register((context) => new BatchRunnerFeature(context))
 		.register((context) => new DraftGuardFeature(context))
 		.register((context) => new CommandPaletteFeature(context))
+		.register((context) => new ExporterFeature(context))
+		.register((context) => new TutorialFeature(context))
+		.register((context) => new UpdatesFeature(context))
 		.register((context) => new PromptQueueFeature(context))
 		.register((context) => new RecallFeature(context))
 		.register((context) => new ContextPacksFeature(context))
-		.register((context) => new ExporterFeature(context))
-		.register((context) => new UpdatesFeature(context))
-		.register((context) => new UsageFeature(context))
-		.register((context) => new TutorialFeature(context))
-		.register((context) => new DiagnosticsFeature(context))
+		.register((context) => new AnswerDiffFeature(context))
 		.start()
 })

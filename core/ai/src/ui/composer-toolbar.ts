@@ -2,7 +2,7 @@ import { createElement, injectStyle } from '@nolly/core'
 import { platform } from '../platform'
 import { markUi, uiConfig } from './config'
 
-const ORDER = ['config', 'big', 'prompts', 'batch', 'queue', 'recall', 'context']
+const ORDER = ['config', 'big', 'prompts', 'batch', 'queue', 'recall', 'context', 'diff']
 const MODE = /^(?:switch to |select |use )?(?:pro search|pro|search|deep research|research|labs?|computer|agentic(?: research)?|think|thinking)(?: mode)?$/i
 const EXCLUDED = 'header, aside, dialog, [role="dialog"], [data-code-block], .cm-editor'
 const tools = new Map<string, HTMLElement>()

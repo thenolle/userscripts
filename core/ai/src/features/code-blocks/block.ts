@@ -18,10 +18,16 @@ export class EnhancedBlock {
 
 	private readonly code = createElement('code', 'bp-code-source')
 	private readonly gutter = createElement('div', 'bp-code-gutter')
+	private readonly pre = createElement('pre', 'bp-code-native-pre')
+	private readonly sourceLines: HTMLElement[] = []
+	private readonly gutterLines: HTMLElement[] = []
 	private readonly toggles = new Map<Flag, HTMLButtonElement>()
 	private readonly lineCount: number
 	private readonly originalDisplay: string
 	private readonly originalPriority: string
+	private readonly resizeObserver: ResizeObserver
+	private frame = 0
+	private destroyed = false
 
 	constructor(
 		readonly source: HTMLElement,
@@ -33,6 +39,7 @@ export class EnhancedBlock {
 		this.lineCount = info.text.split('\n').length
 		this.originalDisplay = root.style.getPropertyValue('display')
 		this.originalPriority = root.style.getPropertyPriority('display')
+		this.resizeObserver = new ResizeObserver(() => this.scheduleGutter())
 		this.build()
 	}
 
@@ -41,21 +48,33 @@ export class EnhancedBlock {
 	}
 
 	get fenced(): string {
-		const longest = Math.max(0, ...(this.text.match(/`+/g) ?? []).map((run) => run.length))
+		let longest = 0
+		let run = 0
+		for (const character of this.text) {
+			run = character === '`' ? run + 1 : 0
+			longest = Math.max(longest, run)
+		}
 		const marker = '`'.repeat(Math.max(3, longest + 1))
-		return `${marker}${this.info.language === 'text' ? '' : this.info.language}\n${this.text}\n${marker}`
+		const language = this.info.language === 'text' ? '' : this.info.language
+		return `${marker}${language}\n${this.text}\n${marker}`
 	}
 
 	mount(): void {
 		this.root.insertAdjacentElement('beforebegin', this.element)
 		this.ensureHidden()
+		this.resizeObserver.observe(this.pre)
+		this.scheduleGutter()
+		void document.fonts.ready.then(() => this.scheduleGutter())
 	}
 
 	ensureHidden(): void {
-		if (this.root.style.getPropertyValue('display') !== 'none') this.root.style.setProperty('display', 'none', 'important')
+		if (this.root.style.getPropertyValue('display') !== 'none' || this.root.style.getPropertyPriority('display') !== 'important') this.root.style.setProperty('display', 'none', 'important')
 	}
 
 	destroy(): void {
+		this.destroyed = true
+		cancelAnimationFrame(this.frame)
+		this.resizeObserver.disconnect()
 		this.element.remove()
 		if (this.originalDisplay) this.root.style.setProperty('display', this.originalDisplay, this.originalPriority)
 		else this.root.style.removeProperty('display')
@@ -64,6 +83,7 @@ export class EnhancedBlock {
 	private setFlag(flag: Flag, value: boolean): void {
 		this.element.dataset[flag] = String(value)
 		this.toggles.get(flag)?.setAttribute('aria-pressed', String(value))
+		if (flag === 'wrap' || flag === 'lines') this.scheduleGutter()
 	}
 
 	private button(icon: IconName, title: string, action: () => void): HTMLButtonElement {
@@ -76,78 +96,109 @@ export class EnhancedBlock {
 		return button
 	}
 
-	private toggle(flag: Flag, icon: IconName, title: string, value: boolean): HTMLButtonElement {
+	private toggle(flag: Flag, icon: IconName, title: string, initial: boolean): HTMLButtonElement {
 		const button = this.button(icon, title, () => {
 			this.setFlag(flag, this.element.dataset[flag] !== 'true')
 		})
 		this.toggles.set(flag, button)
-		this.setFlag(flag, value)
+		this.setFlag(flag, initial)
 		return button
 	}
 
 	private renderSource(): void {
-		let lines: HTMLElement[]
-		if (this.settings.highlight === 'builtin') {
-			lines = highlightLines(this.text, this.info.language)
-				?? renderPlainLines(this.text, this.info.language === 'diff')
-		} else if (this.settings.highlight === 'site') {
-			lines = splitHighlighted(this.source.querySelector('code') ?? this.source, this.lineCount)
-		} else {
-			lines = renderPlainLines(this.text, this.info.language === 'diff')
-		}
-		const fragment = document.createDocumentFragment()
-		lines.forEach((line, index) => {
-			if (index > 0) fragment.appendChild(document.createTextNode('\n'))
-			const cell = line.querySelector('.bp-text')
-			for (const child of cell?.childNodes ?? []) fragment.appendChild(child.cloneNode(true))
+		const rawLines = this.text.split('\n')
+		let highlighted: HTMLElement[] | null = null
+		if (this.settings.highlight === 'builtin') highlighted = highlightLines(this.text, this.info.language)
+		else if (this.settings.highlight === 'site') highlighted = splitHighlighted(this.source.querySelector('code') ?? this.source, this.lineCount)
+		highlighted ??= renderPlainLines(this.text, this.info.language === 'diff')
+		rawLines.forEach((text, index) => {
+			if (index > 0) this.code.appendChild(document.createTextNode('\n'))
+			const line = createElement('span', 'bp-code-logical-line')
+			const cell = highlighted[index]?.querySelector('.bp-text')
+			if (cell && cell.textContent === text) {
+				for (const child of cell.childNodes) line.appendChild(child.cloneNode(true))
+			} else {
+				line.textContent = text
+			}
+			this.sourceLines.push(line)
+			this.code.appendChild(line)
+			const number = createElement('div', 'bp-code-gutter-line', String(index + 1))
+			this.gutterLines.push(number)
+			this.gutter.appendChild(number)
 		})
-		if (fragment.textContent === this.text) this.code.appendChild(fragment)
-		else this.code.textContent = this.text
 	}
 
 	private build(): void {
 		const meta = createElement('div', 'bp-code-meta')
 		meta.append(createLanguageIcon(this.info.language), createElement('span', 'bp-code-lang', languageInfo(this.info.language).name))
 		if (this.info.filename) meta.appendChild(createElement('span', 'bp-code-file', this.info.filename))
-		meta.appendChild(createElement('span', 'bp-code-count', `${this.lineCount} lines`))
+		meta.appendChild(createElement('span', 'bp-code-count', `${this.lineCount} ${this.lineCount === 1 ? 'line' : 'lines'}`))
 		const actions = createElement('div', 'bp-code-actions')
 		actions.append(this.toggle('wrap', 'wrap', 'Wrap lines', this.settings.wrap), this.toggle('lines', 'lines', 'Line numbers', this.settings.lineNumbers))
 		const collapsible = this.settings.collapseAfter > 0 && this.lineCount > this.settings.collapseAfter
-		if (collapsible) actions.appendChild(this.toggle('collapsed', 'fold', 'Fold code', false))
+		if (collapsible) actions.appendChild(this.toggle('collapsed', 'fold', 'Fold code', true))
 		const copy = this.button('copy', 'Copy code', () => {
 			void copyText(this.text).then((ok) => {
-				if (!ok) return
+				if (!ok || this.destroyed) return
 				copy.replaceChildren(createIcon('check', 16))
-				window.setTimeout(() => copy.replaceChildren(createIcon('copy', 16)), 1_200)
+				window.setTimeout(() => {
+					if (!this.destroyed) copy.replaceChildren(createIcon('copy', 16))
+				}, 1_200)
 			})
 		})
-		actions.appendChild(copy)
-		actions.appendChild(this.button('download', 'Download code', () => {
-			const filename = (this.info.filename ?? `snippet.${languageInfo(this.info.language).ext}`).split(/[\\/]/).pop() || 'snippet.txt'
-			saveFile(filename, this.text)
-		}))
+		actions.append(
+			copy,
+			this.button('download', 'Download code', () => {
+				const filename = (this.info.filename ?? `snippet.${languageInfo(this.info.language).ext}`).split(/[\\/]/).pop() || 'snippet.txt'
+				saveFile(filename, this.text)
+			})
+		)
 		const head = createElement('div', 'bp-code-head')
 		head.append(meta, actions)
 		this.gutter.setAttribute('aria-hidden', 'true')
-		this.gutter.textContent = Array.from({ length: this.lineCount }, (_, index) => index + 1).join('\n')
-		const pre = createElement('pre', 'bp-code-native-pre')
-		pre.tabIndex = 0
-		pre.setAttribute('aria-label', `${languageInfo(this.info.language).name} source code`)
+		this.pre.tabIndex = 0
+		this.pre.setAttribute('aria-label', `${languageInfo(this.info.language).name} source code`)
 		this.renderSource()
-		pre.appendChild(this.code)
+		this.pre.appendChild(this.code)
 		const scroll = createElement('div', 'bp-code-scroll')
-		scroll.append(this.gutter, pre)
+		scroll.append(this.gutter, this.pre)
 		const body = createElement('div', 'bp-code-body')
 		body.appendChild(scroll)
 		this.element.style.setProperty('--bp-code-collapse', String(this.settings.collapseAfter))
+		this.element.style.setProperty('--bp-code-digits', String(String(this.lineCount).length))
 		this.element.append(head, body)
 		if (collapsible) {
-			const expand = createElement('button', 'bp-code-more', 'Expand code')
+			const expand = createElement('button', 'bp-code-more', `Expand all ${this.lineCount.toLocaleString()} lines`)
 			expand.type = 'button'
 			expand.addEventListener('click', () => this.setFlag('collapsed', false))
 			this.element.appendChild(expand)
 		}
 		this.element.addEventListener('copy', this.handleCopy, true)
+	}
+
+	private scheduleGutter(): void {
+		if (this.destroyed || this.frame) return
+		this.frame = requestAnimationFrame(() => {
+			this.frame = 0
+			this.syncGutter()
+		})
+	}
+
+	private syncGutter(): void {
+		if (!this.element.isConnected || this.destroyed) return
+		if (this.element.dataset['lines'] === 'false') return
+		const lineHeight = Number.parseFloat(getComputedStyle(this.pre).lineHeight) || 21
+		const wrapped = this.element.dataset['wrap'] === 'true'
+		const heights = this.sourceLines.map((line) => {
+			if (!wrapped || !line.textContent) return lineHeight
+			const rect = line.getBoundingClientRect()
+			return Math.max(lineHeight, Math.ceil(Math.max(0, rect.height - 0.5) / lineHeight) * lineHeight)
+		})
+		heights.forEach((height, index) => {
+			const row = this.gutterLines[index]!
+			const value = `${height}px`
+			if (row.style.height !== value) row.style.height = value
+		})
 	}
 
 	private readonly handleCopy = (event: ClipboardEvent): void => {

@@ -16,6 +16,7 @@ import {
 	UpdatesFeature,
 	configurePlatform,
 	configureUi,
+	AnswerDiffFeature,
 } from '@nolly/ai'
 import { App } from './core/app'
 import { composerKit } from './core/composer'
@@ -75,4 +76,5 @@ new App()
 	.register((context) => new PromptQueueFeature(context))
 	.register((context) => new RecallFeature(context))
 	.register((context) => new ContextPacksFeature(context))
+	.register((context) => new AnswerDiffFeature(context))
 	.start()

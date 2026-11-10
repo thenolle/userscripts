@@ -89,8 +89,7 @@ const CSS = `
   font: inherit !important;
   white-space: inherit !important;
 }
-.bp-code-v2[data-lines='false'] .bp-code-gutter,
-.bp-code-v2[data-wrap='true'] .bp-code-gutter { display: none; }
+.bp-code-v2[data-lines='false'] .bp-code-gutter { display: none; }
 .bp-code-v2[data-wrap='true'] .bp-code-scroll { width: 100%; }
 .bp-code-v2[data-wrap='true'] .bp-code-native-pre {
   white-space: pre-wrap !important;
@@ -131,6 +130,24 @@ const CSS = `
   border-radius: 5px;
   color: var(--bp-fg);
   font: 600 10px system-ui, sans-serif;
+}
+
+.bp-code-v2 .bp-code-gutter {
+	width: calc(var(--bp-code-digits, 2) * 1ch + 25px);
+	white-space: normal;
+	padding: 14px 10px;
+}
+.bp-code-v2 .bp-code-gutter-line {
+	height: 21px;
+	line-height: 21px;
+	font: inherit;
+	text-align: right;
+}
+.bp-code-v2 .bp-code-logical-line { display: inline; }
+.bp-code-v2[data-wrap='true'] .bp-code-native-pre {
+	flex: 1 1 0;
+	width: 0;
+	min-width: 0;
 }
 `
 

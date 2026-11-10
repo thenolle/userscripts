@@ -83,3 +83,7 @@ PDF export opens a print-ready preview with a contents list, readable sections, 
 ## Usage Quota V2
 
 The header usage dialog combines reported allowances, capacity evidence and observation-based recovery scenarios. See [Usage Quota V2](docs/usage-quota-v2.md).
+
+## Answer Diff
+
+Compare two answers or code revisions locally, inspect exact text changes, and explicitly save a reusable baseline. Nothing is sent automatically. See [Answer diff](docs/answer-diff.md).

@@ -20,8 +20,8 @@ The feature does not alter ChatGPT's editable Run-code editors.
 ## Reading
 
 - Wrap toggles visual wrapping without changing the source.
-- Line numbers appear when wrapping is off.
-- Fold is available for sufficiently long blocks, but code starts expanded.
+- Line numbers remain available with wrapping and align with logical source lines.
+- Long blocks automatically fold at the configured threshold. Expand code reveals the full block; a threshold of zero disables automatic folding.
 - Download saves the original source text.
 
 Syntax highlighting is retained only when its reconstructed text matches the source. Otherwise the block falls back to plain text rather than corrupting code.
@@ -39,3 +39,9 @@ Copy a selection containing blank lines, tabs and nested indentation into a plai
 Code panels follow the site's explicit light/dark theme, with a GitHub-like syntax palette. Language badges retain their language-associated colors. Badges are typographic representations, not official logo artwork.
 
 Additional filename labels and conservative content signatures improve detection. New language labels may use an approximate syntax palette or plain text; the original source remains authoritative.
+
+## Wrapping and folding in 1.2.4
+
+Wrapping and line numbers are independent toggles. A wrapped logical line keeps one source line number. The gutter is remeasured when the code viewport resizes.
+
+Long blocks automatically fold according to the configured threshold. A threshold of zero disables this behavior. Copy and download still use the complete source.
