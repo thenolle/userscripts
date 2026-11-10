@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.2.0] - 2026-11-10
+
+### Changed
+
+- Renamed Code Block Pro to Code Blocks V2.
+- Rebuilt code selection around actual newline text nodes and source-faithful content.
+- Added restrained toolbar styling, explicit folding, and a non-selectable line-number gutter.
+- Improved shared dialog spacing and form styling.
+
+### Fixed
+
+- Removed unverified usage totals and misleading quota interpretations.
+- ChatGPT header tools explicitly restore pointer interaction and reattach to the visible native row.
+- Expired ChatGPT tool counters are labelled as awaiting an update rather than automatically refilled.
+
 ## [1.1.2] - 2026-11-10
 
 ### Fixed
@@ -78,3 +93,4 @@
 [1.1.0]: https://github.com/thenolle/userscripts/releases/tag/better-chatgpt-v1.1.0
 [1.1.1]: https://github.com/thenolle/userscripts/releases/tag/better-chatgpt-v1.1.1
 [1.1.2]: https://github.com/thenolle/userscripts/releases/tag/better-chatgpt-v1.1.2
+[1.2.0]: https://github.com/thenolle/userscripts/releases/tag/better-chatgpt-v1.2.0

@@ -3,10 +3,10 @@ import type { LimitDefinition, LimitKey, SettingField, Status } from './types'
 const DAY = 86_400_000
 
 export const LIMITS: Readonly<Record<LimitKey, LimitDefinition>> = {
-  remaining_pro: { label: 'Pro Search', total: 200, period: 'Rolling (learned)', window: 7 * DAY },
-  remaining_research: { label: 'Deep Research', total: 20, period: 'Rolling (learned)', window: 30 * DAY },
-  remaining_agentic_research: { label: 'Computer / Agentic', total: null, period: 'Rolling (learned)', window: 7 * DAY },
-  remaining_labs: { label: 'Labs', total: 25, period: 'Rolling (learned)', window: 30 * DAY }
+  remaining_pro: { label: 'Pro Search', total: 200, period: 'Reset schedule not supplied', window: 7 * DAY },
+  remaining_research: { label: 'Deep Research', total: 20, period: 'Reset schedule not supplied', window: 30 * DAY },
+  remaining_agentic_research: { label: 'Computer / Agentic', total: null, period: 'Reset schedule not supplied', window: 7 * DAY },
+  remaining_labs: { label: 'Labs', total: 25, period: 'Reset schedule not supplied', window: 30 * DAY }
 }
 
 export const LIMIT_KEYS = Object.keys(LIMITS) as LimitKey[]

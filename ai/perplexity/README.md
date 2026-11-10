@@ -14,24 +14,24 @@ Updates arrive automatically. The script also checks on its own and offers to up
 
 ## Features
 
-| Feature           | What you get                                                                                         |
-| ----------------- | ---------------------------------------------------------------------------------------------------- |
-| Usage status      | Remaining queries per mode in the header, hover summary, details dialog, learned refill estimates    |
-| Code Block Pro    | Language badges, syntax colours, line numbers, wrap, fold, download, indentation-safe selection copy |
-| Big messages      | Paste any amount of text; split into parts or attach as a file only when needed                      |
-| Prompt library    | Your prompts plus community prompts, with a form for placeholders                                    |
-| Batch Runner      | Run one template over a list, with pause, resume and reload recovery                                 |
-| Selection toolbar | Ask, explain, summarize, fact-check or quote highlighted text                                        |
-| Exporter          | Markdown, text, Word and PDF, with citation styles                                                   |
-| Draft Guard       | Drafts survive reloads; size meter; warning before closing with unsent text                          |
-| Command palette   | Search every action                                                                                  |
-| Enter as Newline  | Enter adds a line, a shortcut sends                                                                  |
-| Max Width         | Full-width layout, optional sidebar removal                                                          |
-| Usage alerts      | Refill, low and used-up alerts (desktop notifications in the background), plus your daily pace       |
-| Update checker    | Checks on load and every few minutes, tells you once per version, remembers skipped versions         |
-| Message Queue     | Type ahead: queue follow-ups while an answer generates; they send one by one                         |
-| Recall            | Search everything you sent, reuse it in one key, walk back through it with the arrow keys            |
-| Context Packs     | Save sourced excerpts from conversations and assemble a previewable briefing for your next task      |
+| Feature           | What you get                                                                                                                    |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Usage status      | Reported remaining counts per mode in the header, hover summary and details dialog; totals and reset schedules are not invented |
+| Code Blocks V2    | Language badges, syntax colours, line numbers, wrap, fold, download, indentation-safe selection copy                            |
+| Big messages      | Paste any amount of text; split into parts or attach as a file only when needed                                                 |
+| Prompt library    | Your prompts plus community prompts, with a form for placeholders                                                               |
+| Batch Runner      | Run one template over a list, with pause, resume and reload recovery                                                            |
+| Selection toolbar | Ask, explain, summarize, fact-check or quote highlighted text                                                                   |
+| Exporter          | Markdown, text, Word and PDF, with citation styles                                                                              |
+| Draft Guard       | Drafts survive reloads; size meter; warning before closing with unsent text                                                     |
+| Command palette   | Search every action                                                                                                             |
+| Enter as Newline  | Enter adds a line, a shortcut sends                                                                                             |
+| Max Width         | Full-width layout, optional sidebar removal                                                                                     |
+| Usage alerts      | Refill, low and used-up alerts (desktop notifications in the background), plus your daily pace                                  |
+| Update checker    | Checks on load and every few minutes, tells you once per version, remembers skipped versions                                    |
+| Message Queue     | Type ahead: queue follow-ups while an answer generates; they send one by one                                                    |
+| Recall            | Search everything you sent, reuse it in one key, walk back through it with the arrow keys                                       |
+| Context Packs     | Save sourced excerpts from conversations and assemble a previewable briefing for your next task                                 |
 
 ## Shortcuts
 

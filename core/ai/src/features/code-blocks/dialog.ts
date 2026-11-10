@@ -12,7 +12,7 @@ export const toggleCodeSettingsDialog = (current: CodeBlockSettings, onSave: (se
     existing.close()
     return
   }
-  const ui = createDialog({ id: DIALOG_ID(), title: 'Code Block Pro', description: 'Applies to code blocks as soon as an answer finishes.', width: 460 })
+  const ui = createDialog({ id: DIALOG_ID(), title: 'Code Blocks V2', description: 'Applies to code blocks as soon as an answer finishes.', width: 460 })
   const draft: CodeBlockSettings = { ...current }
   const stack = createElement('div', 'bp-stack')
   stack.append(

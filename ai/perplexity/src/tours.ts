@@ -78,12 +78,23 @@ const batch: Tour = {
 
 const codeBlocks: Tour = {
   id: 'code',
-  title: 'Code blocks',
-  summary: 'Language badges, folding, wrapping and copying.',
+  title: 'Code Blocks V2',
+  summary: 'Faithful copying, syntax colors and a compact source toolbar.',
   steps: [
-    point('Enhanced code', 'When an answer finishes, its code blocks are replaced with these. Ask for some code if you do not see one.', find('.bp-code')),
-    point('Toolbar', 'Wrap long lines, toggle line numbers, fold long code, copy, or download as a file.', find('.bp-code-actions')),
-    info('Selecting and copying', 'You can select part of a block and copy it. Indentation and line breaks are kept exactly.')
+    point(
+      'Source-faithful code',
+      'These blocks contain real newline characters. Select code and copy it with Ctrl+C or Cmd+C. Only the selected text is copied.',
+      find('.bp-code-v2')
+    ),
+    point(
+      'Code toolbar',
+      'Copy the entire block, download its source, wrap long lines, toggle line numbers or explicitly fold a long block.',
+      find('.bp-code-v2 .bp-code-actions')
+    ),
+    info(
+      'Visual wrapping is not a source change',
+      'Wrapping hides the gutter to avoid misleading visual line numbers. Blank lines, tabs and indentation remain part of the source.'
+    )
   ]
 }
 
