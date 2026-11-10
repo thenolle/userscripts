@@ -1,8 +1,9 @@
-import { DraftGuardFeature, EnterAsNewlineFeature, configureUi } from '@nolly/ai'
+import { DraftGuardFeature, EnterAsNewlineFeature, MessageSplitterFeature, configureUi, loadSplitterSettings } from '@nolly/ai'
 import { App } from './core/app'
-import { findComposer, writeComposer } from './core/composer'
+import { composerKit, findComposer, writeComposer } from './core/composer'
 import { uiMarker } from './core/dom'
 import { fetchSpy } from './core/fetch-spy'
+import { generationKit } from './core/generation'
 import { isAskRequest } from './core/requests'
 import { storage } from './core/storage'
 import { findComposerActions } from './locate'
@@ -12,8 +13,6 @@ import { CommandPaletteModule } from './modules/command-palette'
 import { ExporterModule } from './modules/exporter'
 import { GlobalSettingsModule } from './modules/global-settings'
 import { MaxWidthModule } from './modules/max-width'
-import { MessageSplitterModule } from './modules/message-splitter'
-import { loadSplitterSettings } from './modules/message-splitter/settings'
 import { PromptLibraryModule } from './modules/prompt-library'
 import { PromptQueueModule } from './modules/prompt-queue'
 import { RecallModule } from './modules/recall'
@@ -31,9 +30,9 @@ new App()
 	.register((context) => new MaxWidthModule(context))
 	.register((context) => new EnterAsNewlineFeature(context, { storage }))
 	.register((context) => new CodeBlocksModule(context))
-	.register((context) => new MessageSplitterModule(context))
+	.register((context) => new MessageSplitterFeature(context, { storage, composer: composerKit, generation: generationKit }))
 	.register((context) => new BatchRunnerModule(context))
-	.register((context) => new DraftGuardFeature(context, { storage, composer: { findComposer, writeComposer }, onSend: (listener) => fetchSpy.subscribe(({ method, url }) => { if (isAskRequest(method, url)) listener() }), tokenLimit: () => loadSplitterSettings().limit }))
+	.register((context) => new DraftGuardFeature(context, { storage, composer: { findComposer, writeComposer }, onSend: (listener) => fetchSpy.subscribe(({ method, url }) => { if (isAskRequest(method, url)) listener() }), tokenLimit: () => loadSplitterSettings(storage).limit }))
 	.register((context) => new CommandPaletteModule(context))
 	.register((context) => new ExporterModule(context))
 	.register((context) => new UsageStatusModule(context))
