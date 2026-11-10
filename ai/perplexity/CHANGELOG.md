@@ -2,6 +2,17 @@
 
 All notable changes to Better Perplexity are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [1.1.2] - 2026-11-10
+
+### Fixed
+
+- Fixed language detection crashing when code has no recognized language signals.
+- Replaced the placeholder regular expression with a single-pass delimiter scanner.
+- Added exporter request timeouts, transport fallback and response validation.
+- Export errors now identify the endpoint, HTTP status and transport.
+- Preserved thread-UUID recovery when the first export identifier is rejected.
+- Fixed shared export parsing of escaped table cells.
+
 ## [1.1.1] - 2026-11-10
 
 ### Export and reliability
@@ -158,3 +169,4 @@ First public release.
 [1.0.5-hotfix.1]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.5-hotfix.1
 [1.1.0]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.1.0
 [1.1.1]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.1.1
+[1.1.2]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.1.2

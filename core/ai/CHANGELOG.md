@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.1] - 2026-11-10
+
+- Replaced placeholder matching with a non-backtracking scanner and Set-based field deduplication.
+- Fixed language detection for an empty score map.
+- Fixed escaped table-cell parsing and added export error logging.
+
 ## [0.2.0] - 2026-11-10
 
 ### Export and reliability

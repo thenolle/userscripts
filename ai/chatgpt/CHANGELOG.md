@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.2] - 2026-11-10
+
+### Fixed
+
+- Fixed language detection crashing when code has no recognized language signals.
+- Replaced the placeholder regular expression with a single-pass delimiter scanner.
+- Fixed Markdown table escaping for backslashes and pipes.
+- Fixed shared export parsing of escaped table cells.
+- Export failures are now logged with their actual error.
+
 ## [1.1.1] - 2026-11-10
 
 ### Export and reliability
@@ -67,3 +77,4 @@
 [1.0.0]: https://github.com/thenolle/userscripts/releases/tag/better-chatgpt-v1.0.0  
 [1.1.0]: https://github.com/thenolle/userscripts/releases/tag/better-chatgpt-v1.1.0
 [1.1.1]: https://github.com/thenolle/userscripts/releases/tag/better-chatgpt-v1.1.1
+[1.1.2]: https://github.com/thenolle/userscripts/releases/tag/better-chatgpt-v1.1.2

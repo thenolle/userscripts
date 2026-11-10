@@ -1,5 +1,5 @@
 import { createElement } from '@nolly/core'
-import { platform } from '../../platform'
+import { logger, platform } from '../../platform'
 import { createButton, createSelectField, createSwitch } from '../../ui/controls'
 import { createDialog } from '../../ui/dialog'
 import type { CitationStyle } from './citations'
@@ -58,6 +58,7 @@ export const toggleExportDialog = (settings: ExportSettings, onSettings: (settin
 		try {
 			status.textContent = await runExport(state, action)
 		} catch (error) {
+			logger.error('Conversation export failed.', error)
 			status.textContent = error instanceof Error ? error.message : 'Export failed.'
 		} finally {
 			copyButton.disabled = false
