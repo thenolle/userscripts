@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name        Better Perplexity
 // @namespace   https://github.com/thenolle/userscripts
-// @version     1.0.5-hotfix.1
+// @version     1.1.0
 // @description Layout, code blocks, prompts, batch runs, exports and usage tracking for Perplexity.
 // @author      Nolly
 // @license     PolyForm-Strict-1.0.0
-// @homepageURL https://github.com/thenolle/userscripts/tree/master/better-perplexity
+// @homepageURL https://github.com/thenolle/userscripts/tree/master/ai/perplexity
 // @supportURL  https://github.com/thenolle/userscripts/issues
 // @updateURL   https://raw.githubusercontent.com/thenolle/userscripts/dist/better-perplexity/better-perplexity.meta.js
 // @downloadURL https://raw.githubusercontent.com/thenolle/userscripts/dist/better-perplexity/better-perplexity.user.js
