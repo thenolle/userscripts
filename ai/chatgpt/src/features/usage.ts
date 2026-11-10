@@ -4,6 +4,7 @@ import type { MenuEntry, ScriptContext } from '@nolly/core'
 import { headerTools } from '../header-tools'
 import { session } from '../runtime'
 import { storage } from '../storage'
+import { PILL_BUTTON_CLASS } from '../header-style'
 
 const PRIMARY_KEY = 'usage-status:primary'
 const LAST_KEY = 'usage-status:last'
@@ -18,9 +19,8 @@ const LABELS: Readonly<Record<string, string>> = {
 }
 
 const CSS = `
-.bp-usage-pill { width: auto; gap: 6px; padding: 0 12px; font: 600 12px/1 ui-sans-serif, system-ui, sans-serif; white-space: nowrap; }
-.bp-usage-pill[data-level='low'] { border-color: var(--bp-yellow); color: var(--bp-yellow); }
-.bp-usage-pill[data-level='empty'] { border-color: var(--bp-red); color: var(--bp-red); }
+.bp-usage-pill[data-level='low'] { color: var(--bp-yellow); }
+.bp-usage-pill[data-level='empty'] { color: var(--bp-red); }
 `
 
 const labelOf = (feature: string): string => LABELS[feature] ?? feature.replace(/_/g, ' ').replace(/^\w/, (letter) => letter.toUpperCase())
@@ -45,7 +45,7 @@ export class UsageFeature extends Feature {
   readonly name = 'Usage Status'
   readonly description = 'Shows your remaining limits (reasoning, uploads, images, research) and your plan.'
 
-  private readonly pill = markUi(createElement('button', 'bp-header-btn bp-usage-pill bp-themed'))
+  private readonly pill = markUi(createElement('button', `${PILL_BUTTON_CLASS} bp-usage-pill bp-themed`))
   private readonly label = createElement('span')
   private readonly tooltip: Tooltip
 
