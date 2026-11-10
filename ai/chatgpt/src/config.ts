@@ -1,7 +1,11 @@
+import type { SplitterSettings } from '@nolly/ai'
+
 export const CONFIG = {
-  initializationDelay: 500,
+  initializationDelay: 1_500,
   safetyInterval: 2_000
 } as const
+
+export const SPLITTER_DEFAULTS: Partial<SplitterSettings> = { limit: 30_000 }
 
 export const OBSERVER_OPTIONS: MutationObserverInit = {
   childList: true,

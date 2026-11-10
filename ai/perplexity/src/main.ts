@@ -1,39 +1,55 @@
+import { BatchRunnerFeature, CodeBlocksFeature, CommandPaletteFeature, DraftGuardFeature, EnterAsNewlineFeature, ExporterFeature, MaxWidthFeature, MessageSplitterFeature, PromptLibraryFeature, PromptQueueFeature, RecallFeature, SelectionToolbarFeature, UpdatesFeature, configurePlatform, configureUi, loadSplitterSettings } from '@nolly/ai'
 import { App } from './core/app'
+import { composerKit, findComposer, writeComposer } from './core/composer'
+import { sendPrompt } from './core/dispatch'
+import { uiMarker } from './core/dom'
 import { fetchSpy } from './core/fetch-spy'
-import { BatchRunnerModule } from './modules/batch-runner'
-import { CodeBlocksModule } from './modules/code-blocks'
-import { CommandPaletteModule } from './modules/command-palette'
-import { DraftGuardModule } from './modules/draft-guard'
-import { EnterAsNewlineModule } from './modules/enter-as-newline'
-import { ExporterModule } from './modules/exporter'
+import { generationKit } from './core/generation'
+import { logger } from './core/logger'
+import { isAskRequest } from './core/requests'
+import { storage } from './core/storage'
+import { threadOf } from './core/threads'
+import { exportSource } from './export-source'
+import { findComposerActions } from './locate'
 import { GlobalSettingsModule } from './modules/global-settings'
-import { MaxWidthModule } from './modules/max-width'
-import { MessageSplitterModule } from './modules/message-splitter'
-import { PromptLibraryModule } from './modules/prompt-library'
-import { SelectionToolbarModule } from './modules/selection-toolbar'
+import { ALWAYS_HIDDEN, LAYOUT_RULES, RIGHT_SIDEBAR } from './modules/max-width/rules'
 import { TutorialModule } from './modules/tutorial'
-import { UpdatesModule } from './modules/updates'
 import { UsageStatusModule } from './modules/usage-status'
-import { PromptQueueModule } from './modules/prompt-queue'
-import { RecallModule } from './modules/recall'
+import { URLS } from './repo'
 
+const onSend = (listener: () => void): (() => void) => fetchSpy.subscribe(({ method, url }) => { if (isAskRequest(method, url)) listener() })
+
+configureUi({ id: 'better-perplexity', title: 'Better Perplexity', version: __VERSION__, marker: uiMarker, composerActions: findComposerActions })
+configurePlatform({
+	id: 'better-perplexity',
+	storage,
+	logger,
+	composer: composerKit,
+	generation: generationKit,
+	sendPrompt,
+	onSend,
+	threadOf,
+	promptsUrl: URLS.prompts,
+	exporter: exportSource,
+	release: { name: 'Better Perplexity', slug: 'better-perplexity', version: __VERSION__, metaUrl: URLS.meta, installUrl: URLS.install, releasesUrl: URLS.releases }
+})
 fetchSpy.install()
 
 new App()
-	.register((context) => new PromptLibraryModule(context))
-	.register((context) => new SelectionToolbarModule(context))
-	.register((context) => new MaxWidthModule(context))
-	.register((context) => new EnterAsNewlineModule(context))
-	.register((context) => new CodeBlocksModule(context))
-	.register((context) => new MessageSplitterModule(context))
-	.register((context) => new BatchRunnerModule(context))
-	.register((context) => new DraftGuardModule(context))
-	.register((context) => new CommandPaletteModule(context))
-	.register((context) => new ExporterModule(context))
+	.register((context) => new PromptLibraryFeature(context))
+	.register((context) => new SelectionToolbarFeature(context))
+	.register((context) => new MaxWidthFeature(context, { storage, hidden: ALWAYS_HIDDEN, layout: LAYOUT_RULES, sidebar: { rule: RIGHT_SIDEBAR, label: 'Right Sidebar', defaultRemoved: true } }))
+	.register((context) => new EnterAsNewlineFeature(context, { storage }))
+	.register((context) => new CodeBlocksFeature(context))
+	.register((context) => new MessageSplitterFeature(context, { storage, composer: composerKit, generation: generationKit }))
+	.register((context) => new BatchRunnerFeature(context))
+	.register((context) => new DraftGuardFeature(context, { storage, composer: { findComposer, writeComposer }, onSend, tokenLimit: () => loadSplitterSettings(storage).limit }))
+	.register((context) => new CommandPaletteFeature(context))
+	.register((context) => new ExporterFeature(context))
 	.register((context) => new UsageStatusModule(context))
 	.register((context) => new GlobalSettingsModule(context))
 	.register((context) => new TutorialModule(context))
-	.register((context) => new UpdatesModule(context))
-	.register((context) => new PromptQueueModule(context))
-	.register((context) => new RecallModule(context))
+	.register((context) => new UpdatesFeature(context))
+	.register((context) => new PromptQueueFeature(context))
+	.register((context) => new RecallFeature(context))
 	.start()

@@ -9,21 +9,30 @@ By submitting a pull request, issue attachment or prompt, you confirm that you w
 ## Ways to contribute
 
 - **Bug reports and ideas:** use the issue forms.
-- **Community prompts:** use the "Prompt submission" form, or open a pull request that adds an entry to `better-perplexity/prompts/library.json`.
+- **Community prompts:** use the "Prompt submission" form, or open a pull request that adds an entry to `ai/perplexity/prompts/library.json`.
 - **Code:** open an issue first for anything larger than a small fix.
+
+## Repository layout
+
+| Folder          | Package                | Purpose                                              |
+| --------------- | ---------------------- | ---------------------------------------------------- |
+| `core/`         | `@nolly/core`          | Runtime, storage, DOM, HTTP, build tooling           |
+| `core/ai`       | `@nolly/ai`            | Platform-agnostic code shared by AI-chat userscripts |
+| `ai/perplexity` | `@nolly/ai-perplexity` | Better Perplexity                                    |
+| `ai/chatgpt`    | `@nolly/ai-chatgpt`    | Better ChatGPT                                       |
 
 ## Development setup
 
 ```bash
 bun install        # at the repository root (Bun workspace)
-cd better-perplexity
+cd ai/perplexity   # or ai/chatgpt
 bun run dev        # unminified, rebuilds on change
 bun run typecheck
 bun run validate:prompts
 bun run build      # minified output in dist/
 ```
 
-Install `dist/better-perplexity.user.js` in your userscript manager to test. Shared code lives in `core/` and is published as the workspace package `@nolly/core`; script-specific code stays in the script's own folder. Start a new script with `bun scripts/new-userscript.ts <slug> "<Name>"`.
+Install the file in `dist/` in your userscript manager to test. Code that does not depend on one site belongs in `core/ai`; site-specific selectors and modules stay in the script's folder. Start a new script with `bun scripts/new-userscript.ts <slug> "<Name>" [parent-folder]`, for example `bun scripts/new-userscript.ts better-claude "Better Claude" ai`.
 
 ## Code style
 
@@ -33,7 +42,7 @@ Install `dist/better-perplexity.user.js` in your userscript manager to test. Sha
 
 ## Releasing
 
-1. Bump `version` in the script's `package.json`.
+1. Bump `version` in the script's `package.json`. Each script also declares its `userscript.slug` there, which names its tag and its folder on the `dist` branch.
 2. Add a section to its `CHANGELOG.md` in the form `## [x.y.z] - YYYY-MM-DD`.
 3. Merge to `master`. The release workflow does the rest.
 

@@ -20,7 +20,6 @@ const CSS = `
 
 .bp-gear:hover { background: var(--bp-accent); }
 .bp-gear:focus-visible { outline: 2px solid var(--bp-fg); outline-offset: 2px; }
-.bp-actions { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 2px; }
 `
 
 export const ensureGearStyles = (): void => injectStyle('better-perplexity-gear-styles', CSS)

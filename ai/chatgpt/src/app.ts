@@ -1,8 +1,8 @@
-import { Userscript, createLogger } from '@nolly/core'
+import { toggleSettingsDialog } from '@nolly/ai'
+import { Userscript } from '@nolly/core'
 import { CONFIG, OBSERVER_OPTIONS } from './config'
 import { uiMarker } from './dom'
-
-const logger = createLogger('better-chatgpt')
+import { findComposerForm } from './locate'
 
 export class App extends Userscript {
 	constructor() {
@@ -16,8 +16,8 @@ export class App extends Userscript {
 			initializationDelay: CONFIG.initializationDelay,
 			safetyInterval: CONFIG.safetyInterval,
 			clearConsole: false,
-			isReady: () => Boolean(document.querySelector('main')),
-			openSettings: () => logger.info('The settings dialog arrives in step 2.')
+			isReady: () => document.readyState === 'complete' && findComposerForm() !== null,
+			openSettings: (script) => toggleSettingsDialog(script)
 		})
 	}
 }

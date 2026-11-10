@@ -16,12 +16,15 @@ Better Perplexity is a thin layer on top of `@nolly/core`, a small library share
 - **Utilities:** storage, logging, DOM helpers, waiting, HTTP, userscript-manager menus, style injection and the page `fetch` observer.
 - **Build:** the metadata header and the bundle are produced by `@nolly/core/build`.
 
+## What comes from @nolly/ai
+
+`@nolly/ai` holds the code Better Perplexity shares with the other AI-chat scripts: composer reading and writing, synthetic keys, generation detection and the response observer. Each piece takes a small adapter, so Perplexity supplies only its own selectors. The common UI kit lives here too: the dialogs, toasts, tooltips, controls, icons and settings dialog are all shared across the userscripts, and Better Perplexity configures them once in `main.ts`. Features that need storage, logging or the composer do not reach into global singletons; instead they read them from a runtime registry the platform fills once at startup. That registry is the bridge between the shared AI layer and the script-specific selectors, storage keys and root DOM marker.
+
 ## What stays in Better Perplexity
 
 - **Modules:** one folder per feature under `src/modules`.
-- **Perplexity logic:** composer handling, selectors, placeholders and the usage tracker.
-- **UI kit:** dialogs, toasts, tooltips and controls.
-- **Instances:** the logger name, the storage key mapping, the UI marker `data-bp-root`, and the extraction of the account header from page requests.
+- **Perplexity logic:** selectors, placeholders and the usage tracker.
+- **Instances:** the logger name, the storage key mapping, the UI marker `data-bp-root`, the bindings of the shared kits, and the extraction of the account header from page requests.
 
 ## Compatibility
 
@@ -29,4 +32,4 @@ Settings and drafts use the same storage keys as version 1.0.0, so nothing is lo
 
 ## Building from source
 
-The repository is a Bun workspace. Run `bun install` at the root, then `bun run build` in `better-perplexity`. The build fails if the `core/` folder is missing.
+The repository is a Bun workspace. Run `bun install` at the root, then `bun run build` in `ai/perplexity`. The build fails if the `core/` or `core/ai/` folders are missing.

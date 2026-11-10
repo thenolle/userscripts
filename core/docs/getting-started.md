@@ -15,6 +15,8 @@ cd my-script
 bun run dev
 ```
 
+Pass a third argument to create it inside a parent folder, for example `ai`. The `cd` command goes to the created folder.
+
 ## A feature
 ```ts
 import { Feature } from '@nolly/core'

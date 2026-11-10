@@ -1,9 +1,6 @@
 import { createElement, Feature, type MenuEntry, type ScriptContext } from '@nolly/core'
 import { markUi } from '../../core/dom'
-import { createIcon } from '../../ui/icons'
-import { ensureUiStyles } from '../../ui/styles'
-import { Tooltip } from '../../ui/tooltip'
-import { toggleGlobalSettings } from './dialog'
+import { createIcon, ensureUiStyles, toggleSettingsDialog, Tooltip } from '@nolly/ai'
 import { ensureGearStyles } from './styles'
 
 const INDICATOR_SELECTOR = '.bp-usage-indicator'
@@ -42,6 +39,6 @@ export class GlobalSettingsModule extends Feature {
   }
 
   private open(): void {
-    toggleGlobalSettings(this.context)
+    toggleSettingsDialog(this.context)
   }
 }

@@ -1,8 +1,6 @@
 import { createElement } from '@nolly/core'
 import { markUi } from '../../core/dom'
-import { createButton } from '../../ui/controls'
-import { ensureUiStyles } from '../../ui/styles'
-import { formatShortcut, matchesShortcut, type Shortcut } from '../command-palette/shortcut'
+import { createButton, ensureUiStyles, formatShortcut, matchesShortcut, type Shortcut } from '@nolly/ai'
 import { ensureTourStyles } from './styles'
 
 export interface Step {

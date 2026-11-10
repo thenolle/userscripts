@@ -2,6 +2,19 @@
 
 All notable changes to Better Perplexity are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+- Internal: composer, synthetic keys and generation detection moved to the shared `@nolly/ai` package. The script moved to `ai/perplexity`; install URLs and storage keys are unchanged.
+- Internal: Prompt Library, Command Palette, Message Queue and Recall now come from the shared package.
+- Internal: Enter as Newline now comes from the shared package.
+- Internal: Draft Guard now comes from the shared package.
+- Internal: Message Splitter now comes from the shared package.
+- Internal: Code Block Pro now comes from the shared package.
+- Internal: Batch Runner, Selection Toolbar and Max Width now come from the shared package.
+- Internal: Exporter and Update checker now come from the shared package.
+- Internal: one shared settings dialog; Batch Runner uses the shared prompt sender.
+- Fixed: the batch runner was registered twice.
+
 ## [1.0.5-hotfix.1] - 2026-11-09
 
 ### Fixed

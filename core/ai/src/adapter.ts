@@ -10,7 +10,6 @@ export interface ComposerAdapter {
   readonly rejectEditable?: (element: HTMLElement) => boolean
   readonly findSendButton?: (editable: HTMLElement) => HTMLElement | null
   readonly findStopButton?: () => HTMLElement | null
-  readonly findFileInput?: () => HTMLInputElement | null
   readonly sendWith?: 'enter' | 'button'
 }
 

@@ -1,12 +1,7 @@
 import { createElement, Feature, type MenuEntry, type ScriptContext } from '@nolly/core'
 import { markUi } from '../../core/dom'
 import { storage } from '../../core/storage'
-import { createButton } from '../../ui/controls'
-import { createDialog } from '../../ui/dialog'
-import { createIcon } from '../../ui/icons'
-import { ensureUiStyles } from '../../ui/styles'
-import { showToast } from '../../ui/toast'
-import { Tooltip } from '../../ui/tooltip'
+import { createButton, createDialog, createIcon, ensureUiStyles, showToast, Tooltip } from '@nolly/ai'
 import { TourRunner } from './engine'
 import { FULL_TOUR, TOURS, type Tour } from './tours'
 

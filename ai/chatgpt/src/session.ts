@@ -30,6 +30,10 @@ export class ChatSession {
 		return [...this.limitMap.values()]
 	}
 
+	limit(feature: string): LimitProgress | null {
+		return this.limitMap.get(feature) ?? null
+	}
+
 	subscribe(listener: (event: SessionEvent) => void): () => void {
 		this.listeners.add(listener)
 		return () => this.listeners.delete(listener)

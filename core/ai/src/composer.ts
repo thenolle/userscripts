@@ -1,6 +1,6 @@
 import { sleep, toElement } from '@nolly/core'
 import type { ComposerAdapter } from './adapter'
-import { dispatchEnter, findGenericSendButton } from './keys'
+import { dispatchEnter, findSendButton } from './keys'
 
 export const EDITABLE_SELECTOR = [
   'textarea',
@@ -111,7 +111,6 @@ const waitForComposer = async (editable: HTMLElement, text: string, timeout = 30
 export interface ComposerKit {
   editableFrom(target: EventTarget | null): HTMLElement | null
   findComposer(): HTMLElement | null
-  findSend(editable: HTMLElement): HTMLElement | null
   writeComposer(editable: HTMLElement, text: string): Promise<boolean>
   sendComposer(editable: HTMLElement): Promise<boolean>
   attachFile(editable: HTMLElement, file: File): boolean
@@ -138,7 +137,7 @@ export const createComposerKit = (adapter: ComposerAdapter): ComposerKit => {
     return candidates.at(-1) ?? null
   }
 
-  const findSend = (editable: HTMLElement): HTMLElement | null => (adapter.findSendButton ? adapter.findSendButton(editable) : findGenericSendButton(editable))
+  const findSend = (editable: HTMLElement): HTMLElement | null => (adapter.findSendButton ? adapter.findSendButton(editable) : findSendButton(editable))
 
   const writeComposer = async (editable: HTMLElement, text: string): Promise<boolean> => {
     if (!editable.isConnected) return false
@@ -182,7 +181,7 @@ export const createComposerKit = (adapter: ComposerAdapter): ComposerKit => {
   const attachFile = (editable: HTMLElement, file: File): boolean => {
     const transfer = new DataTransfer()
     transfer.items.add(file)
-    const input = adapter.findFileInput?.() ?? [...document.querySelectorAll<HTMLInputElement>('input[type="file"]')].find((candidate) => !isOwnUi(candidate) && !candidate.disabled)
+    const input = [...document.querySelectorAll<HTMLInputElement>('input[type="file"]')].find((candidate) => !isOwnUi(candidate) && !candidate.disabled)
     if (input) {
       input.files = transfer.files
       input.dispatchEvent(new Event('change', { bubbles: true, composed: true }))
@@ -193,5 +192,5 @@ export const createComposerKit = (adapter: ComposerAdapter): ComposerKit => {
     return event.defaultPrevented
   }
 
-  return { editableFrom, findComposer, findSend, writeComposer, sendComposer, attachFile }
+  return { editableFrom, findComposer, writeComposer, sendComposer, attachFile }
 }
