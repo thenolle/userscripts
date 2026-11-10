@@ -5,7 +5,7 @@ import { DEFAULT_SHORTCUT, formatShortcut, shortcutFromEvent, type Shortcut } fr
 import { ensurePaletteStyles } from './styles'
 import { uiConfig } from '../../ui/config'
 
-const DIALOG_ID() = `${uiConfig().id}-shortcut-dialog`
+const DIALOG_ID = (): string => `${uiConfig().id}-shortcut-dialog`
 
 export const toggleShortcutDialog = (current: Shortcut, onSave: (shortcut: Shortcut) => void, title = 'Palette shortcut', defaults: Shortcut = DEFAULT_SHORTCUT): void => {
   const existing = document.getElementById(DIALOG_ID())

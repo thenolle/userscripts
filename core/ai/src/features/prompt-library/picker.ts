@@ -5,7 +5,7 @@ import { ensurePaletteStyles } from '../command-palette/styles'
 import type { Prompt, PromptStore } from './store'
 import { uiConfig } from '../../ui/config'
 
-const DIALOG_ID() = `${uiConfig().id}-prompt-picker`
+const DIALOG_ID = (): string => `${uiConfig().id}-prompt-picker`
 
 export interface PickerOptions {
   store: PromptStore

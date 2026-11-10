@@ -6,7 +6,7 @@ import type { Prompt, PromptStore } from './store'
 import { ensureSlashStyles } from './styles'
 import { uiConfig } from '../../ui/config'
 
-const DIALOG_ID() = `${uiConfig().id}-prompts-dialog`
+const DIALOG_ID = (): string => `${uiConfig().id}-prompts-dialog`
 
 export const toggleManager = (store: PromptStore, onInsert: (prompt: Prompt) => void): void => {
   const existing = document.getElementById(DIALOG_ID())
