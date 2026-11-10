@@ -1,7 +1,8 @@
 import { Feature, toElement } from '@nolly/core'
-import type { MenuEntry, ScriptContext, ScriptStorage } from '@nolly/core'
-import type { ComposerKit } from '../../composer'
+import type { MenuEntry, ScriptContext } from '@nolly/core'
 import { isSendButton, readComposer } from '../../composer'
+import { findComposer, platform, storage, writeComposer } from '../../platform'
+import { loadSplitterSettings } from '../message-splitter/settings'
 import { DraftOverlay } from './overlay'
 import { DraftStore } from './store'
 import type { Draft } from './store'
@@ -9,19 +10,10 @@ import type { Draft } from './store'
 const SAVE_DELAY = 400
 const SEND_WINDOW = 3_000
 const GUARD_KEY = 'draft-guard:warn-on-close'
-const DEFAULT_SPLIT_COMMAND = 'message-splitter:split'
+const SPLIT_COMMAND = 'message-splitter:split'
 
 const defaultThreadKey = (): string => location.pathname || '/'
 const meaningful = (text: string): boolean => text.replace(/[\s\u200b]/g, '') !== ''
-
-export interface DraftGuardOptions {
-  readonly storage: ScriptStorage
-  readonly composer: Pick<ComposerKit, 'findComposer' | 'writeComposer'>
-  readonly onSend: (listener: () => void) => () => void
-  readonly tokenLimit: () => number
-  readonly threadKey?: () => string
-  readonly splitCommand?: string
-}
 
 export class DraftGuardFeature extends Feature {
   readonly id = 'draft-guard'
@@ -41,12 +33,12 @@ export class DraftGuardFeature extends Feature {
   private guardAttached = false
   private composer: HTMLElement | null = null
 
-  constructor(context: ScriptContext, private readonly options: DraftGuardOptions) {
+  constructor(context: ScriptContext) {
     super(context)
-    this.store = new DraftStore(options.storage)
+    this.store = new DraftStore(storage)
     this.key = this.threadKey()
-    this.overlay.onSplit(() => this.context.runCommand(options.splitCommand ?? DEFAULT_SPLIT_COMMAND))
-    options.onSend(() => {
+    this.overlay.onSplit(() => this.context.runCommand(SPLIT_COMMAND))
+    platform().onSend(() => {
       if (this.enabled && meaningful(this.lastText)) this.discard(this.key)
     })
     document.addEventListener('click', this.handleClick, true)
@@ -56,11 +48,11 @@ export class DraftGuardFeature extends Feature {
   }
 
   get warnOnClose(): boolean {
-    return this.options.storage.get(GUARD_KEY, true)
+    return storage.get(GUARD_KEY, true)
   }
 
   set warnOnClose(value: boolean) {
-    this.options.storage.set(GUARD_KEY, value)
+    storage.set(GUARD_KEY, value)
   }
 
   run(): void {
@@ -69,7 +61,7 @@ export class DraftGuardFeature extends Feature {
       return
     }
     this.syncGuard()
-    const composer = this.options.composer.findComposer()
+    const composer = findComposer()
     this.composer = composer
     if (!composer) {
       this.overlay.hideAll()
@@ -87,7 +79,7 @@ export class DraftGuardFeature extends Feature {
   }
 
   private threadKey(): string {
-    return (this.options.threadKey ?? defaultThreadKey)()
+    return defaultThreadKey()
   }
 
   private wire(composer: HTMLElement): void {
@@ -128,7 +120,7 @@ export class DraftGuardFeature extends Feature {
   }
 
   private refreshOverlay(composer: HTMLElement, text: string): void {
-    if (meaningful(text)) this.overlay.showMeter(composer, text, this.options.tokenLimit())
+    if (meaningful(text)) this.overlay.showMeter(composer, text, loadSplitterSettings(storage, platform().splitterDefaults).limit)
     else this.overlay.hideMeter()
     const key = this.key
     if (this.dismissed.has(key) || this.typed.has(key)) {
@@ -149,7 +141,7 @@ export class DraftGuardFeature extends Feature {
         this.offered.delete(key)
         this.dismissed.add(key)
         this.overlay.hideBanner()
-        void this.options.composer.writeComposer(composer, draft.text)
+        void writeComposer(composer, draft.text)
       },
       () => this.discard(key)
     )
@@ -186,7 +178,7 @@ export class DraftGuardFeature extends Feature {
   }
 
   private readonly handleBeforeUnload = (event: BeforeUnloadEvent): void => {
-    const composer = this.composer ?? this.options.composer.findComposer()
+    const composer = this.composer ?? findComposer()
     if (!composer || !meaningful(readComposer(composer))) return
     event.preventDefault()
     event.returnValue = ''

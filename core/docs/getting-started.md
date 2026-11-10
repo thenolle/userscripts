@@ -15,6 +15,8 @@ cd my-script
 bun run dev
 ```
 
+Add a third argument to create the script inside a parent folder, for example `ai` for an AI-chat script.
+
 Pass a third argument to create it inside a parent folder, for example `ai`. The `cd` command goes to the created folder.
 
 ## A feature

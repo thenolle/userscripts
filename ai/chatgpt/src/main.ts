@@ -14,8 +14,7 @@ import {
   TutorialFeature,
   UpdatesFeature,
   configurePlatform,
-  configureUi,
-  loadSplitterSettings
+  configureUi
 } from '@nolly/ai'
 import { App } from './app'
 import { fileBudget } from './budget'
@@ -28,13 +27,14 @@ import { UsageFeature } from './features/usage'
 import { composerKit, generationKit, sendPrompt } from './kit'
 import { logger } from './logger'
 import { findAttachButton, findPrimaryAction, rejectEditable } from './locate'
+import { findScroller } from './messages'
 import { whenReady } from './ready'
 import { SLUG, URLS } from './repo'
 import { session } from './runtime'
 import { storage } from './storage'
 import { threadOf } from './threads'
-import { tutorialSource } from './tutorial-source'
 import { installTheme } from './theme'
+import { tutorialSource } from './tutorial-source'
 
 const onSend = (listener: () => void): (() => void) =>
   session.subscribe((event) => {
@@ -63,7 +63,12 @@ whenReady(() => {
     exporter: exportSource,
     release: { name: 'Better ChatGPT', slug: SLUG, version: __VERSION__, metaUrl: URLS.meta, installUrl: URLS.install, releasesUrl: URLS.releases },
     tutorial: tutorialSource,
-    codeBlockRoot: (pre) => pre.closest<HTMLElement>('[data-chatgpt-copy-code]') ?? pre.closest<HTMLElement>('[data-code-block]')
+    codeBlockRoot: (pre) => pre.closest<HTMLElement>('[data-chatgpt-copy-code]') ?? pre.closest<HTMLElement>('[data-code-block]'),
+    rejectEditable,
+    send: (editable) => void composerKit.sendComposer(editable),
+    splitterDefaults: SPLITTER_DEFAULTS,
+    attachBlocked: () => (fileBudget(session).remainingUploads === 0 ? 'No file uploads left until your limit resets.' : null),
+    scroller: findScroller
   })
 
   installTheme()
@@ -74,27 +79,10 @@ whenReady(() => {
     .register((context) => new SelectionToolbarFeature(context))
     .register((context) => new MaxWidthFeature(context, { storage, sidebar: { rule: { id: 'left-sidebar', selector: 'aside' }, label: 'Left Sidebar', defaultRemoved: false } }))
     .register((context) => new CodeBlocksFeature(context))
-    .register((context) => new EnterAsNewlineFeature(context, { storage, reject: rejectEditable, send: (editable) => void composerKit.sendComposer(editable) }))
-    .register(
-      (context) =>
-        new MessageSplitterFeature(context, {
-          storage,
-          composer: composerKit,
-          generation: generationKit,
-          defaults: SPLITTER_DEFAULTS,
-          attachBlocked: () => (fileBudget(session).remainingUploads === 0 ? 'No file uploads left until your limit resets.' : null)
-        })
-    )
+    .register((context) => new EnterAsNewlineFeature(context))
+    .register((context) => new MessageSplitterFeature(context))
     .register((context) => new BatchRunnerFeature(context))
-    .register(
-      (context) =>
-        new DraftGuardFeature(context, {
-          storage,
-          composer: composerKit,
-          onSend,
-          tokenLimit: () => loadSplitterSettings(storage, SPLITTER_DEFAULTS).limit
-        })
-    )
+    .register((context) => new DraftGuardFeature(context))
     .register((context) => new CommandPaletteFeature(context))
     .register((context) => new PromptQueueFeature(context))
     .register((context) => new RecallFeature(context))

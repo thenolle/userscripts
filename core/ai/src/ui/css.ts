@@ -29,6 +29,10 @@ export const THEME_CSS = `
 
 export const DIALOG_CSS = `
 .bp-dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  height: fit-content;
   width: min(var(--bp-width, 560px), calc(100vw - 32px));
   max-width: none;
   max-height: min(86vh, 820px);

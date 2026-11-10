@@ -19,7 +19,12 @@ const render = (turn: Turn): string => (turn.role === 'user' ? turn.text() : toM
 export const exportSource: ExportSource = {
 	name: 'ChatGPT',
 	citations: false,
-	slug: () => parseConversation(new URL(location.href)).id,
+	slug: () => {
+		const id = parseConversation(new URL(location.href)).id
+		if (!id) return null
+		const title = document.title.replace(/\s*[-–|]\s*ChatGPT\s*$/i, '').trim()
+		return title && !/^chatgpt$/i.test(title) ? title : id
+	},
 	markdown: async () => turns().map((turn) => `**${ROLE_LABEL[turn.role]}**\n\n${render(turn)}`).join('\n\n---\n\n'),
 	json: async () => JSON.stringify(
 		{

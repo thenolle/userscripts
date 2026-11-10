@@ -1,18 +1,12 @@
 import { Feature } from '@nolly/core'
-import type { MenuEntry, ScriptContext, ScriptStorage } from '@nolly/core'
+import type { MenuEntry, ScriptContext } from '@nolly/core'
 import { isSynthetic } from '../../keys'
+import { platform, storage } from '../../platform'
 import { ConfigButton } from './config-button'
 import { toggleShortcutsDialog } from './dialog'
 import { defaultSend, getEditableTarget, insertNewline, isComposing } from './keyboard'
-import type { EditableFilter } from './keyboard'
 import { describeShortcuts, hasModifier, loadShortcuts, matchesShortcut, saveShortcuts } from './shortcuts'
 import type { ShortcutSettings } from './shortcuts'
-
-export interface EnterAsNewlineOptions {
-  readonly storage: ScriptStorage
-  readonly reject?: EditableFilter
-  readonly send?: (editable: HTMLElement) => void
-}
 
 export class EnterAsNewlineFeature extends Feature {
   readonly id = 'enter-as-newline'
@@ -23,9 +17,9 @@ export class EnterAsNewlineFeature extends Feature {
   private attached = false
   private readonly configButton: ConfigButton
 
-  constructor(context: ScriptContext, private readonly options: EnterAsNewlineOptions) {
+  constructor(context: ScriptContext) {
     super(context)
-    this.shortcuts = loadShortcuts(options.storage)
+    this.shortcuts = loadShortcuts(storage)
     this.configButton = new ConfigButton(
       () => this.configure(),
       () => describeShortcuts(this.shortcuts)
@@ -57,7 +51,7 @@ export class EnterAsNewlineFeature extends Feature {
       this.shortcuts,
       (settings) => {
         this.shortcuts = settings
-        saveShortcuts(this.options.storage, settings)
+        saveShortcuts(storage, settings)
       },
       this.context.logger
     )
@@ -65,7 +59,7 @@ export class EnterAsNewlineFeature extends Feature {
 
   private readonly handleKeydown = (event: KeyboardEvent): void => {
     if (event.key !== 'Enter' || isComposing(event) || isSynthetic(event)) return
-    const editable = getEditableTarget(event, this.options.reject)
+    const editable = getEditableTarget(event, platform().rejectEditable)
     if (!editable) return
     if (matchesShortcut(event, this.shortcuts)) {
       event.preventDefault()

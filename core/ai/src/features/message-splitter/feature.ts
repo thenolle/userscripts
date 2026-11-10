@@ -1,9 +1,8 @@
 import { Feature, toElement, waitFor } from '@nolly/core'
-import type { MenuEntry, ScriptContext, ScriptStorage } from '@nolly/core'
+import type { MenuEntry, ScriptContext } from '@nolly/core'
 import { isAutomating } from '../../automation'
 import { isSendButton, readComposer } from '../../composer'
-import type { ComposerKit } from '../../composer'
-import type { GenerationKit } from '../../generation'
+import { platform, storage } from '../../platform'
 import { estimateTokens } from '../../tokens'
 import { uiConfig } from '../../ui/config'
 import { ComposerButton } from '../../ui/composer-button'
@@ -13,14 +12,6 @@ import type { SplitChoice } from './dialog'
 import { SendRunner } from './runner'
 import { loadSplitterSettings, saveSplitterSettings } from './settings'
 import type { SplitterSettings } from './settings'
-
-export interface MessageSplitterOptions {
-  readonly storage: ScriptStorage
-  readonly composer: ComposerKit
-  readonly generation: Pick<GenerationKit, 'waitForResponse'>
-  readonly defaults?: Partial<SplitterSettings>
-  readonly attachBlocked?: () => string | null
-}
 
 export class MessageSplitterFeature extends Feature {
   readonly id = 'message-splitter'
@@ -33,10 +24,10 @@ export class MessageSplitterFeature extends Feature {
   private attached = false
   private readonly bigButton = new ComposerButton('Compose big message', 'file', 'Paste a large message. It is split only if needed.', () => this.openBig(), { id: 'big' })
 
-  constructor(context: ScriptContext, private readonly options: MessageSplitterOptions) {
+  constructor(context: ScriptContext) {
     super(context)
-    this.settings = loadSplitterSettings(options.storage, options.defaults)
-    this.runner = new SendRunner({ composer: options.composer, waitForResponse: options.generation.waitForResponse, logger: context.logger })
+    this.settings = loadSplitterSettings(storage, platform().splitterDefaults)
+    this.runner = new SendRunner({ composer: platform().composer, waitForResponse: platform().generation.waitForResponse, logger: context.logger })
   }
 
   run(): void {
@@ -65,7 +56,7 @@ export class MessageSplitterFeature extends Feature {
 
   private saveSettings(settings: SplitterSettings): void {
     this.settings = settings
-    saveSplitterSettings(this.options.storage, settings)
+    saveSplitterSettings(storage, settings)
     this.context.refreshMenu()
   }
 
@@ -79,7 +70,7 @@ export class MessageSplitterFeature extends Feature {
 
   private readonly handleKeydown = (event: KeyboardEvent): void => {
     if (this.runner.active || isAutomating() || event.key !== 'Enter' || event.shiftKey || event.isComposing) return
-    const editable = this.options.composer.editableFrom(event.target)
+    const editable = platform().composer.editableFrom(event.target)
     if (!editable || this.isOwn(editable) || !this.isOversized(editable)) return
     event.preventDefault()
     event.stopImmediatePropagation()
@@ -90,7 +81,7 @@ export class MessageSplitterFeature extends Feature {
     if (this.runner.active || isAutomating() || !this.settings.autoIntercept) return
     const button = toElement(event.target)?.closest('button')
     if (!button || this.isOwn(button) || !isSendButton(button)) return
-    const composer = this.options.composer.findComposer()
+    const composer = platform().composer.findComposer()
     if (!composer || !this.isOversized(composer)) return
     event.preventDefault()
     event.stopImmediatePropagation()
@@ -98,7 +89,7 @@ export class MessageSplitterFeature extends Feature {
   }
 
   private open(): void {
-    const composer = this.options.composer.findComposer()
+    const composer = platform().composer.findComposer()
     const text = composer ? readComposer(composer) : ''
     if (!text.trim()) {
       this.panel.notify('The composer is empty.')
@@ -124,18 +115,18 @@ export class MessageSplitterFeature extends Feature {
   }
 
   private async attachAsFile(text: string, instruction: string): Promise<void> {
-    const blocked = this.options.attachBlocked?.()
+    const blocked = platform().attachBlocked?.()
     if (blocked) {
       this.panel.notify(blocked)
       return
     }
-    const composer = this.options.composer.findComposer()
+    const composer = platform().composer.findComposer()
     if (!composer) {
       this.panel.notify('No composer found.')
       return
     }
-    const attached = this.options.composer.attachFile(composer, new File([text], 'message.txt', { type: 'text/plain' }))
-    await this.options.composer.writeComposer(composer, instruction.trim())
+    const attached = platform().composer.attachFile(composer, new File([text], 'message.txt', { type: 'text/plain' }))
+    await platform().composer.writeComposer(composer, instruction.trim())
     this.panel.notify(attached ? 'File attached. Add your question and send.' : 'Could not attach the file automatically.')
   }
 
@@ -149,11 +140,11 @@ export class MessageSplitterFeature extends Feature {
   }
 
   private async insert(text: string): Promise<void> {
-    const composer = await waitFor(this.options.composer.findComposer, { timeout: 5_000 })
+    const composer = await waitFor(platform().composer.findComposer, { timeout: 5_000 })
     if (!composer) {
       this.panel.notify('No composer found.')
       return
     }
-    this.panel.notify((await this.options.composer.writeComposer(composer, text)) ? 'Inserted into the composer.' : 'Could not insert the text.')
+    this.panel.notify((await platform().composer.writeComposer(composer, text)) ? 'Inserted into the composer.' : 'Could not insert the text.')
   }
 }

@@ -4,6 +4,7 @@ import type { GenerationKit } from './generation'
 import type { PromptSender } from './prompt'
 import type { ExportSource } from './features/exporter/source'
 import type { TutorialSource } from './features/tutorial/source'
+import type { SplitterSettings } from './features/message-splitter/settings'
 
 export interface ReleaseInfo {
 	readonly name: string
@@ -24,10 +25,15 @@ export interface Platform {
 	readonly exporter: ExportSource
 	readonly release: ReleaseInfo
 	readonly tutorial: TutorialSource
+	readonly splitterDefaults?: Partial<SplitterSettings>
 	readonly sendPrompt: PromptSender
 	readonly onSend: (listener: () => void) => () => void
 	readonly threadOf: (pathname: string) => string | null
 	readonly codeBlockRoot?: (pre: HTMLElement) => HTMLElement | null
+	readonly rejectEditable?: (editable: HTMLElement) => boolean
+	readonly send?: (editable: HTMLElement) => void
+	readonly attachBlocked?: () => string | null
+	readonly scroller?: () => HTMLElement | null
 }
 
 let current: Platform | null = null

@@ -1,9 +1,15 @@
-import { findComposer, writeComposer } from '../../platform'
+import { findComposer, platform, writeComposer } from '../../platform'
 import { copyText } from '../../clipboard'
 import { Feature, type FeatureCommand, type MenuEntry } from '@nolly/core'
 import { toggleShortcutDialog } from './dialog'
 import { togglePalette } from './palette'
 import { loadShortcut, matchesShortcut, saveShortcut, type Shortcut } from './shortcut'
+
+const smoothScroll = (top: number | 'end'): void => {
+  const target = platform().scroller?.() ?? window
+  const end = target instanceof Window ? document.documentElement.scrollHeight : target.scrollHeight
+  target.scrollTo({ top: top === 'end' ? end : top, behavior: 'smooth' })
+}
 
 export class CommandPaletteFeature extends Feature {
   readonly id = 'command-palette'
@@ -36,8 +42,8 @@ export class CommandPaletteFeature extends Feature {
     return [
       { id: 'focus-input', title: 'Focus message input', run: () => findComposer()?.focus() },
       { id: 'clear-input', title: 'Clear message input', run: () => void this.clearInput() },
-      { id: 'scroll-top', title: 'Scroll to top', keywords: 'beginning start', run: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
-      { id: 'scroll-bottom', title: 'Scroll to bottom', keywords: 'end latest', run: () => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' }) },
+      { id: 'scroll-top', title: 'Scroll to top', keywords: 'beginning start', run: () => smoothScroll(0) },
+      { id: 'scroll-bottom', title: 'Scroll to bottom', keywords: 'end latest', run: () => smoothScroll('end') },
       { id: 'home', title: 'Go to home', keywords: 'new thread', run: () => location.assign('/') },
       { id: 'copy-url', title: 'Copy page URL', keywords: 'link share', run: () => void copyText(location.href) }
     ]

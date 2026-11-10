@@ -28,6 +28,7 @@ Updates arrive automatically. The script also checks on its own and offers to up
 | Enter as Newline  | Enter adds a line, a shortcut sends                                                                  |
 | Message Queue     | Queue follow-ups while an answer generates; they send one by one                                     |
 | Recall            | Search everything you sent and reuse it                                                              |
+| Tutorial          | Guided tours of every feature, started from the “?” button in the header                          |
 | Max Width         | Full-width conversations, optional sidebar removal                                                   |
 | Update Checker    | Checks on load and every few minutes, tells you once per version                                     |
 

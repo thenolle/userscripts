@@ -12,7 +12,7 @@ const MIME = { docx: 'application/vnd.openxmlformats-officedocument.wordprocessi
 
 const fallbackName = (): string => `${platform().exporter.name.toLowerCase()}-thread`
 
-const filenameBase = (): string => (platform().exporter.slug() ?? fallbackName()).replace(/[^\w-]+/g, '-').slice(0, 60) || fallbackName()
+const filenameBase = (): string => (platform().exporter.slug() ?? fallbackName()).replace(/[^\p{L}\p{N}_-]+/gu, '-').slice(0, 60) || fallbackName()
 
 const pageTitle = (): string => {
   const { name } = platform().exporter

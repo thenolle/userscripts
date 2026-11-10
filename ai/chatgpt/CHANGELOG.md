@@ -9,7 +9,10 @@
 ### Fixed
 
 - **Header buttons:** the settings, usage, download and help buttons now sit after ChatGPT's own buttons in the same row, with the same size and hover as the native ones.
+- **Dialogs** are centered even though ChatGPT's stylesheet resets margins.
+- **Command palette:** "Scroll to top/bottom" scrolls ChatGPT's conversation container.
 - **Export:** finds the messages in the current ChatGPT layout and converts the new answer format (lists, tables, source chips, bold text) to Markdown.
+- **Export filenames** use the conversation title and keep accented letters.
 
 ## [1.0.0] - 2026-11-10
 
@@ -23,3 +26,8 @@
 - Code Block Pro: language badges, highlighting, line numbers, wrap, fold, copy and download.
 - Prompt Library (shared community prompts), Command Palette, Message Queue and Recall.
 - Usage Status: remaining reasoning, upload, image and research limits with reset times, plan and rolling window, and alerts.
+
+---
+
+[1.0.0]: https://github.com/thenolle/userscripts/releases/tag/better-chatgpt-v1.0.0  
+[1.1.0]: https://github.com/thenolle/userscripts/releases/tag/better-chatgpt-v1.1.0

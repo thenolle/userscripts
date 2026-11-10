@@ -22,6 +22,17 @@ All notable changes to Better Perplexity are documented here. The format follows
 
 - Prevented modules from being registered multiple times.
 
+## [1.1.0] - 2026-11-10
+
+### Changed
+
+- **Shared package:** most modules (prompt library, message splitter, drafts, command palette, queue, recall, batch runner, code blocks, selection toolbar, max width, exporter, update checker, tutorial engine) now come from the shared `@nolly/ai` package, which Better ChatGPT also uses. Behavior, shortcuts, settings and stored data are unchanged.
+- **Settings:** the script menu and the gear button open the same settings dialog.
+
+### Fixed
+
+- Dialogs are centered even when the page's CSS resets margins.
+
 ## [1.0.5] - 2026-11-09
 
 ### Added
@@ -105,3 +116,4 @@ First public release.
 [1.0.4]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.4  
 [1.0.5]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.5  
 [1.0.5-hotfix.1]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.5-hotfix.1
+[1.1.0]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.1.0

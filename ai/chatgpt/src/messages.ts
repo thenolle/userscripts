@@ -44,3 +44,13 @@ export const countTurns = (): Record<Role, number> => {
   const turns = findTurns()
   return { user: turns.filter((turn) => turn.role === 'user').length, assistant: turns.filter((turn) => turn.role === 'assistant').length }
 }
+
+export const findScroller = (): HTMLElement | null => {
+  let node: HTMLElement | null = findTurns()[0]?.element.parentElement ?? null
+  while (node && node !== document.body) {
+    const overflow = getComputedStyle(node).overflowY
+    if ((overflow === 'auto' || overflow === 'scroll') && node.scrollHeight > node.clientHeight) return node
+    node = node.parentElement
+  }
+  return null
+}
