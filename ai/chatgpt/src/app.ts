@@ -2,6 +2,7 @@ import { toggleSettingsDialog } from '@nolly/ai'
 import { Userscript } from '@nolly/core'
 import { CONFIG, OBSERVER_OPTIONS } from './config'
 import { uiMarker } from './dom'
+import { findComposerForm } from './locate'
 
 export class App extends Userscript {
   constructor() {
@@ -15,7 +16,7 @@ export class App extends Userscript {
       initializationDelay: CONFIG.initializationDelay,
       safetyInterval: CONFIG.safetyInterval,
       clearConsole: false,
-      isReady: () => Boolean(document.querySelector('main')),
+      isReady: () => document.readyState === 'complete' && findComposerForm() !== null,
       openSettings: (script) =>
         toggleSettingsDialog(script.getFeatures(), () => {
           script.refreshMenu()

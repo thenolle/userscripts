@@ -1,20 +1,21 @@
-import { createElement, Feature, type MenuEntry, type ScriptContext } from '@nolly/core'
-import { markUi } from '../../core/dom'
-import { createIcon, ensureUiStyles, Tooltip } from '@nolly/ai'
-import { currentThreadSlug } from './api'
+import { Feature, createElement } from '@nolly/core'
+import type { MenuEntry, ScriptContext } from '@nolly/core'
+import { platform } from '../../platform'
+import { markUi } from '../../ui/config'
+import { createIcon } from '../../ui/icons'
+import { ensureUiStyles } from '../../ui/styles'
+import { Tooltip } from '../../ui/tooltip'
 import { toggleExportDialog } from './dialog'
-import { loadExportSettings, saveExportSettings, type ExportSettings } from './settings'
+import { loadExportSettings, saveExportSettings } from './settings'
+import type { ExportSettings } from './settings'
 
-const INDICATOR_SELECTOR = '.bp-usage-indicator'
-const GEAR_SELECTOR = '.bp-gear'
-
-export class ExporterModule extends Feature {
+export class ExporterFeature extends Feature {
   readonly id = 'exporter'
   readonly name = 'Conversation Exporter'
   readonly description = 'Exports threads with configurable citation styles.'
 
   private settings: ExportSettings = loadExportSettings()
-  private readonly button = markUi(createElement('button', 'bp-header-btn bp-export'))
+  private readonly button = markUi(createElement('button', 'bp-header-btn bp-export bp-themed'))
   private readonly tooltip: Tooltip
 
   constructor(context: ScriptContext) {
@@ -28,14 +29,11 @@ export class ExporterModule extends Feature {
   }
 
   run(): void {
-    const indicator = document.querySelector<HTMLElement>(INDICATOR_SELECTOR)
-    if (!this.enabled || !indicator || !currentThreadSlug()) {
+    const source = platform().exporter
+    if (!this.enabled || !source.slug() || !source.place(this.button)) {
       this.tooltip.hide()
       this.button.remove()
-      return
     }
-    const gear = indicator.querySelector(GEAR_SELECTOR)
-    if (this.button.parentElement !== indicator || (gear && this.button.nextElementSibling !== gear)) indicator.insertBefore(this.button, gear)
   }
 
   override menuEntries(): MenuEntry[] {

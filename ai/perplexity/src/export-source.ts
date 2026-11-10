@@ -1,7 +1,8 @@
-import { storage } from '../../core/storage'
-import { readCookieAccountId } from '../usage-status/account-cookie'
+import type { ExportSource } from '@nolly/ai'
+import { storage } from './core/storage'
+import { readCookieAccountId } from './modules/usage-status/account-cookie'
 
-export interface ExportedFile {
+interface ExportedFile {
   filename: string
   bytes: Uint8Array
 }
@@ -21,7 +22,7 @@ const request = (path: string, init: RequestInit = {}): Promise<Response> => {
   })
 }
 
-export const currentThreadSlug = (): string | null => {
+const currentThreadSlug = (): string | null => {
   const segments = location.pathname.split('/').filter(Boolean)
   return segments.length >= 2 && !NON_THREAD_ROOTS.has(segments[0]!) ? (segments.at(-1) ?? null) : null
 }
@@ -52,7 +53,7 @@ const fetchThread = async (slug: string): Promise<unknown> => {
   return response.json()
 }
 
-export const exportThread = async (format: 'md' | 'docx' | 'pdf', filename: string): Promise<ExportedFile> => {
+const exportThread = async (format: 'md' | 'docx' | 'pdf', filename: string): Promise<ExportedFile> => {
   const slug = currentThreadSlug()
   if (!slug) throw new Error('Open a thread first.')
   try {
@@ -64,8 +65,25 @@ export const exportThread = async (format: 'md' | 'docx' | 'pdf', filename: stri
   }
 }
 
-export const fetchThreadJson = async (): Promise<string> => {
+const fetchThreadJson = async (): Promise<string> => {
   const slug = currentThreadSlug()
   if (!slug) throw new Error('Open a thread first.')
   return JSON.stringify(await fetchThread(slug), null, 2)
+}
+
+const fileBase = (): string => (currentThreadSlug() ?? 'perplexity-thread').replace(/[^\w-]+/g, '-').slice(0, 60) || 'perplexity-thread'
+
+export const exportSource: ExportSource = {
+  name: 'Perplexity',
+  citations: true,
+  slug: currentThreadSlug,
+  markdown: async () => new TextDecoder().decode((await exportThread('md', fileBase())).bytes),
+  json: fetchThreadJson,
+  place: (button) => {
+    const indicator = document.querySelector<HTMLElement>('.bp-usage-indicator')
+    if (!indicator) return false
+    const gear = indicator.querySelector('.bp-gear')
+    if (button.parentElement !== indicator || (gear && button.nextElementSibling !== gear)) indicator.insertBefore(button, gear)
+    return true
+  }
 }

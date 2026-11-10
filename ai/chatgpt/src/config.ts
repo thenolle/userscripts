@@ -1,7 +1,7 @@
 import type { SplitterSettings } from '@nolly/ai'
 
 export const CONFIG = {
-  initializationDelay: 500,
+  initializationDelay: 1_500,
   safetyInterval: 2_000
 } as const
 

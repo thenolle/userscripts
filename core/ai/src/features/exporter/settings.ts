@@ -1,4 +1,4 @@
-import { storage } from '../../core/storage'
+import { storage } from '../../platform'
 import type { CitationStyle } from './citations'
 
 export type ExportFormat = 'md' | 'txt' | 'docx' | 'pdf' | 'json'

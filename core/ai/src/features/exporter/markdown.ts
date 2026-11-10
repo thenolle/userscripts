@@ -116,7 +116,7 @@ export const parseBlocks = (markdown: string): Block[] => {
 
 const BLOCK_START = /^(#{1,6}\s|---+\s*$|\s*(?:[-*+]|\d+[.)])\s|\s*\|)/
 
-export const formatMarkdown = (markdown: string, meta: { title: string; url: string }): string => {
+export const formatMarkdown = (markdown: string, meta: { title: string; url: string; source: string }): string => {
   const cleaned: string[] = []
   let fenced = false
   for (const raw of markdown.replace(/\r\n?/g, '\n').split('\n')) {
@@ -143,7 +143,7 @@ export const formatMarkdown = (markdown: string, meta: { title: string; url: str
     if (fenced || fence || line.trim() !== '' || spaced.at(-1)?.trim() !== '') spaced.push(line)
   }
   const body = spaced.join('\n').replace(/\n{3,}/g, '\n\n').trim()
-  const stamp = `_Exported from Perplexity on ${new Date().toLocaleString()} · ${meta.url}_`
+  const stamp = `_Exported from ${meta.source} on ${new Date().toLocaleString()} · ${meta.url}_`
   const firstLine = body.split('\n', 1)[0] ?? ''
   if (firstLine.startsWith('# ')) return `${firstLine}\n\n${stamp}\n\n${body.slice(firstLine.length).trim()}\n`
   return `# ${meta.title}\n\n${stamp}\n\n---\n\n${body}\n`

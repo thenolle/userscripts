@@ -2,43 +2,55 @@ import type { Logger, ScriptStorage } from '@nolly/core'
 import type { ComposerKit } from './composer'
 import type { GenerationKit } from './generation'
 import type { PromptSender } from './prompt'
+import type { ExportSource } from './features/exporter/source'
+
+export interface ReleaseInfo {
+	readonly name: string
+	readonly slug: string
+	readonly version: string
+	readonly metaUrl: string
+	readonly installUrl: string
+	readonly releasesUrl: string
+}
 
 export interface Platform {
-  readonly id: string
-  readonly storage: ScriptStorage
-  readonly logger: Logger
-  readonly composer: ComposerKit
-  readonly generation: GenerationKit
-  readonly sendPrompt: PromptSender
-  readonly onSend: (listener: () => void) => () => void
-  readonly threadOf: (pathname: string) => string | null
-  readonly promptsUrl: string
+	readonly id: string
+	readonly storage: ScriptStorage
+	readonly logger: Logger
+	readonly composer: ComposerKit
+	readonly generation: GenerationKit
+	readonly sendPrompt: PromptSender
+	readonly onSend: (listener: () => void) => () => void
+	readonly threadOf: (pathname: string) => string | null
+	readonly promptsUrl: string
+	readonly exporter: ExportSource
+	readonly release: ReleaseInfo
 	readonly codeBlockRoot?: (pre: HTMLElement) => HTMLElement | null
 }
 
 let current: Platform | null = null
 
 export const configurePlatform = (platform: Platform): void => {
-  current = platform
+	current = platform
 }
 
 export const platform = (): Platform => {
-  if (!current) throw new Error('configurePlatform() must run before platform features are used.')
-  return current
+	if (!current) throw new Error('configurePlatform() must run before platform features are used.')
+	return current
 }
 
 export const lazy = <T extends object>(create: () => T): T => {
-  let instance: T | null = null
-  const resolve = (): T => (instance ??= create())
-  return new Proxy({} as T, {
-    get: (_target, key) => {
-      const target = resolve()
-      const value: unknown = Reflect.get(target, key, target)
-      return typeof value === 'function' ? value.bind(target) : value
-    },
-    set: (_target, key, value) => Reflect.set(resolve(), key, value),
-    has: (_target, key) => Reflect.has(resolve(), key)
-  })
+	let instance: T | null = null
+	const resolve = (): T => (instance ??= create())
+	return new Proxy({} as T, {
+		get: (_target, key) => {
+			const target = resolve()
+			const value: unknown = Reflect.get(target, key, target)
+			return typeof value === 'function' ? value.bind(target) : value
+		},
+		set: (_target, key, value) => Reflect.set(resolve(), key, value),
+		has: (_target, key) => Reflect.has(resolve(), key)
+	})
 }
 
 export const storage: ScriptStorage = lazy(() => platform().storage)

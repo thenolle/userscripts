@@ -1,5 +1,6 @@
-import { copyText, saveFile } from '@nolly/ai'
-import { currentThreadSlug, exportThread, fetchThreadJson } from './api'
+import { copyText } from '../../clipboard'
+import { saveFile } from '../../download'
+import { platform } from '../../platform'
 import { reformatCitations, stripLogo } from './citations'
 import { buildDocx } from './docx'
 import { formatMarkdown, parseBlocks } from './markdown'
@@ -9,25 +10,31 @@ import { blocksToText } from './text'
 
 const MIME = { docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', pdf: 'application/pdf' } as const
 
-const filenameBase = (): string => (currentThreadSlug() ?? 'perplexity-thread').replace(/[^\w-]+/g, '-').slice(0, 60) || 'perplexity-thread'
+const fallbackName = (): string => `${platform().exporter.name.toLowerCase()}-thread`
 
-const pageTitle = (): string => document.title.replace(/\s*[-–|]\s*Perplexity\s*$/i, '').trim() || 'Perplexity thread'
+const filenameBase = (): string => (platform().exporter.slug() ?? fallbackName()).replace(/[^\w-]+/g, '-').slice(0, 60) || fallbackName()
 
-const loadMarkdown = async (settings: ExportSettings, base: string): Promise<string> => {
-  const file = await exportThread('md', base)
-  const raw = new TextDecoder().decode(file.bytes)
-  return formatMarkdown(reformatCitations(settings.stripLogo ? stripLogo(raw) : raw, settings.style), { title: pageTitle(), url: location.href })
+const pageTitle = (): string => {
+  const { name } = platform().exporter
+  return document.title.replace(new RegExp(`\\s*[-–|]\\s*${name}\\s*$`, 'i'), '').trim() || `${name} thread`
+}
+
+const loadMarkdown = async (settings: ExportSettings): Promise<string> => {
+  const source = platform().exporter
+  const raw = await source.markdown()
+  const text = source.citations ? reformatCitations(settings.stripLogo ? stripLogo(raw) : raw, settings.style) : raw
+  return formatMarkdown(text, { title: pageTitle(), url: location.href, source: source.name })
 }
 
 export const runExport = async (settings: ExportSettings, action: 'download' | 'copy'): Promise<string> => {
   const base = filenameBase()
   if (settings.format === 'json') {
-    const json = await fetchThreadJson()
+    const json = await platform().exporter.json()
     if (action === 'copy') return (await copyText(json)) ? 'Copied JSON.' : 'Copy failed.'
     saveFile(`${base}.json`, json, 'application/json')
     return 'Downloaded.'
   }
-  const markdown = await loadMarkdown(settings, base)
+  const markdown = await loadMarkdown(settings)
   const blocks = parseBlocks(markdown)
   if (settings.format === 'md' || settings.format === 'txt') {
     const text = settings.format === 'md' ? markdown : blocksToText(blocks)

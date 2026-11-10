@@ -1,4 +1,4 @@
-import { BatchRunnerFeature, CodeBlocksFeature, CommandPaletteFeature, DraftGuardFeature, EnterAsNewlineFeature, MaxWidthFeature, MessageSplitterFeature, PromptLibraryFeature, PromptQueueFeature, RecallFeature, SelectionToolbarFeature, configurePlatform, configureUi, loadSplitterSettings } from '@nolly/ai'
+import { BatchRunnerFeature, CodeBlocksFeature, CommandPaletteFeature, DraftGuardFeature, EnterAsNewlineFeature, ExporterFeature, MaxWidthFeature, MessageSplitterFeature, PromptLibraryFeature, PromptQueueFeature, RecallFeature, SelectionToolbarFeature, UpdatesFeature, configurePlatform, configureUi, loadSplitterSettings } from '@nolly/ai'
 import { App } from './core/app'
 import { composerKit, findComposer, writeComposer } from './core/composer'
 import { sendPrompt } from './core/dispatch'
@@ -9,12 +9,11 @@ import { logger } from './core/logger'
 import { isAskRequest } from './core/requests'
 import { storage } from './core/storage'
 import { threadOf } from './core/threads'
+import { exportSource } from './export-source'
 import { findComposerActions } from './locate'
-import { ExporterModule } from './modules/exporter'
 import { GlobalSettingsModule } from './modules/global-settings'
 import { ALWAYS_HIDDEN, LAYOUT_RULES, RIGHT_SIDEBAR } from './modules/max-width/rules'
 import { TutorialModule } from './modules/tutorial'
-import { UpdatesModule } from './modules/updates'
 import { UsageStatusModule } from './modules/usage-status'
 import { URLS } from './repo'
 
@@ -30,7 +29,9 @@ configurePlatform({
 	sendPrompt,
 	onSend,
 	threadOf,
-	promptsUrl: URLS.prompts
+	promptsUrl: URLS.prompts,
+	exporter: exportSource,
+	release: { name: 'Better Perplexity', slug: 'better-perplexity', version: __VERSION__, metaUrl: URLS.meta, installUrl: URLS.install, releasesUrl: URLS.releases }
 })
 fetchSpy.install()
 
@@ -44,11 +45,11 @@ new App()
 	.register((context) => new BatchRunnerFeature(context))
 	.register((context) => new DraftGuardFeature(context, { storage, composer: { findComposer, writeComposer }, onSend, tokenLimit: () => loadSplitterSettings(storage).limit }))
 	.register((context) => new CommandPaletteFeature(context))
-	.register((context) => new ExporterModule(context))
+	.register((context) => new ExporterFeature(context))
 	.register((context) => new UsageStatusModule(context))
 	.register((context) => new GlobalSettingsModule(context))
 	.register((context) => new TutorialModule(context))
-	.register((context) => new UpdatesModule(context))
+	.register((context) => new UpdatesFeature(context))
 	.register((context) => new PromptQueueFeature(context))
 	.register((context) => new RecallFeature(context))
 	.start()

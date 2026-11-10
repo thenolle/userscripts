@@ -16,3 +16,6 @@ export { formatShortcut, loadShortcut, matchesShortcut } from './command-palette
 export type { Shortcut } from './command-palette/shortcut'
 export { loadPromptShortcut } from './prompt-library/shortcut'
 export { CodeBlocksFeature } from './code-blocks'
+export { ExporterFeature } from './exporter'
+export { UpdatesFeature } from './updates'
+export type { ExportSource } from './exporter/source'

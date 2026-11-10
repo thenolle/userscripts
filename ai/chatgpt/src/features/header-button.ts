@@ -1,29 +1,28 @@
 import { Tooltip, createIcon, ensureUiStyles } from '@nolly/ai'
 import { Feature, createElement } from '@nolly/core'
-import { markUi } from '../dom'
-import { findHeaderSlot } from '../locate'
+import { headerTools } from '../header-tools'
 
 export class HeaderButtonFeature extends Feature {
   readonly id = 'header-button'
   readonly name = 'Header button'
   readonly description = 'Adds the Better ChatGPT settings button to the header.'
 
-  private readonly wrapper = markUi(createElement('div', 'pointer-events-auto flex items-center no-drag shrink-0'))
+  private button: HTMLButtonElement | null = null
   private tooltip: Tooltip | null = null
 
   run(): void {
     if (!this.enabled) return
-    const slot = findHeaderSlot()
-    if (!slot) return
-    if (!this.tooltip) this.build()
-    if (this.wrapper.parentElement !== slot || slot.firstElementChild !== this.wrapper) slot.prepend(this.wrapper)
+    const tools = headerTools()
+    if (!tools) return
+    if (!this.button) this.build()
+    if (this.button && this.button.parentElement !== tools) tools.append(this.button)
   }
 
   override onDisable(): void {
     this.tooltip?.destroy()
     this.tooltip = null
-    this.wrapper.replaceChildren()
-    this.wrapper.remove()
+    this.button?.remove()
+    this.button = null
   }
 
   private build(): void {
@@ -34,6 +33,6 @@ export class HeaderButtonFeature extends Feature {
     button.appendChild(createIcon('sliders'))
     button.addEventListener('click', () => this.context.openSettings())
     this.tooltip = new Tooltip(button, (container) => container.append(createElement('div', 'bp-tip-mode', 'Better ChatGPT'), createElement('div', 'bp-tip-sub', 'Settings')), { align: 'end' })
-    this.wrapper.replaceChildren(button)
+    this.button = button
   }
 }

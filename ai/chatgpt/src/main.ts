@@ -1,14 +1,15 @@
-import { BatchRunnerFeature, CodeBlocksFeature, CommandPaletteFeature, DraftGuardFeature, EnterAsNewlineFeature, MaxWidthFeature, MessageSplitterFeature, PromptLibraryFeature, PromptQueueFeature, RecallFeature, SelectionToolbarFeature, configurePlatform, configureUi, loadSplitterSettings } from '@nolly/ai'
+import { BatchRunnerFeature, CodeBlocksFeature, CommandPaletteFeature, DraftGuardFeature, EnterAsNewlineFeature, ExporterFeature, MaxWidthFeature, MessageSplitterFeature, PromptLibraryFeature, PromptQueueFeature, RecallFeature, SelectionToolbarFeature, UpdatesFeature, configurePlatform, configureUi, loadSplitterSettings } from '@nolly/ai'
 import { App } from './app'
 import { fileBudget } from './budget'
 import { SPLITTER_DEFAULTS } from './config'
 import { uiMarker } from './dom'
+import { exportSource } from './export-source'
 import { DiagnosticsFeature } from './features/diagnostics'
 import { HeaderButtonFeature } from './features/header-button'
 import { composerKit, generationKit, sendPrompt } from './kit'
 import { logger } from './logger'
 import { findAttachButton, findPrimaryAction, rejectEditable } from './locate'
-import { URLS } from './repo'
+import { SLUG, URLS } from './repo'
 import { session } from './runtime'
 import { storage } from './storage'
 import { threadOf } from './threads'
@@ -34,6 +35,8 @@ configurePlatform({
 	onSend,
 	threadOf,
 	promptsUrl: URLS.prompts,
+	exporter: exportSource,
+	release: { name: 'Better ChatGPT', slug: SLUG, version: __VERSION__, metaUrl: URLS.meta, installUrl: URLS.install, releasesUrl: URLS.releases },
 	codeBlockRoot: (pre) => pre.closest<HTMLElement>('[data-chatgpt-copy-code]') ?? pre.closest<HTMLElement>('[data-code-block]')
 })
 
@@ -52,5 +55,7 @@ new App()
 	.register((context) => new CommandPaletteFeature(context))
 	.register((context) => new PromptQueueFeature(context))
 	.register((context) => new RecallFeature(context))
+	.register((context) => new ExporterFeature(context))
+	.register((context) => new UpdatesFeature(context))
 	.register((context) => new DiagnosticsFeature(context))
 	.start()
