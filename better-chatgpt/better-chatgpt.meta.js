@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Better ChatGPT
 // @namespace   https://github.com/thenolle/userscripts
-// @version     1.2.0
+// @version     1.2.1
 // @description Prompts, batch runs, code blocks, exports and usage tracking for ChatGPT.
 // @author      Nolly
 // @license     PolyForm-Strict-1.0.0
