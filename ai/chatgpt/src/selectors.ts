@@ -1,11 +1,11 @@
 export const SELECTORS = {
-  composerForm: 'form:has(fieldset)',
-  editable: '[contenteditable="true"], textarea',
-  codeSurface: '[data-code-block], .cm-editor',
-  attach: '[data-composer-navigation-target="add-context"]',
-  modeToggle: 'button[aria-pressed]',
-  headerSlot: '[data-app-shell-header-obstacle="true"]',
-  sidebar: 'aside'
+	composerForm: 'form:has(fieldset)',
+	editable: '[contenteditable="true"], textarea',
+	codeSurface: '[data-code-block], .cm-editor',
+	attach: '[data-composer-navigation-target="add-context"]',
+	modeToggle: 'button[aria-pressed]',
+	headerSlot: '[data-app-shell-main-titlebar="true"] [data-app-shell-header-obstacle="true"]',
+	sidebar: 'aside'
 } as const
 
 export const STOP_LABEL = /\b(stop|arr[eê]t\w*|stopp\w*|detener|parar)\b/i
