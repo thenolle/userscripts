@@ -1,10 +1,12 @@
 {
   "name": "@nolly/core",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": true,
   "type": "module",
   "license": "PolyForm-Strict-1.0.0",
-  "userscript": { "kind": "library" },
+  "userscript": {
+    "kind": "library"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/thenolle/userscripts.git",

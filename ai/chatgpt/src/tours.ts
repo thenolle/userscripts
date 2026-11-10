@@ -1,3 +1,4 @@
+import { createPdfTour } from '@nolly/ai'
 import { contextPacksTour, loadPromptShortcut, loadShortcut, tour } from '@nolly/ai'
 import type { Tour } from '@nolly/ai'
 import { composerKit } from './kit'
@@ -134,4 +135,4 @@ const contextPacks: Tour = {
   }
 }
 
-export const TOURS: readonly Tour[] = [gettingStarted, usage, longMessages, prompts, batch, codeBlocks, exporting, selection, palette, contextPacks]
+export const TOURS: readonly Tour[] = [gettingStarted, usage, longMessages, prompts, batch, codeBlocks, exporting, selection, palette, contextPacks, createPdfTour()]

@@ -83,3 +83,7 @@ Building needs the `core/` and `core/ai/` folders at the repository root. See [C
 ## License
 
 [PolyForm Strict License 1.0.0](../../LICENSE).
+
+## PDF reports
+
+PDF export opens a print-ready preview with a contents list, readable sections, code panels and tables. Use Print / Save as PDF in the preview. See [PDF reports](docs/pdf-reports.md) for print settings and machine-reading limitations.

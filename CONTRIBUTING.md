@@ -60,3 +60,7 @@ Install the file in `dist/` in your userscript manager to test. Start a new site
 - No personal data, secrets or copyrighted text.
 - Blanks use `{{name}}`; built-ins are `{{clipboard}}`, `{{selection}}`, `{{date}}`, `{{time}}`, `{{url}}` and `{{title}}`.
 - `id` is a unique lowercase slug. Run `bun run validate:prompts` in `ai/perplexity` before committing.
+
+## Dated changelogs
+
+Every change belongs to a numbered, dated release section. Do not create pending-release sections. New features require a tutorial and a guide for each supported platform. Update PDF documentation whenever the save workflow changes.

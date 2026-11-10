@@ -24,7 +24,7 @@ Open a conversation and click the download button in the header.
 | Markdown     | Cleaned and formatted, with a title and export date                |
 | Plain text   | Underlined headings, indented code, links written as `label (url)` |
 | Word (.docx) | Real headings, lists, tables, quotes and clickable links           |
-| PDF          | Generated in your browser with selectable text and page numbers    |
+| PDF          | Print-ready preview; save through the browser print dialog    |
 | Raw JSON     | The thread data, as a fallback                                     |
 
 ## Citation styles
@@ -33,3 +33,7 @@ Choose how sources appear: parenthesized links, inline links, domain names, a nu
 
 > [!NOTE]
 > Exports rely on Perplexity's own export endpoint. If one fails with an HTTP error, use Raw JSON and report it.
+
+## PDF workflow
+
+PDF saving uses the browser print dialog. The preview contains selectable text, linked contents, styled sections, code panels and tables. See [PDF reports](pdf-reports.md) for colors, page numbers and limitations.

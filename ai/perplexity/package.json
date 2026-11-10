@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "license": "PolyForm-Strict-1.0.0",
-  "userscript": { "slug": "better-perplexity" },
+  "userscript": {
+    "slug": "better-perplexity"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/thenolle/userscripts.git",

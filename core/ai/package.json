@@ -1,10 +1,13 @@
 {
   "name": "@nolly/ai",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "license": "PolyForm-Strict-1.0.0",
-	"userscript": { "kind": "library", "slug": "core-ai" },
+  "userscript": {
+    "kind": "library",
+    "slug": "core-ai"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/thenolle/userscripts.git",

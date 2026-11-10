@@ -2,7 +2,15 @@
 
 All notable changes to Better Perplexity are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [1.1.1] - 2026-11-10
+
+### Export and reliability
+
+- PDF export now opens a semantic print preview with Unicode text, section navigation, colors, readable code and tables.
+
+- PDF saving is controlled through the browser print dialog; Markdown and JSON remain available for machine processing.
+
+- Temporary download URLs are released after a delay instead of immediately.
 
 - Internal: composer, synthetic keys and generation detection moved to the shared `@nolly/ai` package. The script moved to `ai/perplexity`; install URLs and storage keys are unchanged.
 - Internal: Prompt Library, Command Palette, Message Queue and Recall now come from the shared package.
@@ -22,7 +30,13 @@ All notable changes to Better Perplexity are documented here. The format follows
 - Distinguished an unknown subscription tier from subscription activity.
 - Made pace labels describe observed counter units and withheld short-history depletion estimates.
 
-## [1.1.1] - 2026-11-10
+### Export and reliability
+
+- PDF export now opens a semantic print preview with Unicode text, section navigation, colors, readable code and tables.
+
+- PDF saving is controlled through the browser print dialog; Markdown and JSON remain available for machine processing.
+
+- Temporary download URLs are released after a delay instead of immediately.
 
 ### Added
 
@@ -41,12 +55,6 @@ All notable changes to Better Perplexity are documented here. The format follows
 ### Documentation
 
 - Documented Context Packs privacy, storage limits, manual transfer and temporary-chat persistence.
-
-## [1.0.5-hotfix.1] - 2026-11-09
-
-### Fixed
-
-- Prevented modules from being registered multiple times.
 
 ## [1.1.0] - 2026-11-10
 
@@ -72,6 +80,12 @@ All notable changes to Better Perplexity are documented here. The format follows
 - **Update checker:** checks on load and every five minutes, shares results between tabs, announces each version once, and "Skip this version" silences it until a newer one is published. The menu shows "Update to vX".
 - **Shared core:** updates, version comparison, polling and notifications now come from `@nolly/core` 1.0.2.
 - **Docs:** added Message Queue and Recall guides, and updated the shortcuts list.
+
+## [1.0.5-hotfix.1] - 2026-11-09
+
+### Fixed
+
+- Prevented modules from being registered multiple times.
 
 ## [1.0.4] - 2026-11-09
 

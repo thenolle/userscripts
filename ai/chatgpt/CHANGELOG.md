@@ -1,11 +1,25 @@
 # Changelog
 
-## [Unreleased]
+## [1.1.1] - 2026-11-10
+
+### Export and reliability
+
+- PDF export now opens a semantic print preview with Unicode text, section navigation, colors, readable code and tables.
+
+- PDF saving is controlled through the browser print dialog; Markdown and JSON remain available for machine processing.
+
+- Temporary download URLs are released after a delay instead of immediately.
 
 - Fixed a remaining registry-refactor reference that prevented typechecking.
 - Dialog positioning is explicitly enforced on the modal element.
 
-## [1.1.1] - 2026-11-10
+### Export and reliability
+
+- PDF export now opens a semantic print preview with Unicode text, section navigation, colors, readable code and tables.
+
+- PDF saving is controlled through the browser print dialog; Markdown and JSON remain available for machine processing.
+
+- Temporary download URLs are released after a delay instead of immediately.
 
 ### Added
 

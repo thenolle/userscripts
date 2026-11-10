@@ -1,293 +1,344 @@
 import type { Block, Inline } from './markdown'
 
-type Font = 'regular' | 'bold' | 'italic' | 'bolditalic' | 'code'
-
-interface Token {
-  text: string
-  font: Font
-  width: number
-  link?: string
+interface Heading {
+	readonly index: number
+	readonly id: string
+	readonly level: number
+	readonly title: string
 }
 
-interface Page {
-  ops: string[]
-  links: { rect: number[]; uri: string }[]
+const escape = (text: string): string => text.replace(/[&<>"']/g, (character) => ({
+	'&': '&amp;',
+	'<': '&lt;',
+	'>': '&gt;',
+	'"': '&quot;',
+	"'": '&#39;'
+}[character] ?? character))
+
+const safeUrl = (value: string): string | null => {
+	try {
+		const url = new URL(value, location.href)
+		return ['https:', 'http:', 'mailto:'].includes(url.protocol) ? url.href : null
+	} catch {
+		return null
+	}
 }
 
-interface LineOptions {
-  x: number
-  width: number
-  size: number
-  leading: number
-  bold?: boolean
-  color?: string
-  bar?: boolean
-  label?: { text: string; x: number }
-}
+const plain = (inlines: readonly Inline[]): string => inlines.map((inline) => inline.text).join('')
 
-const FONTS: readonly Font[] = ['regular', 'bold', 'italic', 'bolditalic', 'code']
-const BASE_FONT: Readonly<Record<Font, string>> = { regular: 'Helvetica', bold: 'Helvetica-Bold', italic: 'Helvetica-Oblique', bolditalic: 'Helvetica-BoldOblique', code: 'Courier' }
-const W = 595.28
-const H = 841.89
-const M = 56
-const CONTENT = W - 2 * M
-const HEADING_SIZES = [22, 17, 14, 12.5, 11.5, 11]
-const LINK_COLOR = '0.1 0.3 0.8'
-
-const WIN_ANSI = new Map<number, number>([
-  [0x20ac, 0x80], [0x201a, 0x82], [0x192, 0x83], [0x201e, 0x84], [0x2026, 0x85], [0x2020, 0x86], [0x2021, 0x87], [0x2c6, 0x88], [0x2030, 0x89], [0x160, 0x8a],
-  [0x2039, 0x8b], [0x152, 0x8c], [0x17d, 0x8e], [0x2018, 0x91], [0x2019, 0x92], [0x201c, 0x93], [0x201d, 0x94], [0x2022, 0x95], [0x2013, 0x96], [0x2014, 0x97],
-  [0x2dc, 0x98], [0x2122, 0x99], [0x161, 0x9a], [0x203a, 0x9b], [0x153, 0x9c], [0x17e, 0x9e], [0x178, 0x9f]
-])
-
-const encode = (text: string): string => Array.from(text, (char) => {
-  const code = char.codePointAt(0) ?? 63
-  if ((code >= 32 && code < 127) || (code >= 160 && code <= 255)) return char
-  return String.fromCharCode(WIN_ANSI.get(code) ?? (code === 9 ? 32 : 63))
+const renderInlines = (inlines: readonly Inline[]): string => inlines.map((inline) => {
+	let content = escape(inline.text)
+	if (inline.code) content = `<code>${content}</code>`
+	if (inline.bold) content = `<strong>${content}</strong>`
+	if (inline.italic) content = `<em>${content}</em>`
+	const url = inline.link ? safeUrl(inline.link) : null
+	return url ? `<a href="${escape(url)}">${content}</a>` : content
 }).join('')
 
-const pdfString = (text: string): string => `(${encode(text).replace(/[\\()]/g, '\\$&')})`
+const meaningfulParagraph = (block: Block): boolean => block.type === 'paragraph' && plain(block.inlines).trim() !== ''
 
-let canvas: CanvasRenderingContext2D | null = null
+const renderTable = (block: Extract<Block, { type: 'table' }>): string => {
+	const columns = Math.max(1, block.header.length, ...block.rows.map((row) => row.length))
+	const cells = (row: readonly Inline[][], tag: 'th' | 'td'): string => Array.from({ length: columns }, (_, index) => `<${tag}${tag === 'th' ? ' scope="col"' : ''}>${renderInlines(row[index] ?? [])}</${tag}>`).join('')
 
-const measure = (text: string, font: Font, size: number): number => {
-  if (font === 'code') return text.length * size * 0.6
-  canvas ??= document.createElement('canvas').getContext('2d')
-  if (!canvas) return text.length * size * 0.5
-  canvas.font = `${font.includes('italic') ? 'italic ' : ''}${font.startsWith('bold') ? 'bold ' : ''}${size}px Arial, Helvetica, sans-serif`
-  return canvas.measureText(text).width
+	return `<div class="table-wrap"><table>
+    <thead><tr>${cells(block.header, 'th')}</tr></thead>
+    <tbody>${block.rows.map((row) => `<tr>${cells(row, 'td')}</tr>`).join('')}</tbody>
+  </table></div>`
 }
 
-const fontOf = (inline: Inline, forceBold: boolean): Font => {
-  if (inline.code) return 'code'
-  const bold = inline.bold || forceBold
-  if (bold && inline.italic) return 'bolditalic'
-  return bold ? 'bold' : inline.italic ? 'italic' : 'regular'
+const renderList = (items: readonly Extract<Block, { type: 'item' }>[]): string => {
+	let cursor = 0
+
+	const level = (depth: number): string => {
+		let output = ''
+
+		while (cursor < items.length && items[cursor]!.depth === depth) {
+			const first = items[cursor]!
+			const ordered = first.ordered
+			const tag = ordered ? 'ol' : 'ul'
+			output += `<${tag}${ordered ? ` start="${first.number}"` : ''}>`
+
+			while (cursor < items.length&& items[cursor]!.depth === depth&& items[cursor]!.ordered === ordered) {
+				const item = items[cursor++]!
+				output += `<li${ordered ? ` value="${item.number}"` : ''}>${renderInlines(item.inlines)}`
+				if (cursor < items.length && items[cursor]!.depth > depth) output += level(items[cursor]!.depth)
+				output += '</li>'
+			}
+
+			output += `</${tag}>`
+		}
+
+		return output
+	}
+
+	let output = ''
+	while (cursor < items.length) output += level(items[cursor]!.depth)
+	return output
 }
 
-const tokenize = (inlines: readonly Inline[], size: number, forceBold = false): Token[] => inlines.flatMap((inline) => {
-  const font = fontOf(inline, forceBold)
-  return inline.text.split(/(\s+)/).filter(Boolean).map((part): Token => {
-    const text = /^\s+$/.test(part) ? ' ' : part
-    return { text, font, width: measure(text, font, size), link: inline.link }
-  })
-})
+const CSS = `
+:root {
+  color-scheme: light;
+  --ink: #18181b;
+  --muted: #52525b;
+  --border: #e4e4e7;
+  --surface: #f4f4f5;
+  --accent: #1d4ed8;
+}
+* { box-sizing: border-box; }
+html { background: #eceef2; }
+body {
+  margin: 0;
+  color: var(--ink);
+  font: 11pt/1.65 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: #fff;
+}
+.toolbar p { margin: 0; color: var(--muted); font-size: 13px; }
+button {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: #18181b;
+  color: #fff;
+  font: 500 13px system-ui, sans-serif;
+  cursor: pointer;
+}
+button:focus-visible, a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.report {
+  max-width: 960px;
+  margin: 28px auto;
+  padding: 56px;
+  background: #fff;
+  box-shadow: 0 8px 40px rgb(0 0 0 / 8%);
+}
+.cover {
+  padding-bottom: 28px;
+  border-bottom: 3px solid var(--accent);
+}
+.eyebrow {
+  margin: 0 0 10px;
+  color: var(--accent);
+  font-size: 9pt;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+h1 {
+  margin: 0 0 18px;
+  font-size: 27pt;
+  line-height: 1.18;
+  letter-spacing: -.035em;
+  overflow-wrap: anywhere;
+}
+.meta {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 9pt;
+}
+.meta p { margin: 0; }
+nav { margin: 28px 0; padding: 22px; border: 1px solid var(--border); border-radius: 8px; }
+nav h2 { margin: 0 0 12px; font-size: 15pt; }
+nav ol { margin: 0; padding-left: 20px; }
+nav li { margin: 5px 0; }
+nav a { text-decoration: none; }
+.toc-depth-2 { margin-left: 14px; }
+.toc-depth-3 { margin-left: 28px; }
+article { margin-top: 32px; }
+article h2, article h3, article h4, article h5, article h6 {
+  break-after: avoid;
+  page-break-after: avoid;
+  margin: 26px 0 10px;
+  line-height: 1.3;
+  letter-spacing: -.02em;
+}
+article h2 { padding-bottom: 9px; border-bottom: 1px solid var(--border); color: #172554; font-size: 19pt; }
+article h3 { color: #1e3a8a; font-size: 15pt; }
+article h4 { font-size: 12pt; }
+article h5, article h6 { font-size: 11pt; }
+p { margin: 0 0 12px; orphans: 3; widows: 3; }
+li { margin: 4px 0; }
+a { color: var(--accent); overflow-wrap: anywhere; }
+blockquote {
+  margin: 18px 0;
+  padding: 12px 18px;
+  border-left: 3px solid #93c5fd;
+  background: #eff6ff;
+  color: #334155;
+}
+blockquote p:last-child { margin-bottom: 0; }
+code { font: .9em/1.6 ui-monospace, "Cascadia Code", Consolas, monospace; }
+p code, li code, td code {
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: var(--surface);
+  overflow-wrap: anywhere;
+}
+.code-panel { margin: 18px 0; border: 1px solid var(--border); border-radius: 7px; }
+.code-label {
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--border);
+  background: #eef2ff;
+  color: #3730a3;
+  font: 600 9pt system-ui, sans-serif;
+  break-after: avoid;
+}
+pre {
+  margin: 0;
+  padding: 14px;
+  background: #fafafa;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  tab-size: 4;
+}
+pre code { font-size: 9pt; }
+.table-wrap { margin: 18px 0; }
+table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 9pt; }
+th, td {
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+th { background: #eef2ff; color: #312e81; font-weight: 650; }
+tbody tr:nth-child(even) { background: #fafafa; }
+thead { display: table-header-group; }
+hr { margin: 24px 0; border: 0; border-top: 1px solid var(--border); }
+footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--border); color: var(--muted); font-size: 9pt; }
+@page { size: A4; margin: 18mm 16mm; }
+@media print {
+  html, body { background: #fff; }
+  .toolbar { display: none !important; }
+  .report { max-width: none; margin: 0; padding: 0; box-shadow: none; }
+  .cover { break-after: page; }
+  nav { break-after: page; border: 0; padding: 0; }
+  article { margin-top: 0; }
+  * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  pre { overflow: visible; }
+}
+@media (max-width: 700px) {
+  .report { margin: 0; padding: 24px; }
+}
+`
 
-const hardSplit = (token: Token, maxWidth: number, size: number): Token[] => {
-  const pieces: Token[] = []
-  let current = ''
-  for (const char of token.text) {
-    if (current && measure(current + char, token.font, size) > maxWidth) {
-      pieces.push({ ...token, text: current, width: measure(current, token.font, size) })
-      current = ''
-    }
-    current += char
-  }
-  if (current) pieces.push({ ...token, text: current, width: measure(current, token.font, size) })
-  return pieces
+export const buildPrintHtml = (blocks: readonly Block[], title: string): string => {
+	const headings: Heading[] = []
+	let skippedTitle = false
+
+	blocks.forEach((block, index) => {
+		if (block.type !== 'heading') return
+		const text = plain(block.inlines).trim()
+		if (!skippedTitle && index === 0 && block.level === 1 && text === title.trim()) {
+			skippedTitle = true
+			return
+		}
+		headings.push({ index, id: `section-${index}`, level: block.level, title: text })
+	})
+
+	const headingMap = new Map(headings.map((heading) => [heading.index, heading]))
+	const body: string[] = []
+
+	for (let index = 0; index < blocks.length; index++) {
+		const block = blocks[index]!
+		if (index === 0 && skippedTitle) continue
+
+		if (block.type === 'heading') {
+			const heading = headingMap.get(index)!
+			const level = Math.max(2, Math.min(6, block.level + 1))
+			body.push(`<h${level} id="${heading.id}">${renderInlines(block.inlines)}</h${level}>`)
+		} else if (block.type === 'paragraph') {
+			if (meaningfulParagraph(block)) body.push(`<p>${renderInlines(block.inlines)}</p>`)
+		} else if (block.type === 'item') {
+			const items: Extract<Block, { type: 'item' }>[] = [block]
+			while (blocks[index + 1]?.type === 'item') {
+				items.push(blocks[++index] as Extract<Block, { type: 'item' }>)
+			}
+			body.push(renderList(items))
+		} else if (block.type === 'quote') {
+			body.push(`<blockquote><p>${renderInlines(block.inlines)}</p></blockquote>`)
+		} else if (block.type === 'code') {
+			body.push(`<section class="code-panel" aria-label="Code block">
+        <div class="code-label">${escape(block.language || 'Plain text')}</div>
+        <pre><code>${escape(block.text)}</code></pre>
+      </section>`)
+		} else if (block.type === 'table') {
+			body.push(renderTable(block))
+		} else {
+			body.push('<hr>')
+		}
+	}
+
+	const minimumLevel = Math.min(...headings.map((heading) => heading.level), 1)
+	const contents = headings.length ? `<nav aria-label="Table of contents">
+    <h2>Contents</h2>
+    <ol>${headings.map((heading, index) =>
+		`<li class="toc-depth-${Math.min(3, heading.level - minimumLevel)}">
+        <a href="#${heading.id}">${index + 1}. ${escape(heading.title)}</a>
+      </li>`
+	).join('')}</ol>
+  </nav>` : ''
+
+	return `<!doctype html>
+<html lang="${escape(document.documentElement.lang || 'en')}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>${escape(title)}</title>
+  <style>${CSS}</style>
+</head>
+<body>
+  <div class="toolbar">
+    <button id="print-report" type="button">Print / Save as PDF</button>
+    <p>Choose Save as PDF. Enable background graphics for colors and browser headers/footers for page numbers.</p>
+  </div>
+  <main class="report">
+    <header class="cover">
+      <p class="eyebrow">Conversation report</p>
+      <h1>${escape(title)}</h1>
+      <div class="meta">
+        <p>Exported: ${escape(new Date().toISOString())}</p>
+        <p>Source: <a href="${escape(location.href)}">${escape(location.href)}</a></p>
+        <p>Text-based export · headings, lists, tables and code remain selectable.</p>
+      </div>
+    </header>
+    ${contents}
+    <article aria-label="Conversation">${body.join('\n')}</article>
+    <footer>For machine processing, retain the Markdown or JSON export alongside this PDF.</footer>
+  </main>
+</body>
+</html>`
 }
 
-const wrap = (tokens: readonly Token[], maxWidth: number, size: number): Token[][] => {
-  const lines: Token[][] = []
-  let line: Token[] = []
-  let width = 0
-  const push = (): void => {
-    while (line.at(-1)?.text === ' ') line.pop()
-    if (line.length) lines.push(line)
-    line = []
-    width = 0
-  }
-  for (const token of tokens) {
-    if (token.text === ' ') {
-      if (line.length) {
-        line.push(token)
-        width += token.width
-      }
-      continue
-    }
-    if (token.width > maxWidth) {
-      push()
-      for (const piece of hardSplit(token, maxWidth, size)) lines.push([piece])
-      continue
-    }
-    if (width + token.width > maxWidth && line.length) push()
-    line.push(token)
-    width += token.width
-  }
-  push()
-  return lines.length ? lines : [[]]
-}
+export const openPdfPreview = (target: Window, blocks: readonly Block[], title: string): void => {
+	target.document.open()
+	target.document.write(buildPrintHtml(blocks, title))
+	target.document.close()
 
-class Layout {
-  readonly pages: Page[] = [{ ops: [], links: [] }]
-  private y = M
+	const button = target.document.getElementById('print-report')
+	if (!button) throw new Error('The PDF preview could not be initialized.')
 
-  private get page(): Page {
-    return this.pages.at(-1)!
-  }
-
-  private ensure(height: number): void {
-    if (this.y + height <= H - M) return
-    this.pages.push({ ops: [], links: [] })
-    this.y = M
-  }
-
-  private rect(x: number, top: number, width: number, height: number, fill: string): void {
-    this.page.ops.push(`${fill} ${x.toFixed(2)} ${(H - top - height).toFixed(2)} ${width.toFixed(2)} ${height.toFixed(2)} re f`)
-  }
-
-  private line(tokens: readonly Token[], x: number, size: number, color: string): void {
-    const baseline = H - (this.y + size)
-    let cursor = x
-    for (const token of tokens) {
-      if (token.text !== ' ') {
-        const fill = token.link ? `${LINK_COLOR} rg` : color
-        this.page.ops.push(`BT ${fill} /F${FONTS.indexOf(token.font) + 1} ${size} Tf ${cursor.toFixed(2)} ${baseline.toFixed(2)} Td ${pdfString(token.text)} Tj ET`)
-        if (token.link) {
-          const underline = (baseline - 1.5).toFixed(2)
-          this.page.ops.push(`${LINK_COLOR} RG 0.5 w ${cursor.toFixed(2)} ${underline} m ${(cursor + token.width).toFixed(2)} ${underline} l S`)
-          this.page.links.push({ rect: [cursor, baseline - 2, cursor + token.width, baseline + size], uri: token.link.replace(/[^\x21-\x7e]/g, '') })
-        }
-      }
-      cursor += token.width
-    }
-  }
-
-  private flow(inlines: readonly Inline[], { x, width, size, leading, bold = false, color = '0.1 g', bar = false, label }: LineOptions): void {
-    wrap(tokenize(inlines, size, bold), width, size).forEach((tokens, index) => {
-      this.ensure(leading)
-      if (bar) this.rect(x - 10, this.y, 2.5, leading, '0.8 g')
-      if (index === 0 && label) this.line([{ text: label.text, font: 'regular', width: measure(label.text, 'regular', size) }], label.x, size, color)
-      this.line(tokens, x, size, color)
-      this.y += leading
-    })
-  }
-
-  private code(text: string): void {
-    const size = 9
-    const leading = 12.5
-    const columns = Math.floor((CONTENT - 20) / (size * 0.6))
-    const lines = text.replace(/\t/g, '  ').split('\n').flatMap((line) => {
-      const out: string[] = []
-      for (let index = 0; index < Math.max(line.length, 1); index += columns) out.push(line.slice(index, index + columns))
-      return out
-    })
-    const pad = (): void => {
-      this.ensure(6)
-      this.rect(M, this.y, CONTENT, 6, '0.955 g')
-      this.y += 6
-    }
-    this.y += 2
-    pad()
-    for (const line of lines) {
-      this.ensure(leading)
-      this.rect(M, this.y, CONTENT, leading, '0.955 g')
-      this.line([{ text: line, font: 'code', width: 0 }], M + 10, size, '0.15 g')
-      this.y += leading
-    }
-    pad()
-    this.y += 8
-  }
-
-  private table(block: Extract<Block, { type: 'table' }>): void {
-    const columns = Math.max(1, block.header.length)
-    const width = CONTENT / columns
-    const size = 9.5
-    const leading = 13
-    const rows = [block.header, ...block.rows]
-    rows.forEach((row, rowIndex) => {
-      const cells = Array.from({ length: columns }, (_, index) => wrap(tokenize(row[index] ?? [], size, rowIndex === 0), width - 8, size))
-      const height = Math.max(...cells.map((lines) => lines.length)) * leading + 8
-      this.ensure(height)
-      cells.forEach((lines, index) => {
-        const x = M + index * width
-        if (rowIndex === 0) this.rect(x, this.y, width, height, '0.94 g')
-        this.page.ops.push(`0.8 G 0.5 w ${x.toFixed(2)} ${(H - this.y - height).toFixed(2)} ${width.toFixed(2)} ${height.toFixed(2)} re S`)
-        const top = this.y
-        lines.forEach((tokens, lineIndex) => {
-          this.y = top + 4 + lineIndex * leading
-          this.line(tokens, x + 4, size, '0.1 g')
-        })
-        this.y = top
-      })
-      this.y += height
-    })
-    this.y += 8
-  }
-
-  render(blocks: readonly Block[]): void {
-    for (const block of blocks) {
-      switch (block.type) {
-        case 'heading': {
-          const size = HEADING_SIZES[block.level - 1] ?? 11
-          this.y += block.level <= 2 ? 14 : 8
-          this.ensure(size * 3)
-          this.flow(block.inlines, { x: M, width: CONTENT, size, leading: size * 1.3, bold: true, color: '0 g' })
-          this.y += 4
-          break
-        }
-        case 'paragraph':
-          this.flow(block.inlines, { x: M, width: CONTENT, size: 11, leading: 15.5 })
-          this.y += 6
-          break
-        case 'item': {
-          const x = M + 18 + block.depth * 16
-          this.flow(block.inlines, { x, width: W - M - x, size: 11, leading: 15.5, label: { text: block.ordered ? `${block.number}.` : '•', x: x - 14 } })
-          this.y += 2
-          break
-        }
-        case 'quote':
-          this.flow(block.inlines, { x: M + 14, width: CONTENT - 14, size: 11, leading: 15.5, color: '0.35 g', bar: true })
-          this.y += 6
-          break
-        case 'rule':
-          this.ensure(14)
-          this.page.ops.push(`0.8 G 0.75 w ${M} ${(H - this.y - 6).toFixed(2)} m ${W - M} ${(H - this.y - 6).toFixed(2)} l S`)
-          this.y += 14
-          break
-        case 'code':
-          this.code(block.text)
-          break
-        case 'table':
-          this.table(block)
-          break
-      }
-    }
-  }
-
-  finish(): void {
-    this.pages.forEach((page, index) => {
-      page.ops.push(`BT 0.5 g /F1 8 Tf ${(W / 2 - 14).toFixed(2)} 28 Td ${pdfString(`${index + 1} / ${this.pages.length}`)} Tj ET`)
-    })
-  }
-}
-
-export const buildPdf = (blocks: readonly Block[], title: string): Uint8Array => {
-  const layout = new Layout()
-  layout.render(blocks)
-  layout.finish()
-  const objects: string[] = ['', '']
-  const add = (body: string): number => objects.push(body)
-  const fontIds = FONTS.map((font) => add(`<< /Type /Font /Subtype /Type1 /BaseFont /${BASE_FONT[font]} /Encoding /WinAnsiEncoding >>`))
-  const resources = `<< /Font << ${fontIds.map((id, index) => `/F${index + 1} ${id} 0 R`).join(' ')} >> >>`
-  const info = add(`<< /Title ${pdfString(title)} /Producer (Better Perplexity) >>`)
-  const pageIds = layout.pages.map((page) => {
-    const stream = page.ops.join('\n')
-    const content = add(`<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`)
-    const annots = page.links.map((link) => add(`<< /Type /Annot /Subtype /Link /Rect [${link.rect.map((value) => value.toFixed(2)).join(' ')}] /Border [0 0 0] /A << /S /URI /URI (${link.uri.replace(/[\\()]/g, '\\$&')}) >> >>`))
-    const annotations = annots.length ? ` /Annots [${annots.map((id) => `${id} 0 R`).join(' ')}]` : ''
-    return add(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources ${resources} /Contents ${content} 0 R${annotations} >>`)
-  })
-  objects[0] = '<< /Type /Catalog /Pages 2 0 R >>'
-  objects[1] = `<< /Type /Pages /Kids [${pageIds.map((id) => `${id} 0 R`).join(' ')}] /Count ${pageIds.length} >>`
-  let out = '%PDF-1.4\n%\xe2\xe3\xcf\xd3\n'
-  const offsets = objects.map((body, index) => {
-    const offset = out.length
-    out += `${index + 1} 0 obj\n${body}\nendobj\n`
-    return offset
-  })
-  const xref = out.length
-  const table = offsets.map((offset) => `${String(offset).padStart(10, '0')} 00000 n \n`).join('')
-  out += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n${table}trailer\n<< /Size ${objects.length + 1} /Root 1 0 R /Info ${info} 0 R >>\nstartxref\n${xref}\n%%EOF`
-  return Uint8Array.from(out, (char) => char.charCodeAt(0) & 0xff)
+	button.addEventListener('click', () => {
+		void target.document.fonts.ready.then(() => {
+			target.focus()
+			target.print()
+		})
+	})
 }
