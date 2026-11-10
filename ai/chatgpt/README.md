@@ -14,24 +14,25 @@ Updates arrive automatically. The script also checks on its own and offers to up
 
 ## Features
 
-| Feature           | What you get                                                                                                       |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Usage Status      | Remaining counts reported by ChatGPT, your plan, and low/empty alerts; totals and reset schedules are not inferred |
-| Code Blocks V2    | Language badges, syntax colours, line numbers, wrap, fold, download, indentation-safe copy                         |
-| Message Splitter  | Paste any amount of text; split into parts or attach as a file only when needed                                    |
-| Prompt Library    | Your prompts plus community prompts, with a form for placeholders                                                  |
-| Batch Runner      | Run one template over a list, with pause, resume and reload recovery                                               |
-| Selection Toolbar | Ask, explain, summarize, fact-check or quote highlighted text                                                      |
-| Exporter          | Markdown, text, Word, PDF and JSON                                                                                 |
-| Draft Guard       | Drafts survive reloads; size meter; warning before closing with unsent text                                        |
-| Command Palette   | Search every action                                                                                                |
-| Enter as Newline  | Enter adds a line, a shortcut sends                                                                                |
-| Message Queue     | Queue follow-ups while an answer generates; they send one by one                                                   |
-| Recall            | Search everything you sent and reuse it                                                                            |
-| Tutorial          | Guided tours of every feature, started from the “?” button in the header                                           |
-| Max Width         | Full-width conversations, optional sidebar removal                                                                 |
-| Update Checker    | Checks on load and every few minutes, tells you once per version                                                   |
-| Context Packs     | Save sourced excerpts from conversations and assemble a previewable briefing for your next task                    |
+| Feature           | What you get                                                                                                           |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Usage Status      | Remaining counts reported by ChatGPT, your plan, and low/empty alerts; totals and reset schedules are not inferred     |
+| Quota Insights    | Persistent counter observations, observed capacity lower bounds, last net increase, and conditional recovery scenarios |
+| Code Blocks V2    | Language badges, syntax colours, line numbers, wrap, fold, download, indentation-safe copy                             |
+| Message Splitter  | Paste any amount of text; split into parts or attach as a file only when needed                                        |
+| Prompt Library    | Your prompts plus community prompts, with a form for placeholders                                                      |
+| Batch Runner      | Run one template over a list, with pause, resume and reload recovery                                                   |
+| Selection Toolbar | Ask, explain, summarize, fact-check or quote highlighted text                                                          |
+| Exporter          | Markdown, text, Word, PDF and JSON                                                                                     |
+| Draft Guard       | Drafts survive reloads; size meter; warning before closing with unsent text                                            |
+| Command Palette   | Search every action                                                                                                    |
+| Enter as Newline  | Enter adds a line, a shortcut sends                                                                                    |
+| Message Queue     | Queue follow-ups while an answer generates; they send one by one                                                       |
+| Recall            | Search everything you sent and reuse it                                                                                |
+| Tutorial          | Guided tours of every feature, started from the “?” button in the header                                               |
+| Max Width         | Full-width conversations, optional sidebar removal                                                                     |
+| Update Checker    | Checks on load and every few minutes, tells you once per version                                                       |
+| Context Packs     | Save sourced excerpts from conversations and assemble a previewable briefing for your next task                        |
 
 ## Shortcuts
 

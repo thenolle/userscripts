@@ -2,6 +2,19 @@
 
 All notable changes to Better Perplexity are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.1] - 2026-11-10
+
+### Added
+
+- Quota Insights: persistent counter observations, observed capacity lower bounds, last net increase and conditional recovery scenarios.
+- Adjustable recovery horizon, +1 and +5 scenarios, and full-recovery scenarios when the API supplies capacity.
+- Shared tutorial and platform documentation.
+
+### Fixed
+
+- Usage totals no longer fall back to configured allowances.
+- Forecasts distinguish observed recovery from guaranteed refill mechanics.
+
 ## [1.2.0] - 2026-11-10
 
 ### Changed
@@ -186,3 +199,4 @@ First public release.
 [1.1.1]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.1.1
 [1.1.2]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.1.2
 [1.2.0]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.2.0
+[1.2.1]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.2.1

@@ -1,4 +1,4 @@
-import { createPdfTour } from '@nolly/ai'
+import { createPdfTour, createQuotaTour } from '@nolly/ai'
 import { findComposer } from './core/composer'
 import { contextPacksTour, loadPromptShortcut, loadShortcut, tour, type Tour } from '@nolly/ai'
 
@@ -140,4 +140,4 @@ const contextPacks: Tour = {
   }
 }
 
-export const TOURS: readonly Tour[] = [gettingStarted, longMessages, prompts, batch, codeBlocks, exporting, selection, palette, contextPacks, createPdfTour()]
+export const TOURS: readonly Tour[] = [gettingStarted, longMessages, prompts, batch, codeBlocks, exporting, selection, palette, contextPacks, createPdfTour(), createQuotaTour()]

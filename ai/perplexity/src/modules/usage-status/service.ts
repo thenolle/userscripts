@@ -11,6 +11,7 @@ import type { Send } from './model'
 import { resolvePlan } from './plan'
 import { findResetTimestamp } from './server-reset'
 import { ResetTracker } from './tracker'
+import { QuotaLedger } from '@nolly/ai'
 import type { ActiveUsage, ApiDiagnostics, Forecast, FreeQueriesInfo, LimitKey, Plan, RateLimitResponse, SettingsResponse, Pace } from './types'
 
 type Listener = () => void
@@ -43,6 +44,7 @@ export class UsageService {
 	private sends: Send[] = loadSends()
 	private lastUsedKey: LimitKey | null = storage.get<LimitKey | null>(LAST_KEY, null)
 	private readonly listeners = new Set<Listener>()
+	private readonly quotaLedger = new QuotaLedger(storage)
 
 	constructor(
 		private readonly api = new UsageApi(),
@@ -148,17 +150,16 @@ export class UsageService {
 		if (!key) return null
 		const cap = findCap(this.rate, key)
 		const remaining = this.getRemaining(key)
-		if (cap === null || (remaining !== null && remaining > cap)) return null
-		return cap
+		return cap !== null && (remaining === null || cap >= remaining) ? cap : null
 	}
 
 	totalSource(key: LimitKey | null): 'api' | 'configured' | 'learned' | null {
-		return this.resolveTotal(key) !== null ? 'api' : null
+		return this.resolveTotal(key) === null ? null : 'api'
 	}
 
 	formatTotal(key: LimitKey | null): string | null {
-		const total = this.resolveTotal(key)
-		return total === null ? null : String(total)
+		const cap = this.resolveTotal(key)
+		return cap === null ? null : String(cap)
 	}
 
 	getForecast(key: LimitKey | null): Forecast | null {
@@ -283,6 +284,7 @@ export class UsageService {
 		for (const key of LIMIT_KEYS) {
 			const value = rate[key]
 			if (typeof value !== 'number' || !Number.isFinite(value)) continue
+			this.quotaLedger.observe(this.namespace(), key, LIMITS[key].label, value, findCap(rate, key), findResetTimestamp(rate, key), now)
 			const { drop } = this.tracker.observe(key, value, now, this.sends)
 			if (drop > 0 && now - this.lastSentAt < LEARN_WINDOW) {
 				this.lastUsedKey = key
