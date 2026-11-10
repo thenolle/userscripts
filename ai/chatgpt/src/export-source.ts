@@ -1,7 +1,7 @@
 import type { ExportSource } from '@nolly/ai'
 import { parseConversation } from './adapter'
 import { toMarkdown } from './dom-markdown'
-import { headerTools } from './header-tools'
+import { placeTool } from './header-tools'
 import { findTurns } from './messages'
 import type { Turn } from './messages'
 import { ICON_BUTTON_CLASS } from './header-style'
@@ -34,10 +34,7 @@ export const exportSource: ExportSource = {
 		2
 	),
 	place: (button) => {
-		const tools = headerTools()
-		if (!tools) return false
 		if (button.className !== ICON_BUTTON_CLASS) button.className = ICON_BUTTON_CLASS
-		if (button.parentElement !== tools) tools.append(button)
-		return true
+		return placeTool(button, 'export')
 	}
 }

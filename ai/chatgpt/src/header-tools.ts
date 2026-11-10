@@ -1,13 +1,23 @@
-import { createElement } from '@nolly/core'
-import { markUi } from './dom'
-import { TOOLS_CLASS } from './header-style'
 import { findHeaderSlot } from './locate'
 
-const container = markUi(createElement('div', TOOLS_CLASS))
+const ORDER = ['settings', 'usage', 'export'] as const
 
-export const headerTools = (): HTMLElement | null => {
+export type ToolId = (typeof ORDER)[number]
+
+const toolRow = (): HTMLElement | null => {
   const slot = findHeaderSlot()
-  if (!slot) return null
-  if (container.parentElement !== slot || slot.firstElementChild !== container) slot.prepend(container)
-  return container
+  return slot?.querySelector<HTMLElement>('.contents > div') ?? slot
+}
+
+export const placeTool = (button: HTMLElement, id: ToolId): boolean => {
+  const row = toolRow()
+  if (!row) return false
+  button.dataset['bcTool'] = id
+  if (button.parentElement !== row) row.prepend(button)
+  const ours = ORDER.flatMap((name) => row.querySelector<HTMLElement>(`:scope > [data-bc-tool="${name}"]`) ?? [])
+  ours.forEach((element, index) => {
+    const expected = row.children[index] ?? null
+    if (expected !== element) row.insertBefore(element, expected)
+  })
+  return true
 }

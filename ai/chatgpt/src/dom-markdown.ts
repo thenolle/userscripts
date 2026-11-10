@@ -1,10 +1,10 @@
 import { isOwnUi } from './dom'
 
 const HEADING = /^H([1-6])$/
-const SKIPPED = 'button, svg, script, style, [data-markdown-copy="exclude"], .katex-html'
+const SKIPPED = 'script, style, svg, [data-markdown-copy="exclude"], [data-conversation-role], .katex-html'
 const BLOCKS = new Set(['P', 'DIV', 'UL', 'OL', 'PRE', 'TABLE', 'BLOCKQUOTE', 'HR', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'SECTION', 'ARTICLE'])
 
-const skipped = (element: HTMLElement): boolean => isOwnUi(element) || element.matches(SKIPPED)
+const skipped = (element: HTMLElement): boolean => isOwnUi(element) || element.matches(SKIPPED) || (element.tagName === 'BUTTON' && !element.querySelector('img'))
 
 const tex = (element: HTMLElement): string => element.querySelector('annotation[encoding="application/x-tex"]')?.textContent?.trim() ?? element.textContent ?? ''
 
@@ -15,7 +15,13 @@ const inline = (node: Node): string => {
   if (!(node instanceof HTMLElement) || skipped(node)) return ''
   if (node.classList.contains('katex-display')) return `\n\n$$${tex(node)}$$\n\n`
   if (node.classList.contains('katex')) return `$${tex(node)}$`
+  if (node.hasAttribute('data-pill')) {
+    const href = node.querySelector('a[href]')?.getAttribute('href')
+    const label = (node.textContent ?? '').trim()
+    return href && label ? ` [${label}](${href})` : ''
+  }
   const inner = (): string => [...node.childNodes].map(inline).join('')
+  if (node.hasAttribute('data-d-default-strong')) return wrap('**', inner())
   switch (node.tagName) {
     case 'BR':
       return '  \n'
@@ -60,6 +66,8 @@ const table = (element: HTMLElement): string => {
   return [line(head ?? []), `| ${Array.from({ length: width }, () => '---').join(' | ')} |`, ...body.map(line)].join('\n')
 }
 
+const flat = (node: Node): Node[] => (node instanceof HTMLElement && node.tagName === 'DIV' && !skipped(node) ? [...node.childNodes].flatMap(flat) : [node])
+
 const list = (element: HTMLElement, depth: number): string => {
   const ordered = element.tagName === 'OL'
   let index = Number.parseInt(element.getAttribute('start') ?? '1', 10) || 1
@@ -69,10 +77,10 @@ const list = (element: HTMLElement, depth: number): string => {
     if (!(item instanceof HTMLElement) || item.tagName !== 'LI' || skipped(item)) continue
     const own: string[] = []
     const nested: string[] = []
-    for (const child of item.childNodes) {
+    for (const child of [...item.childNodes].flatMap(flat)) {
       if (child instanceof HTMLElement && (child.tagName === 'UL' || child.tagName === 'OL')) nested.push(list(child, depth + 1))
       else if (child instanceof HTMLElement && child.tagName === 'PRE') nested.push(fence(child).split('\n').map((line) => `${indent}  ${line}`).join('\n'))
-      else own.push(inline(child))
+      else own.push(child instanceof HTMLElement && child.tagName === 'P' ? `${inline(child)} ` : inline(child))
     }
     lines.push(`${indent}${ordered ? `${index++}.` : '-'} ${own.join('').trim()}`, ...nested.filter(Boolean))
   }
