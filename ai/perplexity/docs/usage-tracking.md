@@ -31,6 +31,16 @@ Perplexity does not publish exact reset times. The script learns them: every dro
 
 You will see "Learning" until the script has watched one use and one refill. Use **Reset Learned Usage Data** in the menu to start over.
 
+## Estimates and uncertainty
+
+Remaining counts come from Perplexity's response. Refill predictions are separate estimates. A learned refill prediction appears only after at least three matched samples with sufficient model confidence. Predictions disappear when their expected time passes; an elapsed prediction does not mean a refill has happened.
+
+Server reset times are used only when explicitly associated with the selected counter. A reset reported for another source or model is not reused.
+
+Plan activity and tier names are separate. If the subscription is active but its tier is unknown, the interface says that the tier was not reported rather than guessing Pro or Max.
+
+Pace describes observed counter decreases, which may include activity from other tabs or devices. It is not a count of confirmed messages. Daily pace requires at least one day and ten observed units; depletion estimates require at least three days. Refills are excluded from that scenario.
+
 ## When the numbers look wrong
 
 | Symptom                                      | Likely cause                      | Fix                                                                               |

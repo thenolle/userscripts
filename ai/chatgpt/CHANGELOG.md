@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+
+- Fixed a remaining registry-refactor reference that prevented typechecking.
+- Dialog positioning is explicitly enforced on the modal element.
+
 ## [1.1.0] - 2026-11-10
 
 ### Added

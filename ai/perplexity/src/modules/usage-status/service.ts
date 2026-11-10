@@ -168,7 +168,17 @@ export class UsageService {
 
 	getForecast(key: LimitKey | null): Forecast | null {
 		if (!key) return null
-		return this.tracker.forecast(key, { now: Date.now(), prior: LIMITS[key].window, serverReset: findResetTimestamp(this.rate) })
+		const now = Date.now()
+		const result = this.tracker.forecast(key, {
+			now,
+			prior: LIMITS[key].window,
+			serverReset: findResetTimestamp(this.rate, key)
+		})
+		if (!result) return null
+		if (result.source === 'server') return result
+		if (result.samples < 3 || result.confidence < 0.2) return null
+		if (result.next <= now) return null
+		return result
 	}
 
 	formatForecast(key: LimitKey | null): string {
@@ -178,12 +188,12 @@ export class UsageService {
 		const forecast = this.getForecast(key)
 		if (!forecast) {
 			const total = this.resolveTotal(key)
-			return total && remaining >= total ? 'Full allowance available' : 'Learning: needs a use and a refill to measure'
+			return total && remaining >= total ? 'Full allowance available' : 'Refill time unconfirmed · collecting matched uses and refills'
 		}
 		const now = Date.now()
 		if (forecast.source === 'server') return `Resets in ${formatDuration(forecast.next - now)}`
 		const confidence = `${Math.round(forecast.confidence * 100)}% conf.`
-		if (forecast.overdue) return `Next unit due any moment · ${confidence}`
+		if (forecast.overdue) return 'Refill estimate expired · waiting for a confirmed increase'
 		const margin = forecast.margin >= 60_000 ? ` ±${formatDuration(forecast.margin)}` : ''
 		if (forecast.regime === 'reset') return `Full reset in ${formatDuration(forecast.next - now)}${margin} · ${confidence}`
 		const lead = forecast.complete ? 'Next +1 in' : 'Next +1 within'
@@ -228,19 +238,31 @@ export class UsageService {
 		if (!key || remaining === null) return null
 		const now = Date.now()
 		const day = 86_400_000
-		const recent = this.tracker.history(key).filter((time) => now - time <= 7 * day)
-		if (recent.length < 3) return null
-		const days = Math.min(7, Math.max(1, (now - Math.min(...recent)) / day))
+		const recent = this.tracker.history(key)
+			.filter((time) => Number.isFinite(time) && time <= now && now - time <= 7 * day)
+		if (recent.length < 10) return null
+		const span = now - Math.min(...recent)
+		if (span < day) return null
+		const days = Math.min(7, span / day)
 		const perDay = recent.length / days
-		return { perDay, days, emptyInMs: remaining > 0 ? (remaining / perDay) * day : null }
+		return {
+			perDay,
+			days,
+			emptyInMs: remaining > 0 && days >= 3 ? remaining / perDay * day : null
+		}
 	}
 
 	formatPace(key: LimitKey | null): string | null {
 		const pace = this.getPace(key)
 		if (!pace) return null
 		const rate = pace.perDay >= 10 ? String(Math.round(pace.perDay)) : pace.perDay.toFixed(1)
-		const tail = pace.emptyInMs === null ? 'used up now' : `lasts about ${formatDuration(pace.emptyInMs)} without refills`
-		return `Pace: ${rate}/day over ${Math.round(pace.days)}d · ${tail}`
+		const remaining = this.getRemaining(key)
+		const tail = remaining === 0
+			? ' · no units remaining'
+			: pace.emptyInMs === null
+				? ' · more history needed for a depletion estimate'
+				: ` · roughly ${formatDuration(pace.emptyInMs)} at that rate, excluding refills`
+		return `Observed counter use: ~${rate} units/day over ${pace.days.toFixed(1)}d${tail}`
 	}
 
 	private pollInterval(now: number): number {

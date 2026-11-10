@@ -14,7 +14,13 @@ All notable changes to Better Perplexity are documented here. The format follows
 - Internal: Exporter and Update checker now come from the shared package.
 - Internal: Tutorial engine and styles now come from the shared package.
 - Internal: one shared settings dialog; Batch Runner uses the shared prompt sender.
+- Fixed a remaining registry-refactor reference that prevented typechecking.
+- Dialog positioning is explicitly enforced on the modal element.
 - Fixed: the batch runner was registered twice.
+- Removed zero-evidence and expired refill predictions.
+- Scoped reset timestamps to their corresponding counter.
+- Distinguished an unknown subscription tier from subscription activity.
+- Made pace labels describe observed counter units and withheld short-history depletion estimates.
 
 ## [1.0.5-hotfix.1] - 2026-11-09
 
