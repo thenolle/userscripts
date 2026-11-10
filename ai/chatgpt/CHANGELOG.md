@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.2.4] - 2026-11-10
+
+### Added
+
+- Answer Diff: local line-by-line comparisons, an explicitly saved baseline, copy/download and a guided tutorial.
+- Quota recovery cards with +1, +5, full recovery, adjustable horizon and local scenario times when evidence is sufficient.
+
+### Fixed
+
+- Wrapped code retains enabled line numbers and measures each logical line's rendered height.
+- Long code blocks automatically fold according to the configured threshold.
+- Code-block resize observers are released when enhanced blocks are removed.
+- Original inline display styles are restored when code enhancement is disabled.
+
+### Documentation
+
+- Added Answer Diff privacy, persistence, comparison limits and tutorial documentation.
+- Updated code wrapping, folding and quota-card instructions.
+
 ## [1.2.2] - 2026-11-10
 
 ### Changed

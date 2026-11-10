@@ -1,4 +1,4 @@
-import { createPdfTour, createQuotaTour } from '@nolly/ai'
+import { createAnswerDiffTour, createPdfTour, createQuotaTour } from '@nolly/ai'
 import { contextPacksTour, loadPromptShortcut, loadShortcut, tour } from '@nolly/ai'
 import type { Tour } from '@nolly/ai'
 import { composerKit } from './kit'
@@ -99,8 +99,8 @@ const codeBlocks: Tour = {
       find('.bp-code-v2 .bp-code-actions')
     ),
     info(
-      'Themes and language detection',
-      'Code panels follow the site light/dark theme. Language-colored badges remain colored. Filename labels and conservative signatures identify more languages; highlighting remains approximate and never changes the source text.'
+      'Wrapping and folding',
+      'Line numbers remain visible while wrapping and align with logical source lines. Long blocks automatically fold at the configured threshold. Expand code or use the fold button to reveal them. Setting the threshold to zero disables automatic folding.'
     )
   ]
 }
@@ -146,4 +146,4 @@ const contextPacks: Tour = {
   }
 }
 
-export const TOURS: readonly Tour[] = [gettingStarted, usage, longMessages, prompts, batch, codeBlocks, exporting, selection, palette, contextPacks, createPdfTour(), createQuotaTour()]
+export const TOURS: readonly Tour[] = [gettingStarted, usage, longMessages, prompts, batch, codeBlocks, exporting, selection, palette, contextPacks, createPdfTour(), createQuotaTour(), createAnswerDiffTour()]

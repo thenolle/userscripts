@@ -1,6 +1,14 @@
 # Changelog
 # Changelog
 
+## [0.2.3] - 2026-11-10
+
+### Code wrapping and Answer Diff update
+
+- Added measured wrapped-line gutters and restored threshold-based automatic folding.
+- Rebuilt quota reporting as recovery cards with evidence details.
+- Added the bounded local Answer Diff engine, feature and tutorial.
+
 ## [0.2.2] - 2026-11-10
 
 - Integrated the quota-ledger panel and summaries into platform usage features.

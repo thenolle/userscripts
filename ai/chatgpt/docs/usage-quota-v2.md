@@ -38,3 +38,9 @@ Perplexity reports are requested using its current account/tier namespace. ChatG
 ## Tutorial
 
 Open Help and choose Usage Quota V2. There is no separate Quota Insights module to enable.
+
+## Recovery cards
+
+The dialog displays +1, +5 and full-recovery cards. When evidence supports a scenario, each card shows a relative duration and an estimated local clock time. These are conditional rate scenarios, not guaranteed server refill deadlines.
+
+Change the recovery horizon to inspect projected recovery within a selected number of minutes. Expand the evidence section for observations, sampled duration and net counter changes.
