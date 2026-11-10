@@ -1,7 +1,6 @@
+import { isAbort, sleep } from '@nolly/core'
 import { automate } from '../../automation'
-import { readComposer } from '../../composer'
-import { findComposer, sendComposer, writeComposer, waitForResponse, logger, storage } from '../../platform'
-import { isAbort, sleep, waitFor } from '@nolly/core'
+import { logger, sendPrompt, storage, waitForResponse } from '../../platform'
 
 export interface BatchState {
   prompts: string[]
@@ -68,7 +67,7 @@ export class BatchRunner {
           }
           signal.throwIfAborted()
           onProgress(index, total, 'sending')
-          if (!(await this.send(state.prompts[index]!, signal))) return 'failed'
+          if (!(await sendPrompt(state.prompts[index]!, signal))) return 'failed'
           onProgress(index, total, 'waiting')
           await waitForResponse({ signal })
           storage.set<BatchState>(STORAGE_KEY, { ...state, next: index + 1, at: Date.now() })
@@ -88,16 +87,5 @@ export class BatchRunner {
       this.controller = null
       this.paused = false
     }
-  }
-
-  private async send(prompt: string, signal: AbortSignal): Promise<boolean> {
-    for (let attempt = 0; attempt < 2; attempt++) {
-      const composer = await waitFor(findComposer, { timeout: 15_000, signal })
-      if (!composer) return false
-      if ((await writeComposer(composer, prompt)) && (await sendComposer(composer))) return true
-      if (readComposer(composer).trim() === '') return true
-      await sleep(1_500, signal)
-    }
-    return false
   }
 }

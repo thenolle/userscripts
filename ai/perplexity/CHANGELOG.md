@@ -12,6 +12,7 @@ All notable changes to Better Perplexity are documented here. The format follows
 - Internal: Code Block Pro now comes from the shared package.
 - Internal: Batch Runner, Selection Toolbar and Max Width now come from the shared package.
 - Internal: Exporter and Update checker now come from the shared package.
+- Internal: one shared settings dialog; Batch Runner uses the shared prompt sender.
 - Fixed: the batch runner was registered twice.
 
 ## [1.0.5-hotfix.1] - 2026-11-09

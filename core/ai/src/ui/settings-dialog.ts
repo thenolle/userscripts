@@ -1,9 +1,12 @@
-import { createElement, type Feature } from '@nolly/core'
+import { createElement } from '@nolly/core'
+import type { ScriptContext } from '@nolly/core'
 import { uiConfig } from './config'
-import { createButton, createSection, createSwitch } from './controls'
+import { createButton, createSwitch } from './controls'
 import { createDialog } from './dialog'
 
-export const toggleSettingsDialog = (modules: readonly Feature[], onChange: () => void): void => {
+type SettingsHost = Pick<ScriptContext, 'getFeatures' | 'runCommand'>
+
+export const toggleSettingsDialog = (host: SettingsHost): void => {
   const { id, title, version } = uiConfig()
   const dialogId = `${id}-settings-dialog`
   const existing = document.getElementById(dialogId)
@@ -11,37 +14,49 @@ export const toggleSettingsDialog = (modules: readonly Feature[], onChange: () =
     existing.close()
     return
   }
-  const ui = createDialog({ id: dialogId, title, description: `Version ${version}`, width: 480 })
+  const ui = createDialog({ id: dialogId, title, description: `Version ${version}`, width: 560 })
   const render = (): void => {
-    const sections = modules.map((module) => {
-      const section = createSection(module.name)
-      const stack = createElement('div', 'bp-stack')
-      const toggle = createSwitch({
-        label: 'Enabled',
-        hint: module.description,
-        checked: module.enabled,
-        onChange: (checked) => {
-          module.enabled = checked
-          onChange()
-        }
-      })
-      stack.appendChild(toggle.wrapper)
-      for (const entry of module.menuEntries()) {
-        stack.appendChild(
-          createButton(entry.label, {
-            onClick: () => {
-              entry.action()
+    ui.body.replaceChildren(
+      ...host.getFeatures().map((feature) => {
+        const section = createElement('section', 'bp-section')
+        section.appendChild(
+          createSwitch({
+            label: feature.name,
+            hint: feature.description,
+            checked: feature.enabled,
+            onChange: () => {
+              feature.toggle()
               render()
             }
-          })
+          }).wrapper
         )
-      }
-      section.appendChild(stack)
-      return section
-    })
-    ui.body.replaceChildren(...sections)
+        if (feature.enabled) {
+          const actions = createElement('div', 'bp-actions')
+          for (const entry of feature.menuEntries()) {
+            actions.appendChild(
+              createButton(entry.label, {
+                onClick: () => {
+                  ui.close()
+                  window.setTimeout(entry.action, 0)
+                }
+              })
+            )
+          }
+          if (actions.childElementCount) section.appendChild(actions)
+        }
+        return section
+      })
+    )
   }
   render()
-  ui.footer.append(createButton('Done', { primary: true, onClick: ui.close }))
+  ui.footer.append(
+    createButton('Command palette', {
+      onClick: () => {
+        ui.close()
+        window.setTimeout(() => host.runCommand('command-palette:open'), 0)
+      }
+    }),
+    createButton('Close', { primary: true, onClick: ui.close })
+  )
   ui.show()
 }

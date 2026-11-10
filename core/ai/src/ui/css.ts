@@ -146,6 +146,7 @@ export const CONTROLS_CSS = `
 }
 
 .bp-hint { margin: 12px 0 0; color: var(--bp-muted); font-size: 12px; }
+.bp-actions { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 2px; }
 
 .bp-switch {
   position: relative;

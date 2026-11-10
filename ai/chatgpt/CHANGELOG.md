@@ -5,6 +5,7 @@
 - Exporter built from the conversation view (Markdown, text, Word, PDF, JSON) and update checker.
 - Batch Runner, Selection Toolbar (Ask, Explain, Summarize, Fact-check, Quote) and Max Width.
 - Initial skeleton: composer and header detection, response observer, session state and diagnostics.
+- Starts only after the page has loaded and the composer has rendered, so it doesn't interfere with ChatGPT's own startup.
 - Header settings button and settings dialog from the shared UI kit; `betterChatgptSend(text)` for testing the composer.
 - Draft Guard: autosaved drafts, size meter and unsent-text warning.
 - Message Splitter: send oversized prompts in parts or attach them as a file (respects remaining uploads).

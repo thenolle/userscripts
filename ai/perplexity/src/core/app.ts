@@ -1,6 +1,6 @@
+import { toggleSettingsDialog } from '@nolly/ai'
 import { Userscript } from '@nolly/core'
 import { CONFIG, OBSERVER_OPTIONS } from '../config'
-import { toggleSettingsDialog } from '@nolly/ai'
 import { uiMarker } from './dom'
 
 export class App extends Userscript {
@@ -16,11 +16,7 @@ export class App extends Userscript {
       safetyInterval: CONFIG.safetyInterval,
       clearConsole: true,
       isReady: () => Boolean(document.querySelector('main')?.children.length),
-      openSettings: (script) =>
-        toggleSettingsDialog(script.getFeatures(), () => {
-          script.refreshMenu()
-          script.requestUpdate()
-        })
+      openSettings: (script) => toggleSettingsDialog(script)
     })
   }
 }
