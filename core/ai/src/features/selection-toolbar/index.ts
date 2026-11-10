@@ -1,7 +1,10 @@
-import { findComposer, sendComposer, writeComposer } from '../../core/composer'
-import { readComposer, rememberSelection, ensureUiStyles, askFields } from '@nolly/ai'
+import { findComposer, sendComposer, writeComposer } from '../../platform'
+import { readComposer } from '../../composer'
+import { rememberSelection } from '../../selection'
+import { ensureUiStyles } from '../../ui/styles'
+import { askFields } from '../../ui/placeholder-dialog'
 import { createElement, Feature, injectStyle, type MenuEntry } from '@nolly/core'
-import { isOwnUi, markUi } from '../../core/dom'
+import { isOwnUi, markUi, uiConfig } from '../../ui/config'
 
 interface Action {
   id: string
@@ -36,7 +39,7 @@ const ACTIONS: readonly Action[] = [
   { id: 'quote', label: 'Quote', title: 'Quote in the message box', compose: async (selected) => `${quote(selected)}\n\n` }
 ]
 
-export class SelectionToolbarModule extends Feature {
+export class SelectionToolbarFeature extends Feature {
   readonly id = 'selection-toolbar'
   readonly name = 'Selection Toolbar'
   readonly description = 'Ask, explain, summarize or quote any selected text.'
@@ -48,7 +51,7 @@ export class SelectionToolbarModule extends Feature {
   constructor(context: ConstructorParameters<typeof Feature>[0]) {
     super(context)
     ensureUiStyles()
-    injectStyle('better-perplexity-selection-styles', CSS)
+    injectStyle(`${uiConfig().id}-selection-styles`, CSS)
     for (const action of ACTIONS) {
       const button = createElement('button', undefined, action.label)
       button.type = 'button'

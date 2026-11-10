@@ -1,4 +1,4 @@
-import { CommandPaletteFeature, DraftGuardFeature, EnterAsNewlineFeature, MessageSplitterFeature, PromptLibraryFeature, PromptQueueFeature, RecallFeature, configurePlatform, configureUi, loadSplitterSettings } from '@nolly/ai'
+import { BatchRunnerFeature, CommandPaletteFeature, DraftGuardFeature, EnterAsNewlineFeature, MaxWidthFeature, MessageSplitterFeature, PromptLibraryFeature, PromptQueueFeature, RecallFeature, SelectionToolbarFeature, configurePlatform, configureUi, loadSplitterSettings } from '@nolly/ai'
 import { App } from './core/app'
 import { composerKit, findComposer, writeComposer } from './core/composer'
 import { sendPrompt } from './core/dispatch'
@@ -10,12 +10,10 @@ import { isAskRequest } from './core/requests'
 import { storage } from './core/storage'
 import { threadOf } from './core/threads'
 import { findComposerActions } from './locate'
-import { BatchRunnerModule } from './modules/batch-runner'
 import { CodeBlocksModule } from './modules/code-blocks'
 import { ExporterModule } from './modules/exporter'
 import { GlobalSettingsModule } from './modules/global-settings'
-import { MaxWidthModule } from './modules/max-width'
-import { SelectionToolbarModule } from './modules/selection-toolbar'
+import { ALWAYS_HIDDEN, LAYOUT_RULES, RIGHT_SIDEBAR } from './modules/max-width/rules'
 import { TutorialModule } from './modules/tutorial'
 import { UpdatesModule } from './modules/updates'
 import { UsageStatusModule } from './modules/usage-status'
@@ -39,12 +37,12 @@ fetchSpy.install()
 
 new App()
 	.register((context) => new PromptLibraryFeature(context))
-	.register((context) => new SelectionToolbarModule(context))
-	.register((context) => new MaxWidthModule(context))
+	.register((context) => new SelectionToolbarFeature(context))
+	.register((context) => new MaxWidthFeature(context, { storage, hidden: ALWAYS_HIDDEN, layout: LAYOUT_RULES, sidebar: { rule: RIGHT_SIDEBAR, label: 'Right Sidebar', defaultRemoved: true } }))
 	.register((context) => new EnterAsNewlineFeature(context, { storage }))
 	.register((context) => new CodeBlocksModule(context))
 	.register((context) => new MessageSplitterFeature(context, { storage, composer: composerKit, generation: generationKit }))
-	.register((context) => new BatchRunnerModule(context))
+	.register((context) => new BatchRunnerFeature(context))
 	.register((context) => new DraftGuardFeature(context, { storage, composer: { findComposer, writeComposer }, onSend, tokenLimit: () => loadSplitterSettings(storage).limit }))
 	.register((context) => new CommandPaletteFeature(context))
 	.register((context) => new ExporterModule(context))

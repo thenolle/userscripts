@@ -1,11 +1,13 @@
 import { Feature, type MenuEntry, type ScriptContext } from '@nolly/core'
-import { ComposerButton, applyValues, findFields, askFields } from '@nolly/ai'
+import { ComposerButton } from '../../ui/composer-button'
+import { applyValues, findFields } from '../../placeholders'
+import { askFields } from '../../ui/placeholder-dialog'
 import { openBatchDialog, type BatchInput } from './dialog'
 import { renderTemplate } from './template'
 import { BatchPanel } from './panel'
 import { BatchRunner, clearState, loadState, type BatchState } from './runner'
 
-export class BatchRunnerModule extends Feature {
+export class BatchRunnerFeature extends Feature {
   readonly id = 'batch-runner'
   readonly name = 'Batch Runner'
   readonly description = 'Send one templated message per item, one after another.'

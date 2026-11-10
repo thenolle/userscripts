@@ -1,4 +1,4 @@
-import { logger } from '../../core/logger'
+import { logger } from '../../platform'
 
 interface OriginalValue {
   readonly value: string

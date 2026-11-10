@@ -1,8 +1,10 @@
 import { createElement } from '@nolly/core'
-import { createButton, createNumberField, createSwitch, createTextArea, createDialog } from '@nolly/ai'
+import { createButton, createNumberField, createSwitch, createTextArea } from '../../ui/controls'
+import { createDialog } from '../../ui/dialog'
 import { parseItems, renderTemplate } from './template'
+import { uiConfig } from '../../ui/config'
 
-const DIALOG_ID = 'better-perplexity-batch-dialog'
+const DIALOG_ID = (): string => `${uiConfig().id}-batch-dialog`
 const MAX_ITEMS = 200
 const PREVIEWS = 3
 
@@ -35,8 +37,8 @@ const section = (step: number, title: string, help: string, tour: string): { roo
 }
 
 export const openBatchDialog = (onStart: (input: BatchInput) => void): void => {
-  if (document.getElementById(DIALOG_ID)) return
-  const ui = createDialog({ id: DIALOG_ID, title: 'Batch Runner', description: 'Send the same kind of message many times, one after another, in this conversation.', width: 700 })
+  if (document.getElementById(DIALOG_ID())) return
+  const ui = createDialog({ id: DIALOG_ID(), title: 'Batch Runner', description: 'Send the same kind of message many times, one after another, in this conversation.', width: 700 })
   let template = ''
   let items = ''
   let delay = 2

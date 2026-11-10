@@ -9,6 +9,7 @@ All notable changes to Better Perplexity are documented here. The format follows
 - Internal: Enter as Newline now comes from the shared package.
 - Internal: Draft Guard now comes from the shared package.
 - Internal: Message Splitter now comes from the shared package.
+- Internal: Batch Runner, Selection Toolbar and Max Width now come from the shared package.
 - Fixed: the batch runner was registered twice.
 
 ## [1.0.5-hotfix.1] - 2026-11-09

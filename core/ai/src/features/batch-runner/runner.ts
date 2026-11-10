@@ -1,8 +1,6 @@
-import { automate, readComposer } from '@nolly/ai'
-import { findComposer, sendComposer, writeComposer } from '../../core/composer'
-import { waitForResponse } from '../../core/generation'
-import { logger } from '../../core/logger'
-import { storage } from '../../core/storage'
+import { automate } from '../../automation'
+import { readComposer } from '../../composer'
+import { findComposer, sendComposer, writeComposer, waitForResponse, logger, storage } from '../../platform'
 import { isAbort, sleep, waitFor } from '@nolly/core'
 
 export interface BatchState {

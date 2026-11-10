@@ -2,6 +2,7 @@
 
 ## [0.1.0] - 2026-11-10
 
+- Batch Runner, Selection Toolbar (Ask, Explain, Summarize, Fact-check, Quote) and Max Width.
 - Initial skeleton: composer and header detection, response observer, session state and diagnostics.
 - Header settings button and settings dialog from the shared UI kit; `betterChatgptSend(text)` for testing the composer.
 - Draft Guard: autosaved drafts, size meter and unsent-text warning.

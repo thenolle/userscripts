@@ -1,14 +1,5 @@
+import type { HideRule, LayoutRule } from '@nolly/ai'
 import { CONTENT, ROOT } from '../../selectors'
-
-export interface HideRule {
-  readonly id: string
-  readonly xpath: string
-}
-
-export interface LayoutRule {
-  readonly xpath: string
-  readonly styles: Readonly<Record<string, string>>
-}
 
 const FULL = { width: '100%', 'max-width': '100%' } as const
 

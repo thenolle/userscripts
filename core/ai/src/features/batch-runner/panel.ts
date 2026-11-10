@@ -1,9 +1,10 @@
 import { createElement } from '@nolly/core'
-import { markUi } from '../../core/dom'
-import { createButton, ensureUiStyles } from '@nolly/ai'
+import { markUi, uiConfig } from '../../ui/config'
+import { createButton } from '../../ui/controls'
+import { ensureUiStyles } from '../../ui/styles'
 import type { BatchPhase, BatchResult } from './runner'
 
-const CSS_ID = 'better-perplexity-batch-styles'
+const CSS_ID = (): string => `${uiConfig().id}-batch-styles`
 
 const PHASE_TEXT: Readonly<Record<BatchPhase, string>> = { sending: 'sending', waiting: 'waiting for the answer', paused: 'paused', resting: 'resting' }
 
@@ -15,9 +16,9 @@ export class BatchPanel {
 
   constructor() {
     ensureUiStyles()
-    if (!document.getElementById(CSS_ID)) {
+    if (!document.getElementById(CSS_ID())) {
       const style = createElement('style')
-      style.id = CSS_ID
+      style.id = CSS_ID()
       style.textContent = `
         .bp-batch-panel { position: fixed; right: 20px; bottom: 20px; z-index: 100000; display: flex; flex-direction: column; gap: 8px; width: 300px; padding: 12px 14px; border: 1px solid var(--bp-border); border-radius: 12px; background: var(--bp-bg); color: var(--bp-fg); box-shadow: 0 12px 32px rgb(0 0 0 / 22%); font-size: 12px; }
         .bp-batch-actions { display: flex; gap: 6px; flex-wrap: wrap; }
