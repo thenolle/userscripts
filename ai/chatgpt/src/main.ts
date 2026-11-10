@@ -11,6 +11,7 @@ import {
   PromptQueueFeature,
   RecallFeature,
   SelectionToolbarFeature,
+  TutorialFeature,
   UpdatesFeature,
   configurePlatform,
   configureUi,
@@ -32,6 +33,7 @@ import { SLUG, URLS } from './repo'
 import { session } from './runtime'
 import { storage } from './storage'
 import { threadOf } from './threads'
+import { tutorialSource } from './tutorial-source'
 import { installTheme } from './theme'
 
 const onSend = (listener: () => void): (() => void) =>
@@ -60,6 +62,7 @@ whenReady(() => {
     promptsUrl: URLS.prompts,
     exporter: exportSource,
     release: { name: 'Better ChatGPT', slug: SLUG, version: __VERSION__, metaUrl: URLS.meta, installUrl: URLS.install, releasesUrl: URLS.releases },
+    tutorial: tutorialSource,
     codeBlockRoot: (pre) => pre.closest<HTMLElement>('[data-chatgpt-copy-code]') ?? pre.closest<HTMLElement>('[data-code-block]')
   })
 
@@ -98,6 +101,7 @@ whenReady(() => {
     .register((context) => new ExporterFeature(context))
     .register((context) => new UpdatesFeature(context))
     .register((context) => new UsageFeature(context))
+    .register((context) => new TutorialFeature(context))
     .register((context) => new DiagnosticsFeature(context))
     .start()
 })

@@ -1,6 +1,6 @@
 {
   "name": "@nolly/ai-chatgpt",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "license": "PolyForm-Strict-1.0.0",

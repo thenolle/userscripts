@@ -1,22 +1,7 @@
-import { findComposer } from '../../core/composer'
-import { loadPromptShortcut, loadShortcut, type Shortcut } from '@nolly/ai'
-import type { Step } from './engine'
+import { findComposer } from './core/composer'
+import { loadPromptShortcut, loadShortcut, tour, type Tour } from '@nolly/ai'
 
-export interface Tour {
-  id: string
-  title: string
-  summary: string
-  steps: readonly Step[]
-}
-
-const find = (selector: string) => (): HTMLElement | null => document.querySelector<HTMLElement>(selector)
-const info = (title: string, body: string): Step => ({ title, body })
-const point = (title: string, body: string, target: () => HTMLElement | null): Step => ({ title, body, target })
-const click = (title: string, body: string, target: () => HTMLElement | null): Step => ({ title, body, target, kind: 'click' })
-const press = (title: string, body: string, shortcut: () => Shortcut): Step => ({ title, body, kind: 'key', shortcut })
-const wait = (title: string, body: string, until: () => boolean, hint?: string): Step => ({ title, body, kind: 'wait', until, hint })
-const escape: () => Shortcut = () => ({ ctrl: false, alt: false, shift: false, meta: false, code: 'Escape' })
-const closed = (id: string) => (): boolean => !document.getElementById(id)
+const { click, closed, escape, find, info, inside, point, press, wait } = tour
 
 const DIALOG = {
   big: 'better-perplexity-bigtext-dialog',
@@ -26,7 +11,6 @@ const DIALOG = {
   palette: 'better-perplexity-palette'
 } as const
 
-const inside = (id: string, selector: string) => find(`#${id} ${selector}`)
 
 const gettingStarted: Tour = {
   id: 'start',
@@ -136,10 +120,3 @@ const palette: Tour = {
 }
 
 export const TOURS: readonly Tour[] = [gettingStarted, longMessages, prompts, batch, codeBlocks, exporting, selection, palette]
-
-export const FULL_TOUR: Tour = {
-  id: 'all',
-  title: 'Full tour',
-  summary: 'Everything above, in order.',
-  steps: TOURS.flatMap((tour) => tour.steps)
-}

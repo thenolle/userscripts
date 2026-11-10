@@ -1,4 +1,5 @@
 import { injectStyle } from '@nolly/core'
+import { uiConfig } from '../../ui/config'
 
 const CSS = `
 .bp-tour { position: fixed; inset: 0; z-index: 2147483647; pointer-events: none; }
@@ -13,4 +14,4 @@ const CSS = `
 @media (prefers-reduced-motion: reduce) { .bp-tour-hole, .bp-tour-hole[data-pulse='true'] { transition: none; animation: none; } }
 `
 
-export const ensureTourStyles = (): void => injectStyle('better-perplexity-tour-styles', CSS)
+export const ensureTourStyles = (): void => injectStyle(`${uiConfig().id}-tour-styles`, CSS)

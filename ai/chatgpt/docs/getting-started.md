@@ -12,6 +12,7 @@ Install a userscript manager, then the script, and open chatgpt.com. After the p
 - **Settings** (sliders icon) in the header: turn modules on or off and open each module's own settings.
 - **Usage** pill: your remaining reasoning messages. Hover for every limit, click for details.
 - **Download** icon inside a conversation: exports it.
+- A **?** button opens guided tours for each feature.
 - Extra buttons next to the message box for big messages, prompts, batches, queue and recall.
 
 Press Alt + Shift + P at any time to search every action.

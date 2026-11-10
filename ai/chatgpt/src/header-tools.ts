@@ -1,6 +1,6 @@
 import { findHeaderSlot } from './locate'
 
-const ORDER = ['settings', 'usage', 'export'] as const
+const ORDER = ['settings', 'usage', 'export', 'help'] as const
 
 export type ToolId = (typeof ORDER)[number]
 
@@ -13,11 +13,13 @@ export const placeTool = (button: HTMLElement, id: ToolId): boolean => {
   const row = toolRow()
   if (!row) return false
   button.dataset['bcTool'] = id
-  if (button.parentElement !== row) row.prepend(button)
+  if (button.parentElement !== row) row.append(button)
   const ours = ORDER.flatMap((name) => row.querySelector<HTMLElement>(`:scope > [data-bc-tool="${name}"]`) ?? [])
-  ours.forEach((element, index) => {
-    const expected = row.children[index] ?? null
-    if (expected !== element) row.insertBefore(element, expected)
-  })
+  let cursor: Element | null = [...row.children].filter((child) => !child.hasAttribute('data-bc-tool')).at(-1) ?? null
+  for (const element of ours) {
+    const wanted: Element | null = cursor ? cursor.nextElementSibling : row.firstElementChild
+    if (wanted !== element) row.insertBefore(element, wanted)
+    cursor = element
+  }
   return true
 }
