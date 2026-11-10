@@ -4,14 +4,17 @@ Platform-agnostic building blocks for AI-chat userscripts such as Better Perplex
 
 ## What you get
 
-- A `PlatformAdapter` contract that a site implements once.
-- Composer kits: find the input, write text, send, attach files; a prompt sender built on them.
-- Generation detection and a wait-for-answer helper.
+- A platform registry: `configureUi` and `configurePlatform` are called once at startup with the site's storage, logger, composer, generation detection, thread rule, prompt library URL, export source and release information.
+- Composer and generation kits: find the input, write text, send, attach files, wait for an answer.
 - A streaming response observer and an incremental Server-Sent Events parser.
-- Placeholders, token estimates, selection memory, clipboard and file download helpers.
-- A UI kit: dialogs, toasts, tooltips, controls, icons, the settings dialog and the composer button. Call `configureUi` once before using it.
-- Feature modules that need only an adapter: Enter as Newline, Draft Guard, Message Splitter, Batch Runner, Selection Toolbar, Max Width, Code Blocks, Exporter (Markdown, text, Word, PDF, JSON), and Update checker.
-- Exports can be sourced from conversation messages or selected text.
-- Prompt Library, Command Palette, Prompt Queue and Recall.
+- A UI kit: dialogs, toasts, tooltips, controls, icons, the settings dialog and the composer button.
+- Features that need only the registry: Enter as Newline, Draft Guard, Message Splitter, Prompt Library, Command Palette, Message Queue, Recall, Batch Runner, Selection Toolbar, Max Width, Code Block Pro, Exporter and Update Checker.
 
-Platforms register once with `configurePlatform` and `configureUi`.
+This is a library. It is bundled into each userscript and is not installed on its own.
+
+## Adding a platform
+
+1. Create `ai/<site>` with `bun scripts/new-userscript.ts <slug> "<Name>" ai`.
+2. Write the site's locators and a composer adapter.
+3. Call `configureUi` and `configurePlatform`, then register the features you want.
+4. Provide an export source if you want the exporter, and a `codeBlockRoot` hook if you want Code Block Pro.

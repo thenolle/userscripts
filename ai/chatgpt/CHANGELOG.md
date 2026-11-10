@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.1.0] - 2026-11-10
+## [1.0.0] - 2026-11-10
 
 - Exporter built from the conversation view (Markdown, text, Word, PDF, JSON) and update checker.
 - Batch Runner, Selection Toolbar (Ask, Explain, Summarize, Fact-check, Quote) and Max Width.

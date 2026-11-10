@@ -18,7 +18,7 @@ Better Perplexity is a thin layer on top of `@nolly/core`, a small library share
 
 ## What comes from @nolly/ai
 
-`@nolly/ai` holds the code Better Perplexity shares with the other AI-chat scripts: composer reading and writing, synthetic keys, generation detection and the response observer. Each piece takes a small adapter, so Perplexity supplies only its own selectors. The dialogs, toasts, tooltips, controls, icons and settings dialog also live there; Better Perplexity configures them once in `main.ts`. Features that need storage, logging or the composer read them from a registry the platform fills once at startup.
+`@nolly/ai` holds the code Better Perplexity shares with the other AI-chat scripts: composer reading and writing, synthetic keys, generation detection and the response observer. Each piece takes a small adapter, so Perplexity supplies only its own selectors. The common UI kit lives here too: the dialogs, toasts, tooltips, controls, icons and settings dialog are all shared across the userscripts, and Better Perplexity configures them once in `main.ts`. Features that need storage, logging or the composer do not reach into global singletons; instead they read them from a runtime registry the platform fills once at startup. That registry is the bridge between the shared AI layer and the script-specific selectors, storage keys and root DOM marker.
 
 ## What stays in Better Perplexity
 
