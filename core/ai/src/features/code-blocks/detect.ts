@@ -1,3 +1,4 @@
+import { platform } from '../../platform'
 import { guessLanguage } from './guess'
 import { isKnownLanguage, languageForFilename, normalizeLanguage } from './languages'
 
@@ -46,6 +47,8 @@ export const detectLanguage = (pre: HTMLElement, root: HTMLElement, text: string
 
 export const findBlockRoot = (pre: HTMLElement, includeChrome: boolean): HTMLElement => {
   if (!includeChrome) return pre
+  const custom = platform().codeBlockRoot?.(pre)
+  if (custom) return custom
   const codeLength = (pre.textContent ?? '').length
   let root = pre
   for (let depth = 0; depth < 3; depth++) {

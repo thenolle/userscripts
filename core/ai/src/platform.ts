@@ -13,6 +13,7 @@ export interface Platform {
   readonly onSend: (listener: () => void) => () => void
   readonly threadOf: (pathname: string) => string | null
   readonly promptsUrl: string
+	readonly codeBlockRoot?: (pre: HTMLElement) => HTMLElement | null
 }
 
 let current: Platform | null = null

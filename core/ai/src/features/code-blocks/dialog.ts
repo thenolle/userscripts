@@ -1,16 +1,18 @@
 import { createElement } from '@nolly/core'
-import { createButton, createNumberField, createSelectField, createSwitch, createDialog } from '@nolly/ai'
+import { createButton, createNumberField, createSelectField, createSwitch } from '../../ui/controls'
+import { createDialog } from '../../ui/dialog'
 import { DEFAULT_CODE_SETTINGS, type CodeBlockSettings } from './settings'
+import { uiConfig } from '../../ui/config'
 
-const DIALOG_ID = 'better-perplexity-code-dialog'
+const DIALOG_ID = (): string => `${uiConfig().id}-code-dialog`
 
 export const toggleCodeSettingsDialog = (current: CodeBlockSettings, onSave: (settings: CodeBlockSettings) => void): void => {
-  const existing = document.getElementById(DIALOG_ID)
+  const existing = document.getElementById(DIALOG_ID())
   if (existing instanceof HTMLDialogElement) {
     existing.close()
     return
   }
-  const ui = createDialog({ id: DIALOG_ID, title: 'Code Block Pro', description: 'Applies to code blocks as soon as an answer finishes.', width: 460 })
+  const ui = createDialog({ id: DIALOG_ID(), title: 'Code Block Pro', description: 'Applies to code blocks as soon as an answer finishes.', width: 460 })
   const draft: CodeBlockSettings = { ...current }
   const stack = createElement('div', 'bp-stack')
   stack.append(

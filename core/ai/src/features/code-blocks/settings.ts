@@ -1,4 +1,4 @@
-import { storage } from '../../core/storage'
+import { storage } from '../../platform'
 
 export interface CodeBlockSettings {
   collapseAfter: number

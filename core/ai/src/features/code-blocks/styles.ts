@@ -1,4 +1,5 @@
 import { injectStyle } from '@nolly/core'
+import { uiConfig } from '../../ui/config'
 
 const CSS = `
 .bp-code {
@@ -142,4 +143,4 @@ const CSS = `
 .bp-lang-plain { color: var(--bp-muted); }
 `
 
-export const ensureCodeStyles = (): void => injectStyle('better-perplexity-code-styles', CSS)
+export const ensureCodeStyles = (): void => injectStyle(`${uiConfig().id}-code-styles`, CSS)

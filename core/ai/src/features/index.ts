@@ -15,3 +15,4 @@ export type { HideRule, LayoutRule, MaxWidthOptions, SidebarOption } from './max
 export { formatShortcut, loadShortcut, matchesShortcut } from './command-palette/shortcut'
 export type { Shortcut } from './command-palette/shortcut'
 export { loadPromptShortcut } from './prompt-library/shortcut'
+export { CodeBlocksFeature } from './code-blocks'
