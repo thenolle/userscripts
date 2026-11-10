@@ -10,7 +10,9 @@ Small, focused userscripts by [Nolly](https://github.com/thenolle). Each lives i
 
 | Script | Version | What it does | Links |
 | --- | --- | --- | --- |
-| **Better Perplexity** | 1.0.5-hotfix.1 | A modular userscript that adds the missing parts of the Perplexity web app: reliable usage tracking, better code blocks, long-message handling, a prompt library, batch runs and real exports. | [Install](https://raw.githubusercontent.com/thenolle/userscripts/dist/perplexity/perplexity.user.js) · [Docs](https://thenolle.github.io/userscripts/perplexity/) |
+| **AI Core** | 0.1.0 | Platform-agnostic building blocks for AI-chat userscripts such as Better Perplexity and Better ChatGPT. It sits on top of @nolly/core. | [Docs](https://thenolle.github.io/userscripts/core-ai/) · [Source](https://github.com/thenolle/userscripts/tree/master/core/ai) |
+| **Better ChatGPT** | 1.0.0 | A modular userscript that adds the missing parts of ChatGPT: limits at a glance, better code blocks, long-message handling, a prompt library, batch runs and real exports. | [Install](https://raw.githubusercontent.com/thenolle/userscripts/dist/better-chatgpt/better-chatgpt.user.js) · [Docs](https://thenolle.github.io/userscripts/better-chatgpt/) |
+| **Better Perplexity** | 1.0.5-hotfix.1 | A modular userscript that adds the missing parts of the Perplexity web app: reliable usage tracking, better code blocks, long-message handling, a prompt library, batch runs and real exports. | [Install](https://raw.githubusercontent.com/thenolle/userscripts/dist/better-perplexity/better-perplexity.user.js) · [Docs](https://thenolle.github.io/userscripts/better-perplexity/) |
 | **Userscript Core** | 1.0.2 | Shared runtime, utilities and build tooling for every userscript in this repository. Write features, not plumbing. | [Docs](https://thenolle.github.io/userscripts/core/) · [Source](https://github.com/thenolle/userscripts/tree/master/core) |
 
 ## Installing
@@ -21,25 +23,45 @@ Small, focused userscripts by [Nolly](https://github.com/thenolle). Each lives i
 
 ## What is inside
 
+### AI Core
+
+Platform-agnostic building blocks for AI-chat userscripts such as Better Perplexity and Better ChatGPT. It sits on top of @nolly/core.
+
+[Documentation](https://thenolle.github.io/userscripts/core-ai/) · [Changelog](https://thenolle.github.io/userscripts/core-ai/changelog/) · [Source](https://github.com/thenolle/userscripts/tree/master/core/ai)
+
+### Better ChatGPT
+
+A modular userscript that adds the missing parts of ChatGPT: limits at a glance, better code blocks, long-message handling, a prompt library, batch runs and real exports.
+
+[Install](https://raw.githubusercontent.com/thenolle/userscripts/dist/better-chatgpt/better-chatgpt.user.js) · [Documentation](https://thenolle.github.io/userscripts/better-chatgpt/) · [Changelog](https://thenolle.github.io/userscripts/better-chatgpt/changelog/) · [Source](https://github.com/thenolle/userscripts/tree/master/ai/chatgpt)
+
+Guides:
+
+- [Getting started](https://thenolle.github.io/userscripts/better-chatgpt/getting-started/): Install Better ChatGPT and find your way around.
+- [Usage tracking](https://thenolle.github.io/userscripts/better-chatgpt/usage-tracking/): Where the numbers come from and when they refresh.
+- [Exporting a conversation](https://thenolle.github.io/userscripts/better-chatgpt/exporting/): Markdown, text, Word, PDF and JSON.
+- [Troubleshooting](https://thenolle.github.io/userscripts/better-chatgpt/troubleshooting/): Fixes for missing buttons, empty limits and failed exports.
+- [Architecture](https://thenolle.github.io/userscripts/better-chatgpt/architecture/): How Better ChatGPT is built on the shared packages.
+
 ### Better Perplexity
 
 A modular userscript that adds the missing parts of the Perplexity web app: reliable usage tracking, better code blocks, long-message handling, a prompt library, batch runs and real exports.
 
-[Install](https://raw.githubusercontent.com/thenolle/userscripts/dist/perplexity/perplexity.user.js) · [Documentation](https://thenolle.github.io/userscripts/perplexity/) · [Changelog](https://thenolle.github.io/userscripts/perplexity/changelog/) · [Source](https://github.com/thenolle/userscripts/tree/master/ai/perplexity)
+[Install](https://raw.githubusercontent.com/thenolle/userscripts/dist/better-perplexity/better-perplexity.user.js) · [Documentation](https://thenolle.github.io/userscripts/better-perplexity/) · [Changelog](https://thenolle.github.io/userscripts/better-perplexity/changelog/) · [Source](https://github.com/thenolle/userscripts/tree/master/ai/perplexity)
 
 Guides:
 
-- [Getting started](https://thenolle.github.io/userscripts/perplexity/getting-started/): Install Better Perplexity, take the built-in tour and learn where everything lives.
-- [Usage tracking](https://thenolle.github.io/userscripts/perplexity/usage-tracking/): How remaining queries, totals and refill estimates are calculated, and what to do when they look wrong.
-- [Updates and alerts](https://thenolle.github.io/userscripts/perplexity/updates-and-alerts/): How update checks work, how to skip a version, and how refill alerts and pace work.
-- [Message queue](https://thenolle.github.io/userscripts/perplexity/message-queue/): Queue follow-up messages while an answer is generating and let them send themselves.
-- [Recall](https://thenolle.github.io/userscripts/perplexity/recall/): Search everything you sent, reuse it in one key, and walk back through it with the arrow keys.
-- [Long messages](https://thenolle.github.io/userscripts/perplexity/long-messages/): Paste any amount of text, see the size as you type, and split or attach it only when it is too big.
-- [Prompts and batches](https://thenolle.github.io/userscripts/perplexity/prompts-and-batches/): Reusable prompts with placeholders, community prompts from GitHub, and running one message over a whole list.
-- [Code blocks and export](https://thenolle.github.io/userscripts/perplexity/code-and-export/): Better code blocks with language badges, and exporting threads as Markdown, Word, PDF or plain text.
-- [Shortcuts and settings](https://thenolle.github.io/userscripts/perplexity/shortcuts/): Every keyboard shortcut, how Enter works, the command palette and the selection toolbar.
-- [Architecture](https://thenolle.github.io/userscripts/perplexity/architecture/): How Better Perplexity is built on the shared @nolly/core package.
-- [Troubleshooting](https://thenolle.github.io/userscripts/perplexity/troubleshooting/): Fixes for missing buttons, wrong usage numbers, failed exports and update problems.
+- [Getting started](https://thenolle.github.io/userscripts/better-perplexity/getting-started/): Install Better Perplexity, take the built-in tour and learn where everything lives.
+- [Usage tracking](https://thenolle.github.io/userscripts/better-perplexity/usage-tracking/): How remaining queries, totals and refill estimates are calculated, and what to do when they look wrong.
+- [Updates and alerts](https://thenolle.github.io/userscripts/better-perplexity/updates-and-alerts/): How update checks work, how to skip a version, and how refill alerts and pace work.
+- [Message queue](https://thenolle.github.io/userscripts/better-perplexity/message-queue/): Queue follow-up messages while an answer is generating and let them send themselves.
+- [Recall](https://thenolle.github.io/userscripts/better-perplexity/recall/): Search everything you sent, reuse it in one key, and walk back through it with the arrow keys.
+- [Long messages](https://thenolle.github.io/userscripts/better-perplexity/long-messages/): Paste any amount of text, see the size as you type, and split or attach it only when it is too big.
+- [Prompts and batches](https://thenolle.github.io/userscripts/better-perplexity/prompts-and-batches/): Reusable prompts with placeholders, community prompts from GitHub, and running one message over a whole list.
+- [Code blocks and export](https://thenolle.github.io/userscripts/better-perplexity/code-and-export/): Better code blocks with language badges, and exporting threads as Markdown, Word, PDF or plain text.
+- [Shortcuts and settings](https://thenolle.github.io/userscripts/better-perplexity/shortcuts/): Every keyboard shortcut, how Enter works, the command palette and the selection toolbar.
+- [Architecture](https://thenolle.github.io/userscripts/better-perplexity/architecture/): How Better Perplexity is built on the shared @nolly/core package.
+- [Troubleshooting](https://thenolle.github.io/userscripts/better-perplexity/troubleshooting/): Fixes for missing buttons, wrong usage numbers, failed exports and update problems.
 
 ### Userscript Core
 
