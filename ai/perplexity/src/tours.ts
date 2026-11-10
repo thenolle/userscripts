@@ -92,8 +92,8 @@ const codeBlocks: Tour = {
       find('.bp-code-v2 .bp-code-actions')
     ),
     info(
-      'Visual wrapping is not a source change',
-      'Wrapping hides the gutter to avoid misleading visual line numbers. Blank lines, tabs and indentation remain part of the source.'
+      'Themes and language detection',
+      'Code panels follow the site light/dark theme. Language-colored badges remain colored. Filename labels and conservative signatures identify more languages; highlighting remains approximate and never changes the source text.'
     )
   ]
 }

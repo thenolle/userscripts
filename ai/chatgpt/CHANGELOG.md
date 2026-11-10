@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.2.2] - 2026-11-10
+
+### Changed
+
+- Merged quota observations and recovery scenarios into Usage Quota V2.
+- Removed the separate Quota Insights feature registration while preserving stored observations.
+- Added GitHub-like light and dark code palettes that follow explicit site themes.
+- Expanded language labels, detection signatures and colored typographic badges.
+- Scoped composer tools to a single toolbar after native mode controls.
+- Bounded full-width content with border-box sizing and a small outer gutter.
+
+### Fixed
+
+- Known positive usage counts with unknown capacity are labelled Reported.
+- Usage headers and detailed dialogs use the same quota-ledger summaries.
+- Sidebar visibility restores original inline display styles.
+- Nested width wrappers no longer accumulate gutters after navigation.
+
 ## [1.2.1] - 2026-11-10
 
 ### Added

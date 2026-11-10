@@ -19,7 +19,13 @@ const BADGES: Readonly<Record<string, Badge>> = {
 	solidity: ['SOL', '#363636', '#fff'], assembly: ['ASM', '#6e4c13', '#fff'], vim: ['VIM', '#019733', '#fff'],
 	nginx: ['NGX', '#009639', '#fff'], makefile: ['MK', '#6d8086', '#fff'], dockerfile: ['DK', '#2496ed', '#fff'],
 	latex: ['TEX', '#008080', '#fff'], markdown: ['M↓', '#083fa1', '#fff'], diff: ['±', '#6f42c1', '#fff'],
-	regex: ['.*', '#6f42c1', '#fff'], http: ['HTTP', '#1f6feb', '#fff'], log: ['LOG', '#6e7681', '#fff'], csv: ['CSV', '#217346', '#fff']
+	regex: ['.*', '#6f42c1', '#fff'], http: ['HTTP', '#1f6feb', '#fff'], log: ['LOG', '#6e7681', '#fff'], csv: ['CSV', '#217346', '#fff'],
+	jsx: ['JSX', '#149eca', '#ffffff'], tsx: ['TSX', '#3178c6', '#ffffff'], vue: ['V', '#42b883', '#172554'], svelte: ['S', '#ff3e00', '#ffffff'],
+	scss: ['Sass', '#cc6699', '#ffffff'], fsharp: ['F#', '#378bba', '#ffffff'], erlang: ['ERL', '#a90533', '#ffffff'], ocaml: ['ML', '#ec6813', '#ffffff'],
+	nix: ['NIX', '#5277c3', '#ffffff'], terraform: ['TF', '#7b42bc', '#ffffff'], hcl: ['HCL', '#7b42bc', '#ffffff'], prisma: ['P', '#2d3748', '#ffffff'],
+	astro: ['A', '#bc52ee', '#ffffff'], fish: ['>_', '#4aa3df', '#ffffff'], glsl: ['GL', '#5586a4', '#ffffff'], hlsl: ['HL', '#5586a4', '#ffffff'],
+	wgsl: ['WG', '#005a9c', '#ffffff'], jupyter: ['J', '#f37626', '#ffffff'], mermaid: ['MM', '#ff3670', '#ffffff'], plantuml: ['UML', '#d9b34c', '#18181b'],
+	cobol: ['COB', '#005ca9', '#ffffff'], fortran: ['F', '#734f96', '#ffffff'],
 }
 
 export const createLanguageIcon = (language: string): HTMLElement => {

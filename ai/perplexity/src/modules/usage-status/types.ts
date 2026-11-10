@@ -1,5 +1,5 @@
 export type LimitKey = 'remaining_pro' | 'remaining_research' | 'remaining_agentic_research' | 'remaining_labs'
-export type Status = 'healthy' | 'low' | 'critical' | 'empty' | 'unavailable'
+export type Status = 'healthy' | 'low' | 'critical' | 'empty' | 'unavailable' | 'reported'
 export type Plan = 'paid' | 'free' | 'unknown'
 export type ModeSource = 'dom' | 'url' | 'learned' | 'default'
 

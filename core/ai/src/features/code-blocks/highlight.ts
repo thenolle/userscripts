@@ -81,7 +81,9 @@ const RULESETS: Readonly<Record<string, RuleSet>> = {
 
 const RULESET_OF: Readonly<Record<string, string>> = {
   cpp: 'c', xml: 'html', objectivec: 'c', dart: 'java', scala: 'java', groovy: 'java',
-  solidity: 'javascript', perl: 'ruby', zig: 'rust', nim: 'python', julia: 'python'
+  solidity: 'javascript', perl: 'ruby', zig: 'rust', nim: 'python', julia: 'python',
+	jsx: 'javascript', tsx: 'typescript', scss: 'css', vue: 'html', svelte: 'html',
+  astro: 'html', hlsl: 'c', glsl: 'c', wgsl: 'rust', fish: 'bash',
 }
 
 interface Token {

@@ -16,8 +16,7 @@ Updates arrive automatically. The script also checks on its own and offers to up
 
 | Feature           | What you get                                                                                                           |
 | ----------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Usage Status      | Remaining counts reported by ChatGPT, your plan, and low/empty alerts; totals and reset schedules are not inferred     |
-| Quota Insights    | Persistent counter observations, observed capacity lower bounds, last net increase, and conditional recovery scenarios |
+| Usage Quota V2      | Remaining counts reported by ChatGPT, your plan, and low/empty alerts; totals and reset schedules are not inferred     |
 | Code Blocks V2    | Language badges, syntax colours, line numbers, wrap, fold, download, indentation-safe copy                             |
 | Message Splitter  | Paste any amount of text; split into parts or attach as a file only when needed                                        |
 | Prompt Library    | Your prompts plus community prompts, with a form for placeholders                                                      |
@@ -45,7 +44,7 @@ Updates arrive automatically. The script also checks on its own and offers to up
 
 All of them can be changed from the settings dialog.
 
-Usage Status shows reported remaining counts only; it does not invent totals or reset schedules. The `/wham/usage` endpoint is not displayed as the ordinary chat quota.
+Usage Quota V2 shows reported remaining counts only; it does not invent totals or reset schedules. The `/wham/usage` endpoint is not displayed as the ordinary chat quota.
 
 ## Privacy
 
@@ -80,3 +79,7 @@ bun run build        # minified userscript in dist/
 ## PDF reports
 
 PDF export opens a print-ready preview with a contents list, readable sections, code panels and tables. Use Print / Save as PDF in the preview. See [PDF reports](docs/pdf-reports.md) for print settings and machine-reading limitations.
+
+## Usage Quota V2
+
+The header usage dialog combines reported allowances, capacity evidence and observation-based recovery scenarios. See [Usage Quota V2](docs/usage-quota-v2.md).

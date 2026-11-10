@@ -11,7 +11,8 @@ import type { Send } from './model'
 import { resolvePlan } from './plan'
 import { findResetTimestamp } from './server-reset'
 import { ResetTracker } from './tracker'
-import { QuotaLedger } from '@nolly/ai'
+import { QuotaLedger, quotaSummary } from '@nolly/ai'
+import type { QuotaReport } from '@nolly/ai'
 import type { ActiveUsage, ApiDiagnostics, Forecast, FreeQueriesInfo, LimitKey, Plan, RateLimitResponse, SettingsResponse, Pace } from './types'
 
 type Listener = () => void
@@ -52,6 +53,10 @@ export class UsageService {
 		private readonly modes = new ModeDetector()
 	) {
 		this.modes.setFallback(() => this.lastUsedKey)
+	}
+
+	getQuotaReports(): QuotaReport[] {
+		return this.quotaLedger.reports(Date.now(), this.namespace())
 	}
 
 	subscribe(listener: Listener): () => void {
@@ -178,22 +183,9 @@ export class UsageService {
 	}
 
 	formatForecast(key: LimitKey | null): string {
-		if (!key) return 'No limit tracked for this mode'
-		const remaining = this.getRemaining(key)
-		if (remaining === null) return 'Reset time unavailable'
-		const forecast = this.getForecast(key)
-		if (!forecast) {
-			const total = this.resolveTotal(key)
-			return total && remaining >= total ? 'Full allowance available' : 'Refill time unconfirmed · collecting matched uses and refills'
-		}
-		const now = Date.now()
-		if (forecast.source === 'server') return `Resets in ${formatDuration(forecast.next - now)}`
-		const confidence = `${Math.round(forecast.confidence * 100)}% conf.`
-		if (forecast.overdue) return 'Refill estimate expired · waiting for a confirmed increase'
-		const margin = forecast.margin >= 60_000 ? ` ±${formatDuration(forecast.margin)}` : ''
-		if (forecast.regime === 'reset') return `Full reset in ${formatDuration(forecast.next - now)}${margin} · ${confidence}`
-		const lead = forecast.complete ? 'Next +1 in' : 'Next +1 within'
-		return `${lead} ${formatDuration(forecast.next - now)}${margin} · full in ${formatDuration(forecast.full - now)} · ${confidence}`
+		if (!key) return 'No counter identified for this mode'
+		const report = this.getQuotaReports().find((entry) => entry.key === key) ?? null
+		return quotaSummary(report)
 	}
 
 	getFreeQueries(): FreeQueriesInfo | null {
@@ -225,7 +217,7 @@ export class UsageService {
 			freeFallback,
 			period: mode.key ? LIMITS[mode.key].period : 'Unknown',
 			reset: this.formatForecast(mode.key),
-			status: freeFallback ? 'low' : remaining === null ? 'unavailable' : remaining === 0 ? 'empty' : total === null ? 'unavailable' : getStatus(remaining, total)
+			status: freeFallback ? 'low' : remaining === null ? 'unavailable' : remaining <= 0 ? 'empty' : total === null ? 'reported' : getStatus(remaining, total)
 		}
 	}
 

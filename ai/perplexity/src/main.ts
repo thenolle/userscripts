@@ -16,7 +16,6 @@ import {
 	UpdatesFeature,
 	configurePlatform,
 	configureUi,
-	QuotaInsightsFeature
 } from '@nolly/ai'
 import { App } from './core/app'
 import { composerKit } from './core/composer'
@@ -71,7 +70,6 @@ new App()
 	.register((context) => new ExporterFeature(context))
 	.register((context) => new UsageStatusModule(context))
 	.register((context) => new GlobalSettingsModule(context))
-	.register((context) => new QuotaInsightsFeature(context))
 	.register((context) => new TutorialFeature(context))
 	.register((context) => new UpdatesFeature(context))
 	.register((context) => new PromptQueueFeature(context))

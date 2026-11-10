@@ -3,6 +3,11 @@
 
 ## [0.2.2] - 2026-11-10
 
+- Integrated the quota-ledger panel and summaries into platform usage features.
+- Improved composer scoping, bounded layout, code themes and language metadata.
+
+## [0.2.2] - 2026-11-10
+
 - Added the V2 renderer and shared UI changes.
 
 ## [0.2.1] - 2026-11-10

@@ -162,6 +162,9 @@ const USAGE_CSS = `
   white-space: pre-wrap;
   word-break: break-word;
 }
+
+.bp-badge.reported { color: var(--bp-muted); background: var(--bp-accent); }
+.bp-dot.reported { background: var(--bp-muted); }
 `
 
 export const ensureUsageStyles = (): void => injectStyle('better-perplexity-usage-styles', USAGE_CSS)

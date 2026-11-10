@@ -45,6 +45,8 @@ export interface QuotaReport {
 	readonly scenarios: readonly RecoveryScenario[]
 	readonly fullMs: number | null
 	readonly resetAt: number | null
+	readonly key: string
+	readonly scope: string
 }
 
 const KEY = 'quota-insights:v1'
@@ -90,9 +92,9 @@ export class QuotaLedger {
 		this.storage.set(KEY, database)
 	}
 
-	reports(now = Date.now()): QuotaReport[] {
+	reports(now = Date.now(), scope?: string): QuotaReport[] {
 		const database = this.read()
-		return Object.values(database.counters).filter((counter) => counter.scope === database.activeScope).flatMap((counter): QuotaReport[] => {
+		return Object.values(database.counters).filter((counter) => counter.scope === (scope ?? database.activeScope)).flatMap((counter): QuotaReport[] => {
 			const points = counter.points.filter((point) => point.at <= now && now - point.at <= MAX_AGE).sort((a, b) => a.at - b.at)
 			const latest = points.at(-1)
 			if (!latest) return []
@@ -109,6 +111,7 @@ export class QuotaLedger {
 				const delta = current.remaining - previous.remaining
 				if (delta > 0) lastIncrease = { from: previous.at, to: current.at, units: delta }
 				if (now - current.at > 7 * DAY || gap <= 0 || gap > MAX_GAP) continue
+				if (previous.cap !== current.cap) continue
 				const capped = previous.cap !== null && previous.remaining >= previous.cap
 				const reachedCap = current.cap !== null && current.remaining >= current.cap
 				if (capped || reachedCap) continue
@@ -140,7 +143,9 @@ export class QuotaLedger {
 				positiveIntervals,
 				scenarios,
 				fullMs: missing === 0 ? 0 : missing !== null && rate !== null ? missing / rate * 3_600_000 : null,
-				resetAt: latest.resetAt
+				resetAt: latest.resetAt,
+				key: counter.key,
+				scope: counter.scope,
 			}]
 		})
 	}

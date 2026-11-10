@@ -16,7 +16,6 @@ import {
 	UpdatesFeature,
 	configurePlatform,
 	configureUi,
-	QuotaInsightsFeature
 } from '@nolly/ai'
 import { App } from './app'
 import { fileBudget } from './budget'
@@ -92,7 +91,6 @@ whenReady(() => {
 		.register((context) => new ExporterFeature(context))
 		.register((context) => new UpdatesFeature(context))
 		.register((context) => new UsageFeature(context))
-		.register((context) => new QuotaInsightsFeature(context))
 		.register((context) => new TutorialFeature(context))
 		.register((context) => new DiagnosticsFeature(context))
 		.start()
