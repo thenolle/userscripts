@@ -1,6 +1,5 @@
 import { createElement } from '@nolly/core'
-import { createButton, createNumberField, createSwitch, createTextArea } from '@nolly/ai'
-import { createDialog } from '@nolly/ai'
+import { createButton, createNumberField, createSwitch, createTextArea, createDialog } from '@nolly/ai'
 import { parseItems, renderTemplate } from './template'
 
 const DIALOG_ID = 'better-perplexity-batch-dialog'

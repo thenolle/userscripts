@@ -1,6 +1,4 @@
-import { applyValues, findFields, type Field } from '@nolly/ai'
-import { currentSelection } from '@nolly/ai'
-import { askFields } from '@nolly/ai'
+import { applyValues, findFields, type Field, currentSelection, askFields } from '@nolly/ai'
 
 const BUILTINS = new Set(['clipboard', 'selection', 'date', 'time', 'url', 'title'])
 

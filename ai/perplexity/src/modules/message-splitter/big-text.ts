@@ -1,7 +1,5 @@
 import { createElement } from '@nolly/core'
-import { estimateTokens } from '@nolly/ai'
-import { createButton, createNumberField, createSelectField, createTextArea } from '@nolly/ai'
-import { createDialog } from '@nolly/ai'
+import { estimateTokens, createButton, createNumberField, createSelectField, createTextArea, createDialog } from '@nolly/ai'
 import { createPartRows, formatNumber, type SplitChoice } from './dialog'
 import { planParts, type SplitPlan } from './plan'
 import type { SplitterSettings } from './settings'

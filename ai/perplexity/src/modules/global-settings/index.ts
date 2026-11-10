@@ -1,8 +1,6 @@
 import { createElement, Feature, type MenuEntry, type ScriptContext } from '@nolly/core'
 import { markUi } from '../../core/dom'
-import { createIcon } from '@nolly/ai'
-import { ensureUiStyles } from '@nolly/ai'
-import { Tooltip } from '@nolly/ai'
+import { createIcon, ensureUiStyles, Tooltip } from '@nolly/ai'
 import { toggleGlobalSettings } from './dialog'
 import { ensureGearStyles } from './styles'
 

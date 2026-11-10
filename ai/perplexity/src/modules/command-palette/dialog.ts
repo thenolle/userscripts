@@ -1,6 +1,5 @@
 import { createElement } from '@nolly/core'
-import { createButton } from '@nolly/ai'
-import { createDialog } from '@nolly/ai'
+import { createButton, createDialog } from '@nolly/ai'
 import { DEFAULT_SHORTCUT, formatShortcut, shortcutFromEvent, type Shortcut } from './shortcut'
 import { ensurePaletteStyles } from './styles'
 

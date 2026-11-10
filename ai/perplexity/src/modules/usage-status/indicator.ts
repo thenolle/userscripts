@@ -1,7 +1,6 @@
 import { createElement } from '@nolly/core'
 import { markUi } from '../../core/dom'
-import { Tooltip } from '@nolly/ai'
-import { ensureUiStyles } from '@nolly/ai'
+import { Tooltip, ensureUiStyles } from '@nolly/ai'
 import { Dock } from './dock'
 import { isPlaced, type Placement } from './placement'
 import type { UsageService } from './service'

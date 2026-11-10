@@ -1,7 +1,5 @@
-import { copyText } from '@nolly/ai'
+import { copyText, createButton, createTextArea, createDialog } from '@nolly/ai'
 import { createElement } from '@nolly/core'
-import { createButton, createTextArea } from '@nolly/ai'
-import { createDialog } from '@nolly/ai'
 import type { Prompt, PromptStore } from './store'
 import { ensureSlashStyles } from './styles'
 

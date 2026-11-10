@@ -1,6 +1,5 @@
-import { automate } from '@nolly/ai'
+import { automate, readComposer } from '@nolly/ai'
 import { findComposer, sendComposer, writeComposer } from '../../core/composer'
-import { readComposer } from '@nolly/ai'
 import { waitForResponse } from '../../core/generation'
 import { logger } from '../../core/logger'
 import { storage } from '../../core/storage'

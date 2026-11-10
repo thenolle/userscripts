@@ -1,7 +1,6 @@
-import { copyText } from '@nolly/ai'
+import { copyText, createIcon, type IconName } from '@nolly/ai'
 import { createElement } from '@nolly/core'
 import { markUi } from '../../core/dom'
-import { createIcon, type IconName } from '@nolly/ai'
 import type { BlockInfo } from './detect'
 import { highlightLines } from './highlight'
 import { languageInfo } from './languages'

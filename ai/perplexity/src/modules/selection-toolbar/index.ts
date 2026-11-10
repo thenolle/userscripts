@@ -1,10 +1,7 @@
 import { findComposer, sendComposer, writeComposer } from '../../core/composer'
-import { readComposer } from '@nolly/ai'
+import { readComposer, rememberSelection, ensureUiStyles, askFields } from '@nolly/ai'
 import { createElement, Feature, injectStyle, type MenuEntry } from '@nolly/core'
 import { isOwnUi, markUi } from '../../core/dom'
-import { rememberSelection } from '@nolly/ai'
-import { ensureUiStyles } from '@nolly/ai'
-import { askFields } from '@nolly/ai'
 
 interface Action {
   id: string

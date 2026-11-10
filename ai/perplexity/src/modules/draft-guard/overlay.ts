@@ -1,7 +1,6 @@
 import { createElement } from '@nolly/core'
 import { markUi } from '../../core/dom'
-import { estimateTokens } from '@nolly/ai'
-import { ensureUiStyles } from '@nolly/ai'
+import { estimateTokens, ensureUiStyles } from '@nolly/ai'
 import type { Draft } from './store'
 import { ensureDraftStyles } from './styles'
 

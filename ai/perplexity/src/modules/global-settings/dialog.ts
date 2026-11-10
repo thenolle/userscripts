@@ -1,6 +1,5 @@
 import { createElement, type ScriptContext } from '@nolly/core'
-import { createButton, createSwitch } from '@nolly/ai'
-import { createDialog } from '@nolly/ai'
+import { createButton, createSwitch, createDialog } from '@nolly/ai'
 import { ensureGearStyles } from './styles'
 
 const DIALOG_ID = 'better-perplexity-settings-dialog'

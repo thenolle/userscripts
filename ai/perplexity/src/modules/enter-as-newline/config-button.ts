@@ -1,8 +1,7 @@
 import { createElement } from '@nolly/core'
 import { markUi } from '../../core/dom'
 import { findComposerActions } from '../../locate'
-import { ensureUiStyles } from '@nolly/ai'
-import { Tooltip } from '@nolly/ai'
+import { ensureUiStyles, Tooltip } from '@nolly/ai'
 import { ensureConfigButtonStyles } from './styles'
 
 const SVG_NS = 'http://www.w3.org/2000/svg'

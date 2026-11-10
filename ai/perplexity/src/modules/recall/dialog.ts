@@ -1,7 +1,5 @@
 import { createElement } from '@nolly/core'
-import { copyText } from '@nolly/ai'
-import { createDialog } from '@nolly/ai'
-import { showToast } from '@nolly/ai'
+import { copyText, createDialog, showToast } from '@nolly/ai'
 import { ensurePaletteStyles } from '../command-palette/styles'
 import { threadLabel, timeAgo } from './format'
 import type { HistoryEntry, HistoryFilter, HistoryStore } from './store'

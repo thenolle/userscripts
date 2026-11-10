@@ -1,7 +1,5 @@
 import { Feature, type MenuEntry, type ScriptContext } from '@nolly/core'
-import { ComposerButton } from '@nolly/ai'
-import { applyValues, findFields } from '@nolly/ai'
-import { askFields } from '@nolly/ai'
+import { ComposerButton, applyValues, findFields, askFields } from '@nolly/ai'
 import { openBatchDialog, type BatchInput } from './dialog'
 import { renderTemplate } from './template'
 import { BatchPanel } from './panel'

@@ -1,6 +1,5 @@
 import { createElement } from '@nolly/core'
-import { createButton, createSelectField, createSwitch } from '@nolly/ai'
-import { createDialog } from '@nolly/ai'
+import { createButton, createSelectField, createSwitch, createDialog } from '@nolly/ai'
 import type { CitationStyle } from './citations'
 import { runExport } from './service'
 import type { ExportFormat, ExportSettings } from './settings'
