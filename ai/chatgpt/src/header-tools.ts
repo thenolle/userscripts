@@ -4,7 +4,7 @@ const ORDER = ['settings', 'usage', 'export'] as const
 
 export type ToolId = (typeof ORDER)[number]
 
-const toolRow = (): HTMLElement | null => {
+export const toolRow = (): HTMLElement | null => {
   const slot = findHeaderSlot()
   return slot?.querySelector<HTMLElement>('.contents > div') ?? slot
 }
