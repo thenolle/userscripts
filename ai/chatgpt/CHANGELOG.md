@@ -10,3 +10,4 @@
 - Message Splitter: send oversized prompts in parts or attach them as a file (respects remaining uploads).
 - Code Block Pro: language badges, highlighting, line numbers, wrap, fold, copy and download.
 - Prompt Library (shared community prompts), Command Palette, Message Queue and Recall.
+- Usage Status: remaining reasoning, upload, image and research limits with reset times, plan and rolling window, and alerts.

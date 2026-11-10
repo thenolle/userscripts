@@ -14,6 +14,7 @@ import { session } from './runtime'
 import { storage } from './storage'
 import { threadOf } from './threads'
 import { installTheme } from './theme'
+import { UsageFeature } from './features/usage'
 
 const onSend = (listener: () => void): (() => void) => session.subscribe((event) => { if (event === 'generation-start') listener() })
 
@@ -57,5 +58,6 @@ new App()
 	.register((context) => new RecallFeature(context))
 	.register((context) => new ExporterFeature(context))
 	.register((context) => new UpdatesFeature(context))
+	.register((context) => new UsageFeature(context))
 	.register((context) => new DiagnosticsFeature(context))
 	.start()

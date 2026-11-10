@@ -10,6 +10,10 @@ Install [Violentmonkey](https://violentmonkey.github.io/) or [Tampermonkey](http
 
 Open the browser console on chatgpt.com and run `betterChatgptDump()` to print the detected layout and the live session state.
 
+## Usage
+
+- Figures come from ChatGPT's own responses and update on page load and after each message.
+
 ## Built on the shared core
 
 Better ChatGPT is built on [`@nolly/core`](../../core/README.md) and [`@nolly/ai`](../../core/ai/README.md), and is bundled into one file at build time.
