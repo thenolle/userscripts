@@ -1,18 +1,21 @@
-import { copyText, createButton, createTextArea, createDialog } from '@nolly/ai'
+import { copyText } from '../../clipboard'
+import { createButton, createTextArea } from '../../ui/controls'
+import { createDialog } from '../../ui/dialog'
 import { createElement } from '@nolly/core'
 import type { Prompt, PromptStore } from './store'
 import { ensureSlashStyles } from './styles'
+import { uiConfig } from '../../ui/config'
 
-const DIALOG_ID = 'better-perplexity-prompts-dialog'
+const DIALOG_ID() = `${uiConfig().id}-prompts-dialog`
 
 export const toggleManager = (store: PromptStore, onInsert: (prompt: Prompt) => void): void => {
-  const existing = document.getElementById(DIALOG_ID)
+  const existing = document.getElementById(DIALOG_ID())
   if (existing instanceof HTMLDialogElement) {
     existing.close()
     return
   }
   ensureSlashStyles()
-  const ui = createDialog({ id: DIALOG_ID, title: 'Prompt library', description: 'Type / in an empty message box to insert a prompt.', width: 620 })
+  const ui = createDialog({ id: DIALOG_ID(), title: 'Prompt library', description: 'Type / in an empty message box to insert a prompt.', width: 620 })
   const status = createElement('span', 'bp-updated')
   const editForm = (prompt: Prompt): void => {
     const draft = { ...prompt }

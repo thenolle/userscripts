@@ -27,3 +27,5 @@ export const uiConfig = (): UiConfig => {
 }
 
 export const markUi: UiMarker['mark'] = (element) => uiConfig().marker.mark(element)
+
+export const isOwnUi: UiMarker['isOwn'] = (node) => uiConfig().marker.isOwn(node)

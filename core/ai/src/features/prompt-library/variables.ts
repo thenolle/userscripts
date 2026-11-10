@@ -1,4 +1,6 @@
-import { applyValues, findFields, type Field, currentSelection, askFields } from '@nolly/ai'
+import { applyValues, findFields, type Field } from '../../placeholders'
+import { currentSelection } from '../../selection'
+import { askFields } from '../../ui/placeholder-dialog'
 
 const BUILTINS = new Set(['clipboard', 'selection', 'date', 'time', 'url', 'title'])
 

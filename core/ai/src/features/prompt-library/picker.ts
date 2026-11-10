@@ -1,10 +1,11 @@
 import { createElement } from '@nolly/core'
-import { createDialog } from '@nolly/ai'
+import { createDialog } from '../../ui/dialog'
 import { fuzzyScore } from '../command-palette/fuzzy'
 import { ensurePaletteStyles } from '../command-palette/styles'
 import type { Prompt, PromptStore } from './store'
+import { uiConfig } from '../../ui/config'
 
-const DIALOG_ID = 'better-perplexity-prompt-picker'
+const DIALOG_ID() = `${uiConfig().id}-prompt-picker`
 
 export interface PickerOptions {
   store: PromptStore
@@ -22,13 +23,13 @@ interface Row {
 }
 
 export const togglePromptPicker = ({ store, community, onPick, onSave, onManage }: PickerOptions): void => {
-  const existing = document.getElementById(DIALOG_ID)
+  const existing = document.getElementById(DIALOG_ID())
   if (existing instanceof HTMLDialogElement) {
     existing.close()
     return
   }
   ensurePaletteStyles()
-  const ui = createDialog({ id: DIALOG_ID, title: 'Prompts', width: 600 })
+  const ui = createDialog({ id: DIALOG_ID(), title: 'Prompts', width: 600 })
   ui.dialog.classList.add('bp-palette')
   const mine = store.list()
   let shared: Prompt[] = []

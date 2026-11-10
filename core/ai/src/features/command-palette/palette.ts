@@ -1,10 +1,11 @@
 import { type Command, createElement } from '@nolly/core'
-import { storage } from '../../core/storage'
-import { createDialog } from '@nolly/ai'
+import { storage } from '../../platform'
+import { createDialog } from '../../ui/dialog'
 import { fuzzyScore } from './fuzzy'
 import { ensurePaletteStyles } from './styles'
+import { uiConfig } from '../../ui/config'
 
-const DIALOG_ID = 'better-perplexity-palette'
+const DIALOG_ID = (): string => `${uiConfig().id}-palette`
 const RECENT_KEY = 'command-palette:recent'
 const MAX_RECENT = 6
 const MAX_RESULTS = 60
@@ -21,13 +22,13 @@ const rank = (commands: readonly Command[], query: string, recent: readonly stri
 }
 
 export const togglePalette = (getCommands: () => Command[]): void => {
-  const existing = document.getElementById(DIALOG_ID)
+  const existing = document.getElementById(DIALOG_ID())
   if (existing instanceof HTMLDialogElement) {
     existing.close()
     return
   }
   ensurePaletteStyles()
-  const ui = createDialog({ id: DIALOG_ID, title: 'Command palette', width: 560 })
+  const ui = createDialog({ id: DIALOG_ID(), title: 'Command palette', width: 560 })
   ui.dialog.classList.add('bp-palette')
   const commands = getCommands()
   const input = createElement('input', 'bp-palette-input')

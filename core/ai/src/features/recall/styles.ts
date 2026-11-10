@@ -1,4 +1,5 @@
 import { injectStyle } from '@nolly/core'
+import { uiConfig } from '../../ui/config'
 
 const CSS = `
 .bp-recall .bp-palette-list { max-height: 340px; }
@@ -16,4 +17,4 @@ const CSS = `
 .bp-recall-hint { padding: 8px 14px; border-top: 1px solid var(--bp-border); color: var(--bp-muted); font-size: 11px; }
 `
 
-export const ensureRecallStyles = (): void => injectStyle('better-perplexity-recall-styles', CSS)
+export const ensureRecallStyles = (): void => injectStyle(`${uiConfig().id}-recall-styles`, CSS)

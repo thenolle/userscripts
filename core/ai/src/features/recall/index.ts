@@ -1,10 +1,12 @@
 import { Feature, toElement, type MenuEntry, type ScriptContext } from '@nolly/core'
-import { isAutomating, copyText, isSendButton, readComposer, saveFile, ComposerButton, showToast } from '@nolly/ai'
-import { editableFrom, findComposer, sendComposer, writeComposer } from '../../core/composer'
-import { isOwnUi } from '../../core/dom'
-import { fetchSpy } from '../../core/fetch-spy'
-import { isAskRequest } from '../../core/requests'
-import { storage } from '../../core/storage'
+import { isAutomating } from '../../automation'
+import { copyText } from '../../clipboard'
+import { isSendButton, readComposer } from '../../composer'
+import { saveFile } from '../../download'
+import { ComposerButton } from '../../ui/composer-button'
+import { showToast } from '../../ui/toast'
+import { editableFrom, findComposer, sendComposer, writeComposer, platform, storage } from '../../platform'
+import { isOwnUi, uiConfig } from '../../ui/config'
 import { toggleShortcutDialog } from '../command-palette/dialog'
 import { matchesShortcut, type Shortcut } from '../command-palette/shortcut'
 import { promptQueue, threadOf } from '../prompt-queue/queue'
@@ -15,7 +17,7 @@ import { history, recordPrompt } from './history'
 import { SendRecorder } from './recorder'
 import { DEFAULT_RECALL_SHORTCUT, loadRecallSettings, loadRecallShortcut, RECALL_SHORTCUT_KEY, saveRecallSettings } from './settings'
 
-export class RecallModule extends Feature {
+export class RecallFeature extends Feature {
 	readonly id = 'recall'
 	readonly name = 'Recall'
 	readonly description = 'Searchable history of the messages you send, with one-key reuse and arrow-key recall.'
@@ -41,9 +43,7 @@ export class RecallModule extends Feature {
 		history.prune(loadRecallSettings().retentionDays)
 		this.scope.listen(window, 'keydown', this.onKeydown as EventListener, { capture: true })
 		this.scope.listen(document, 'click', this.onClick as EventListener, { capture: true })
-		this.scope.add(fetchSpy.subscribe(({ method, url }) => {
-			if (isAskRequest(method, url)) this.recorder.request()
-		}))
+		this.scope.add(platform().onSend(() => this.recorder.request()))
 		this.scope.interval(() => this.recorder.tick(), 250)
 	}
 
@@ -59,7 +59,7 @@ export class RecallModule extends Feature {
 			{ id: 'pause', label: settings.paused ? 'Resume Recording' : 'Pause Recording', action: () => this.update({ paused: !settings.paused }) },
 			{ id: 'arrows', label: `Turn Arrow-Key History ${settings.arrowHistory ? 'Off' : 'On'}`, action: () => this.update({ arrowHistory: !settings.arrowHistory }) },
 			{ id: 'retention', label: 'Set History Retention…', action: () => this.setRetention() },
-			{ id: 'export', label: 'Export History…', action: () => saveFile('better-perplexity-history.json', history.exportJson(), 'application/json') },
+			{ id: 'export', label: 'Export History…', action: () => saveFile(`${uiConfig().id}-history.json`, history.exportJson(), 'application/json') },
 			{ id: 'import', label: 'Import History…', action: () => this.importFile() },
 			{ id: 'clear', label: 'Clear History…', action: () => this.clear() },
 			{ id: 'shortcut', label: 'Configure Recall Shortcut', action: () => this.configure() }

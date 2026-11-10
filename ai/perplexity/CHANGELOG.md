@@ -5,6 +5,7 @@ All notable changes to Better Perplexity are documented here. The format follows
 ## [Unreleased]
 
 - Internal: composer, synthetic keys and generation detection moved to the shared `@nolly/ai` package. The script moved to `ai/perplexity`; install URLs and storage keys are unchanged.
+- Internal: Prompt Library, Command Palette, Message Queue and Recall now come from the shared package.
 - Internal: Enter as Newline now comes from the shared package.
 - Internal: Draft Guard now comes from the shared package.
 - Internal: Message Splitter now comes from the shared package.

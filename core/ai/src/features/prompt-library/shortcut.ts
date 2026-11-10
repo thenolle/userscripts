@@ -1,4 +1,4 @@
-import { storage } from '../../core/storage'
+import { storage } from '../../platform'
 import type { Shortcut } from '../command-palette/shortcut'
 
 export const PROMPT_SHORTCUT_KEY = 'prompt-library:shortcut'

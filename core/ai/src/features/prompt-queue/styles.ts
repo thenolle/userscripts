@@ -1,4 +1,5 @@
 import { injectStyle } from '@nolly/core'
+import { uiConfig } from '../../ui/config'
 
 const CSS = `
 .bp-queue { position: fixed; right: 20px; bottom: 112px; z-index: 100000; display: flex; flex-direction: column; width: 340px; max-width: calc(100vw - 40px); border: 1px solid var(--bp-border); border-radius: 12px; background: var(--bp-bg); color: var(--bp-fg); box-shadow: 0 12px 32px rgb(0 0 0 / 22%); font: 12px/1.45 ui-sans-serif, system-ui, sans-serif; }
@@ -21,4 +22,4 @@ const CSS = `
 .bp-queue[data-collapsed='true'] .bp-queue-head { padding-bottom: 8px; }
 `
 
-export const ensureQueueStyles = (): void => injectStyle('better-perplexity-queue-styles', CSS)
+export const ensureQueueStyles = (): void => injectStyle(`${uiConfig().id}-queue-styles`, CSS)

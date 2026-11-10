@@ -1,18 +1,20 @@
 import { createElement } from '@nolly/core'
-import { createButton, createDialog } from '@nolly/ai'
+import { createButton } from '../../ui/controls'
+import { createDialog } from '../../ui/dialog'
 import { DEFAULT_SHORTCUT, formatShortcut, shortcutFromEvent, type Shortcut } from './shortcut'
 import { ensurePaletteStyles } from './styles'
+import { uiConfig } from '../../ui/config'
 
-const DIALOG_ID = 'better-perplexity-shortcut-dialog'
+const DIALOG_ID() = `${uiConfig().id}-shortcut-dialog`
 
 export const toggleShortcutDialog = (current: Shortcut, onSave: (shortcut: Shortcut) => void, title = 'Palette shortcut', defaults: Shortcut = DEFAULT_SHORTCUT): void => {
-  const existing = document.getElementById(DIALOG_ID)
+  const existing = document.getElementById(DIALOG_ID())
   if (existing instanceof HTMLDialogElement) {
     existing.close()
     return
   }
   ensurePaletteStyles()
-  const ui = createDialog({ id: DIALOG_ID, title, description: 'Use at least one of Ctrl, Alt or Meta.', width: 420 })
+  const ui = createDialog({ id: DIALOG_ID(), title, description: 'Use at least one of Ctrl, Alt or Meta.', width: 420 })
   let draft: Shortcut = { ...current }
   let recording = false
   const box = createElement('div', 'bp-shortcut-box', formatShortcut(draft))

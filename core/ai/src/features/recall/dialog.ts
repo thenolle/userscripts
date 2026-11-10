@@ -1,11 +1,14 @@
 import { createElement } from '@nolly/core'
-import { copyText, createDialog, showToast } from '@nolly/ai'
+import { copyText } from '../../clipboard'
+import { createDialog } from '../../ui/dialog'
+import { showToast } from '../../ui/toast'
 import { ensurePaletteStyles } from '../command-palette/styles'
 import { threadLabel, timeAgo } from './format'
 import type { HistoryEntry, HistoryFilter, HistoryStore } from './store'
 import { ensureRecallStyles } from './styles'
+import { uiConfig } from '../../ui/config'
 
-const DIALOG_ID = 'better-perplexity-recall'
+const DIALOG_ID = (): string => `${uiConfig().id}-recall`
 const LIMIT = 100
 
 const FILTERS: readonly { readonly id: HistoryFilter; readonly label: string }[] = [
@@ -31,14 +34,14 @@ const metaLine = (entry: HistoryEntry, now: number): string => {
 }
 
 export const toggleRecall = ({ store, insert, send, queue }: RecallActions): void => {
-  const existing = document.getElementById(DIALOG_ID)
+  const existing = document.getElementById(DIALOG_ID())
   if (existing instanceof HTMLDialogElement) {
     existing.close()
     return
   }
   ensurePaletteStyles()
   ensureRecallStyles()
-  const ui = createDialog({ id: DIALOG_ID, title: 'Recall', width: 680 })
+  const ui = createDialog({ id: DIALOG_ID(), title: 'Recall', width: 680 })
   ui.dialog.classList.add('bp-palette', 'bp-recall')
   const input = createElement('input', 'bp-palette-input')
   input.placeholder = 'Search the messages you sent…'

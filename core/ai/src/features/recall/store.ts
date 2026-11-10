@@ -1,6 +1,7 @@
-import { storage } from '../../core/storage'
+import { storage } from '../../platform'
 import { fuzzyScore } from '../command-palette/fuzzy'
 import type { KeyValueStore } from '../prompt-queue/queue'
+import { uiConfig } from '../../ui/config'
 
 export interface ThreadRef {
 	readonly path: string
@@ -171,7 +172,7 @@ export class HistoryStore {
 	}
 
 	exportJson(): string {
-		return JSON.stringify({ app: 'better-perplexity', kind: 'recall', version: 1, exportedAt: new Date(this.now()).toISOString(), entries: [...this.entries.values()] }, null, 2)
+		return JSON.stringify({ app: uiConfig().id, kind: 'recall', version: 1, exportedAt: new Date(this.now()).toISOString(), entries: [...this.entries.values()] }, null, 2)
 	}
 
 	importJson(json: string): ImportResult {

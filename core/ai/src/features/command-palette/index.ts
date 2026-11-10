@@ -1,11 +1,11 @@
-import { findComposer, writeComposer } from '../../core/composer'
-import { copyText } from '@nolly/ai'
+import { findComposer, writeComposer } from '../../platform'
+import { copyText } from '../../clipboard'
 import { Feature, type FeatureCommand, type MenuEntry } from '@nolly/core'
 import { toggleShortcutDialog } from './dialog'
 import { togglePalette } from './palette'
 import { loadShortcut, matchesShortcut, saveShortcut, type Shortcut } from './shortcut'
 
-export class CommandPaletteModule extends Feature {
+export class CommandPaletteFeature extends Feature {
   readonly id = 'command-palette'
   readonly name = 'Command Palette'
   readonly description = 'Search and run any action with a keyboard shortcut.'

@@ -1,4 +1,4 @@
-import { storage } from '../../core/storage'
+import { storage, lazy, platform } from '../../platform'
 
 export interface KeyValueStore {
   get<T>(key: string, fallback: T): T
@@ -13,12 +13,11 @@ export interface QueueItem {
 }
 
 const KEY = 'prompt-queue:items'
-const ROOT_PATH = /^\/(?:computer|spaces|library|discover)?\/?$/
 
 export const MAX_ITEMS = 50
 export const MAX_AGE = 24 * 3_600_000
 
-export const threadOf = (pathname: string): string | null => (ROOT_PATH.test(pathname) ? null : pathname)
+export const threadOf = (pathname: string): string | null => platform().threadOf(pathname)
 
 export class PromptQueue {
   private items: QueueItem[]
@@ -104,4 +103,4 @@ export class PromptQueue {
   }
 }
 
-export const promptQueue = new PromptQueue()
+export const promptQueue = lazy(() => new PromptQueue())

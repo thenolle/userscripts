@@ -1,9 +1,8 @@
 import { Feature, waitFor, type MenuEntry, type ScriptContext } from '@nolly/core'
-import { findComposer, sendComposer, writeComposer } from '../../core/composer'
-import { readComposer, ComposerButton, showToast } from '@nolly/ai'
-import { sendPrompt } from '../../core/dispatch'
-import { isGenerating, waitForResponse } from '../../core/generation'
-import { storage } from '../../core/storage'
+import { findComposer, sendComposer, writeComposer, sendPrompt, isGenerating, waitForResponse, storage } from '../../platform'
+import { readComposer } from '../../composer'
+import { ComposerButton } from '../../ui/composer-button'
+import { showToast } from '../../ui/toast'
 import { toggleShortcutDialog } from '../command-palette/dialog'
 import { matchesShortcut, type Shortcut } from '../command-palette/shortcut'
 import { recordPrompt } from '../recall/history'
@@ -28,7 +27,7 @@ const deps: RunnerDeps = {
   onSent: (text) => recordPrompt(text)
 }
 
-export class PromptQueueModule extends Feature {
+export class PromptQueueFeature extends Feature {
   readonly id = 'prompt-queue'
   readonly name = 'Message Queue'
   readonly description = 'Queue follow-up messages while an answer is generating; they send one by one when it finishes.'

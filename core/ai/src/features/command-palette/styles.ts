@@ -1,4 +1,5 @@
 import { injectStyle } from '@nolly/core'
+import { uiConfig } from '../../ui/config'
 
 const CSS = `
 .bp-palette { max-height: min(70vh, 480px); }
@@ -36,4 +37,4 @@ const CSS = `
 .bp-shortcut-box { padding: 14px; border: 1px dashed var(--bp-border); border-radius: 10px; font-size: 15px; font-weight: 600; text-align: center; }
 `
 
-export const ensurePaletteStyles = (): void => injectStyle('better-perplexity-palette-styles', CSS)
+export const ensurePaletteStyles = (): void => injectStyle(`${uiConfig().id}-palette-styles`, CSS)

@@ -1,7 +1,6 @@
-import { findComposer, writeComposer } from '../../core/composer'
+import { findComposer, writeComposer, storage } from '../../platform'
 import { Feature, type MenuEntry, type ScriptContext } from '@nolly/core'
-import { storage } from '../../core/storage'
-import { ComposerButton } from '@nolly/ai'
+import { ComposerButton } from '../../ui/composer-button'
 import { toggleShortcutDialog } from '../command-palette/dialog'
 import { matchesShortcut, type Shortcut } from '../command-palette/shortcut'
 import { toggleManager } from './manager'
@@ -11,7 +10,7 @@ import { loadPromptShortcut, PROMPT_SHORTCUT_KEY, DEFAULT_PROMPT_SHORTCUT } from
 import { PromptStore, type Prompt } from './store'
 import { expandPrompt } from './variables'
 
-export class PromptLibraryModule extends Feature {
+export class PromptLibraryFeature extends Feature {
 	readonly id = 'prompt-library'
 	readonly name = 'Prompt Library'
 	readonly description = 'Insert saved and community prompts from a button or shortcut.'

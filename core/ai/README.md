@@ -11,3 +11,6 @@ Platform-agnostic building blocks for AI-chat userscripts such as Better Perplex
 - Placeholders, token estimates, selection memory, clipboard and file download helpers.
 - A UI kit: dialogs, toasts, tooltips, controls, icons, the settings dialog and the composer button. Call `configureUi` once before using it.
 - Feature modules that need only an adapter: Enter as Newline, Draft Guard, and Message Splitter.
+- Prompt Library, Command Palette, Prompt Queue and Recall.
+
+Platforms register once with `configurePlatform` and `configureUi`.
