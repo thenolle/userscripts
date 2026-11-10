@@ -10,9 +10,9 @@ Small, focused userscripts by [Nolly](https://github.com/thenolle). Each lives i
 
 | Script | Version | What it does | Links |
 | --- | --- | --- | --- |
-| **AI Core** | 0.2.2 | Platform-agnostic building blocks for AI-chat userscripts such as Better Perplexity and Better ChatGPT. It sits on top of @nolly/core. | [Docs](https://thenolle.github.io/userscripts/core-ai/) · [Source](https://github.com/thenolle/userscripts/tree/master/core/ai) |
-| **Better ChatGPT** | 1.2.2 | A modular userscript that adds the missing parts of ChatGPT: limits at a glance, better code blocks, long-message handling, a prompt library, batch runs and real exports. | [Install](https://raw.githubusercontent.com/thenolle/userscripts/dist/better-chatgpt/better-chatgpt.user.js) · [Docs](https://thenolle.github.io/userscripts/better-chatgpt/) |
-| **Better Perplexity** | 1.2.2 | A modular userscript that adds the missing parts of the Perplexity web app: reliable usage tracking, better code blocks, long-message handling, a prompt library, batch runs and real exports. | [Install](https://raw.githubusercontent.com/thenolle/userscripts/dist/better-perplexity/better-perplexity.user.js) · [Docs](https://thenolle.github.io/userscripts/better-perplexity/) |
+| **AI Core** | 0.2.3 | Platform-agnostic building blocks for AI-chat userscripts such as Better Perplexity and Better ChatGPT. It sits on top of @nolly/core. | [Docs](https://thenolle.github.io/userscripts/core-ai/) · [Source](https://github.com/thenolle/userscripts/tree/master/core/ai) |
+| **Better ChatGPT** | 1.2.4 | A modular userscript that adds the missing parts of ChatGPT: limits at a glance, better code blocks, long-message handling, a prompt library, batch runs and real exports. | [Install](https://raw.githubusercontent.com/thenolle/userscripts/dist/better-chatgpt/better-chatgpt.user.js) · [Docs](https://thenolle.github.io/userscripts/better-chatgpt/) |
+| **Better Perplexity** | 1.2.4 | A modular userscript that adds the missing parts of the Perplexity web app: reliable usage tracking, better code blocks, long-message handling, a prompt library, batch runs and real exports. | [Install](https://raw.githubusercontent.com/thenolle/userscripts/dist/better-perplexity/better-perplexity.user.js) · [Docs](https://thenolle.github.io/userscripts/better-perplexity/) |
 | **Userscript Core** | 1.0.3 | Shared runtime, utilities and build tooling for every userscript in this repository. Write features, not plumbing. | [Docs](https://thenolle.github.io/userscripts/core/) · [Source](https://github.com/thenolle/userscripts/tree/master/core) |
 
 ## Installing
@@ -42,6 +42,7 @@ Guides:
 - [Usage Quota V2](https://thenolle.github.io/userscripts/better-chatgpt/usage-quota-v2/): Reported counts, capacity evidence and recovery scenarios in one usage feature.
 - [Exporting a conversation](https://thenolle.github.io/userscripts/better-chatgpt/exporting/): Markdown, text, Word, PDF and JSON.
 - [Context packs](https://thenolle.github.io/userscripts/better-chatgpt/context-packs/): Collect sourced excerpts and assemble a reusable briefing.
+- [Answer diff](https://thenolle.github.io/userscripts/better-chatgpt/answer-diff/): Compare exact changes between answers or code revisions.
 - [Code Blocks V2](https://thenolle.github.io/userscripts/better-chatgpt/code-blocks-v2/): Faithful source selection, syntax colors and a compact code toolbar.
 - [Beautiful PDF reports](https://thenolle.github.io/userscripts/better-chatgpt/pdf-reports/): Export readable, selectable reports with contents, sections, code and tables.
 - [Troubleshooting](https://thenolle.github.io/userscripts/better-chatgpt/troubleshooting/): Fixes for missing buttons, empty limits and failed exports.
@@ -65,6 +66,7 @@ Guides:
 - [Long messages](https://thenolle.github.io/userscripts/better-perplexity/long-messages/): Paste any amount of text, see the size as you type, and split or attach it only when it is too big.
 - [Prompts and batches](https://thenolle.github.io/userscripts/better-perplexity/prompts-and-batches/): Reusable prompts with placeholders, community prompts from GitHub, and running one message over a whole list.
 - [Context packs](https://thenolle.github.io/userscripts/better-perplexity/context-packs/): Collect sourced excerpts and assemble a reusable briefing.
+- [Answer diff](https://thenolle.github.io/userscripts/better-perplexity/answer-diff/): Compare exact changes between answers or code revisions.
 - [Code Blocks V2](https://thenolle.github.io/userscripts/better-perplexity/code-blocks-v2/): Faithful source selection, syntax colors and a compact code toolbar.
 - [Code blocks and export](https://thenolle.github.io/userscripts/better-perplexity/code-and-export/): Better code blocks with language badges, and exporting threads as Markdown, Word, PDF or plain text.
 - [Beautiful PDF reports](https://thenolle.github.io/userscripts/better-perplexity/pdf-reports/): Export readable, selectable reports with contents, sections, code and tables.
