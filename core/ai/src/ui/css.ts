@@ -289,6 +289,32 @@ textarea.bp-input { width: 100%; min-height: 64px; resize: vertical; font-family
 
 .bp-header-btn:hover { background: var(--bp-accent); }
 .bp-header-btn:focus-visible { outline: 2px solid var(--bp-fg); outline-offset: 2px; }
+
+.bp-dialog .bp-button {
+  min-height: 34px;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+}
+.bp-dialog .bp-input {
+  min-height: 36px;
+  border-radius: 6px;
+}
+.bp-dialog .bp-input::placeholder { color: var(--bp-muted); }
+.bp-dialog .bp-section-heading {
+  color: var(--bp-fg);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.bp-dialog .bp-data-row {
+  align-items: flex-start;
+  padding: 10px 12px;
+}
+.bp-dialog .bp-data-label { flex: 0 1 42%; }
+.bp-dialog .bp-data-value { flex: 1; font-variant-numeric: tabular-nums; }
+.bp-dialog .bp-actions { gap: 8px; margin-top: 10px; }
+.bp-dialog .bp-switch { border-radius: 8px; }
 `
 
 export const TOOLTIP_CSS = `

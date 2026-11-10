@@ -2,48 +2,40 @@ import { Tooltip, createButton, createDataRow, createDialog, createSection, ensu
 import { Feature, createElement, injectStyle } from '@nolly/core'
 import type { MenuEntry, ScriptContext } from '@nolly/core'
 import { placeTool } from '../header-tools'
+import { PILL_BUTTON_CLASS } from '../header-style'
 import { session } from '../runtime'
 import { storage } from '../storage'
-import { PILL_BUTTON_CLASS } from '../header-style'
 
 const PRIMARY_KEY = 'usage-status:primary'
 const LAST_KEY = 'usage-status:last'
 const LOW = 2
 
 const LABELS: Readonly<Record<string, string>> = {
-	reason: 'Reasoning',
+	reason: 'Reasoning tool',
 	file_upload: 'File uploads',
-	paste_text_to_file: 'Pasted text as file',
+	paste_text_to_file: 'Paste-to-file',
 	image_gen: 'Image generation',
 	deep_research: 'Deep research'
 }
 
-const CSS = `
-.bp-usage-pill[data-level='low'] { color: var(--bp-yellow); }
-.bp-usage-pill[data-level='empty'] { color: var(--bp-red); }
-`
+const labelOf = (feature: string): string => LABELS[feature] ?? feature.replace(/_/g, ' ')
 
-const labelOf = (feature: string): string => LABELS[feature] ?? feature.replace(/_/g, ' ').replace(/^\w/, (letter) => letter.toUpperCase())
-
-const formatReset = (iso: string | null): string => {
-	const ms = iso ? Date.parse(iso) - Date.now() : Number.NaN
-	if (!Number.isFinite(ms)) return 'no reset time'
-	if (ms <= 0) return 'resetting now'
-	const minutes = Math.round(ms / 60_000)
-	if (minutes < 60) return `resets in ${minutes}m`
-	const hours = Math.floor(minutes / 60)
-	if (hours < 24) return `resets in ${hours}h ${minutes % 60}m`
-	return `resets ${new Date(iso as string).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`
+const resetText = (iso: string | null): string => {
+	const timestamp = iso ? Date.parse(iso) : Number.NaN
+	if (!Number.isFinite(timestamp)) return 'reset not reported'
+	if (timestamp <= Date.now()) return 'reported reset passed · awaiting updated count'
+	return `reset ${new Date(timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`
 }
 
-const level = (remaining: number): 'ok' | 'low' | 'empty' => (remaining === 0 ? 'empty' : remaining <= LOW ? 'low' : 'ok')
-
-const titleCase = (value: string): string => value.charAt(0).toUpperCase() + value.slice(1)
+const expired = (iso: string | null): boolean => {
+	const timestamp = iso ? Date.parse(iso) : Number.NaN
+	return Number.isFinite(timestamp) && timestamp <= Date.now()
+}
 
 export class UsageFeature extends Feature {
 	readonly id = 'usage-status'
 	readonly name = 'Usage Status'
-	readonly description = 'Shows your remaining limits (reasoning, uploads, images, research) and your plan.'
+	readonly description = 'Shows reported tool allowances without inventing a chat-message quota.'
 
 	private readonly pill = markUi(createElement('button', `${PILL_BUTTON_CLASS} bp-usage-pill bp-themed`))
 	private readonly label = createElement('span')
@@ -52,12 +44,12 @@ export class UsageFeature extends Feature {
 	constructor(context: ScriptContext) {
 		super(context)
 		ensureUiStyles()
-		injectStyle(`${uiConfig().id}-usage-styles`, CSS)
+		injectStyle(`${uiConfig().id}-usage-styles`, `.bp-usage-pill[data-level='low'] { color: var(--bp-yellow); }.bp-usage-pill[data-level='empty'] { color: var(--bp-red); }`)
 		this.pill.type = 'button'
 		this.pill.setAttribute('aria-label', 'Usage status')
 		this.pill.appendChild(this.label)
 		this.pill.addEventListener('click', () => this.open())
-		this.tooltip = new Tooltip(this.pill, (container) => container.append(this.rows()), { align: 'end' })
+		this.tooltip = new Tooltip(this.pill, (container) => container.appendChild(this.rows()), { align: 'end' })
 	}
 
 	private get primary(): string {
@@ -65,14 +57,24 @@ export class UsageFeature extends Feature {
 	}
 
 	override onEnable(): void {
-		this.scope.add(
-			session.subscribe((event) => {
-				if (event !== 'limits' && event !== 'usage' && event !== 'plan') return
-				if (event === 'limits') this.checkAlerts()
-				this.update()
-				this.context.refreshMenu()
-			})
-		)
+		this.scope.add(session.subscribe((event) => {
+			if (!['limits', 'usage', 'plan'].includes(event)) return
+			if (event === 'limits') this.checkAlerts()
+			this.update()
+			this.renderOpenDialog()
+			this.context.refreshMenu()
+		}))
+		this.scope.interval(() => {
+			this.update()
+			this.renderOpenDialog()
+		}, 30_000)
+	}
+
+	override onDisable(): void {
+		this.tooltip.hide()
+		this.pill.remove()
+		const dialog = document.getElementById(this.dialogId)
+		if (dialog instanceof HTMLDialogElement) dialog.close()
 	}
 
 	run(): void {
@@ -87,64 +89,77 @@ export class UsageFeature extends Feature {
 	override menuEntries(): MenuEntry[] {
 		return [
 			{ id: 'details', label: 'Show Usage Details', action: () => this.open() },
-			{ id: 'metric', label: `Badge Shows: ${labelOf(this.primary)} (click to change)`, action: () => this.cycle() }
+			{ id: 'metric', label: `Badge: ${labelOf(this.primary)} · change`, action: () => this.cycle() }
 		]
+	}
+
+	private get dialogId(): string {
+		return `${uiConfig().id}-usage-dialog`
 	}
 
 	private update(): void {
 		const entry = session.limit(this.primary)
-		this.label.textContent = entry ? `${labelOf(entry.feature)} ${entry.remaining}` : session.plan ? `${titleCase(session.plan)} plan` : 'Usage'
-		this.pill.dataset['level'] = entry ? level(entry.remaining) : 'ok'
+		const stale = entry ? expired(entry.resetAfter) : false
+		this.label.textContent = entry ? `${labelOf(entry.feature)} ${stale ? '—' : entry.remaining}` : 'Tool usage'
+		this.pill.dataset['level'] = !entry || stale ? 'ok' : entry.remaining <= 0 ? 'empty' : entry.remaining <= LOW ? 'low' : 'ok'
 		this.tooltip.refresh()
 	}
 
 	private cycle(): void {
 		const features = session.limits.map((limit) => limit.feature)
 		if (!features.length) return
-		storage.set(PRIMARY_KEY, features[(features.indexOf(this.primary) + 1) % features.length] ?? 'reason')
-		this.context.refreshMenu()
+		const next = features[(features.indexOf(this.primary) + 1) % features.length]!
+		storage.set(PRIMARY_KEY, next)
 		this.update()
+		this.context.refreshMenu()
 	}
 
 	private rows(): HTMLElement {
 		const list = createElement('div', 'bp-data-list')
-		const limits = session.limits
-		if (!limits.length) {
-			list.appendChild(createElement('div', 'bp-empty', 'No limit data yet. Send a message or reload the page.'))
+		if (!session.limits.length) {
+			list.appendChild(createElement('div', 'bp-empty', 'No tool allowances reported yet.'))
 			return list
 		}
-		for (const limit of limits) list.appendChild(createDataRow(labelOf(limit.feature), `${limit.remaining} left · ${formatReset(limit.resetAfter)}`, limit.remaining === 0 ? 'negative' : ''))
+		for (const limit of session.limits) {
+			const value = expired(limit.resetAfter) ? `Last reported: ${limit.remaining} · ${resetText(limit.resetAfter)}` : `${limit.remaining} remaining · ${resetText(limit.resetAfter)}`
+			list.appendChild(createDataRow(labelOf(limit.feature), value))
+		}
 		return list
 	}
 
+	private body(): HTMLElement[] {
+		const limits = createSection('Reported tool allowances')
+		limits.appendChild(this.rows())
+		const explanation = createElement('p', 'bp-hint', 'These are tool counters returned by ChatGPT, not a verified total chat-message allowance. Totals are not supplied. Counts refresh when ChatGPT returns new data; elapsed reset times do not imply a confirmed refill.')
+		const nodes = [limits, explanation]
+		if (session.maxFileMb !== null) {
+			const files = createSection('Reported attachment ceiling')
+			files.appendChild(createDataRow('General file ceiling', `${session.maxFileMb} MB`))
+			files.appendChild(createElement('p', 'bp-hint', 'File-type and account restrictions can be lower.'))
+			nodes.push(files)
+		}
+		if (session.usage) nodes.push(createElement('p', 'bp-hint', 'The separate /wham/usage window is excluded because it has not been established as the quota for this chat.'))
+		return nodes
+	}
+
+	private renderOpenDialog(): void {
+		const dialog = document.getElementById(this.dialogId)
+		if (!(dialog instanceof HTMLDialogElement) || !dialog.open) return
+		const body = dialog.querySelector<HTMLElement>('.bp-dialog-body')
+		if (!body) return
+		const top = body.scrollTop
+		body.replaceChildren(...this.body())
+		body.scrollTop = top
+	}
+
 	private open(): void {
-		const dialogId = `${uiConfig().id}-usage-dialog`
-		const existing = document.getElementById(dialogId)
+		const existing = document.getElementById(this.dialogId)
 		if (existing instanceof HTMLDialogElement) {
 			existing.close()
 			return
 		}
-		const ui = createDialog({ id: dialogId, title: 'Usage', description: session.plan ? `${titleCase(session.plan)} plan` : 'Plan not detected yet', width: 480 })
-		const limits = createSection('Limits')
-		limits.appendChild(this.rows())
-		const body = [limits]
-		const { usage } = session
-		if (usage?.usedPercent !== null && usage?.usedPercent !== undefined) {
-			const window = createSection('Rolling window')
-			const bar = createElement('div', 'bp-progress')
-			const fill = createElement('div', `bp-progress-fill ${usage.limitReached ? 'empty' : ''}`.trim())
-			fill.style.width = `${Math.min(100, usage.usedPercent)}%`
-			bar.appendChild(fill)
-			const reset = usage.resetAt ? new Date(usage.resetAt * 1000).toLocaleString() : 'unknown'
-			window.append(bar, createDataRow('Used', `${usage.usedPercent}%`), createDataRow('Resets', reset))
-			body.push(window)
-		}
-		if (session.maxFileMb !== null) {
-			const files = createSection('Files')
-			files.appendChild(createDataRow('Largest file', `${session.maxFileMb} MB`))
-			body.push(files)
-		}
-		ui.body.replaceChildren(...body)
+		const ui = createDialog({ id: this.dialogId, title: 'Usage', description: session.plan ? `Reported plan: ${session.plan}` : 'Plan not reported', width: 600 })
+		ui.body.append(...this.body())
 		ui.footer.append(createButton('Close', { primary: true, onClick: ui.close }))
 		ui.show()
 	}
@@ -152,14 +167,13 @@ export class UsageFeature extends Feature {
 	private checkAlerts(): void {
 		const last = storage.get<Record<string, number>>(LAST_KEY, {})
 		const next = { ...last }
-		for (const { feature, remaining, resetAfter } of session.limits) {
-			const before = last[feature]
-			next[feature] = remaining
+		for (const entry of session.limits) {
+			if (expired(entry.resetAfter)) continue
+			const before = last[entry.feature]
+			next[entry.feature] = entry.remaining
 			if (before === undefined) continue
-			const name = labelOf(feature)
-			if (before > 0 && remaining === 0) showToast(`${name}: none left, ${formatReset(resetAfter)}.`, [], 10_000)
-			else if (before === 0 && remaining > 0) showToast(`${name} is available again (${remaining} left).`, [], 8_000)
-			else if (before > LOW && remaining > 0 && remaining <= LOW) showToast(`${name}: only ${remaining} left, ${formatReset(resetAfter)}.`, [], 8_000)
+			if (before > 0 && entry.remaining === 0) showToast(`${labelOf(entry.feature)}: none remaining · ${resetText(entry.resetAfter)}`)
+			else if (before === 0 && entry.remaining > 0) showToast(`${labelOf(entry.feature)}: ${entry.remaining} now reported available.`)
 		}
 		storage.set(LAST_KEY, next)
 	}

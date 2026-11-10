@@ -135,9 +135,7 @@ export class UsageService {
 
 	getNotice(): string | null {
 		if (!this.initialized || this.getPlan() !== 'free') return null
-		return hasSignInPrompt()
-			? 'Not signed in: Perplexity returned anonymous limits. Sign in to see your plan.'
-			: 'Perplexity reports no subscription tier or status for this session, even though the page looks signed in. Open "Raw API data" to see which request variants were tried.'
+		return hasSignInPrompt() ? 'Not signed in: Perplexity returned anonymous limits. Sign in to see your plan.' : 'Perplexity reports no subscription tier or status for this session, even though the page looks signed in. Open "Raw API data" to see which request variants were tried.'
 	}
 
 	getRemaining(key: LimitKey | null): number | null {
@@ -148,22 +146,19 @@ export class UsageService {
 
 	resolveTotal(key: LimitKey | null): number | null {
 		if (!key) return null
-		return findCap(this.rate, key) ?? (Math.max(LIMITS[key].total ?? 0, this.tracker.peak(key) ?? 0) || null)
+		const cap = findCap(this.rate, key)
+		const remaining = this.getRemaining(key)
+		if (cap === null || (remaining !== null && remaining > cap)) return null
+		return cap
 	}
 
 	totalSource(key: LimitKey | null): 'api' | 'configured' | 'learned' | null {
-		if (!key) return null
-		if (findCap(this.rate, key) !== null) return 'api'
-		const configured = LIMITS[key].total ?? 0
-		const peak = this.tracker.peak(key) ?? 0
-		if (peak > configured) return 'learned'
-		return configured > 0 ? 'configured' : null
+		return this.resolveTotal(key) !== null ? 'api' : null
 	}
 
 	formatTotal(key: LimitKey | null): string | null {
 		const total = this.resolveTotal(key)
-		if (total === null) return null
-		return this.totalSource(key) === 'learned' ? `≥${total}` : String(total)
+		return total === null ? null : String(total)
 	}
 
 	getForecast(key: LimitKey | null): Forecast | null {
@@ -229,7 +224,7 @@ export class UsageService {
 			freeFallback,
 			period: mode.key ? LIMITS[mode.key].period : 'Unknown',
 			reset: this.formatForecast(mode.key),
-			status: freeFallback ? 'low' : getStatus(remaining, total)
+			status: freeFallback ? 'low' : remaining === null ? 'unavailable' : remaining === 0 ? 'empty' : total === null ? 'unavailable' : getStatus(remaining, total)
 		}
 	}
 

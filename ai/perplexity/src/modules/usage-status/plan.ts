@@ -36,7 +36,7 @@ export const resolvePlan = (settings: SettingsResponse | null): PlanInfo => {
   }
 
   if (UNKNOWN.has(tierKey)) {
-    if (active) return { plan: 'paid', label: 'Paid subscription · tier not reported' }
+    if (active) return { plan: 'unknown', label: 'Subscription active · tier not reported' }
     return { plan: 'unknown', label: status ? `Tier not reported (${status})` : 'Tier not reported' }
   }
 
