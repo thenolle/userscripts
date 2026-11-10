@@ -1,5 +1,5 @@
 {
   "name": "userscripts",
   "private": true,
-  "workspaces": ["core", "better-perplexity"]
+  "workspaces": ["core", "core/ai", "ai/perplexity", "ai/chatgpt"]
 }

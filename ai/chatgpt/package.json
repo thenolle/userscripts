@@ -1,0 +1,25 @@
+{
+  "name": "@nolly/ai-chatgpt",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "PolyForm-Strict-1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thenolle/userscripts.git",
+    "directory": "ai/chatgpt"
+  },
+  "scripts": {
+    "build": "bun run scripts/build.ts",
+    "dev": "bun run scripts/build.ts --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@nolly/ai": "workspace:*",
+    "@nolly/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.4",
+    "typescript": "^7.0.2"
+  }
+}

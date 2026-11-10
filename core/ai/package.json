@@ -1,0 +1,26 @@
+{
+  "name": "@nolly/ai",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "PolyForm-Strict-1.0.0",
+  "userscript": { "kind": "library" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thenolle/userscripts.git",
+    "directory": "core/ai"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@nolly/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.4",
+    "typescript": "^7.0.2"
+  }
+}

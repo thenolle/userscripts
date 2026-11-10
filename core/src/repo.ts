@@ -3,19 +3,20 @@ export interface RepoOptions {
   readonly repo: string
   readonly branch: string
   readonly slug: string
+  readonly dir?: string
 }
 
-export const repoUrls = ({ owner, repo, branch, slug }: RepoOptions) => {
+export const repoUrls = ({ owner, repo, branch, slug, dir = slug }: RepoOptions) => {
   const raw = `https://raw.githubusercontent.com/${owner}/${repo}`
   const site = `https://github.com/${owner}/${repo}`
   return {
-    home: `${site}/tree/${branch}/${slug}`,
+    home: `${site}/tree/${branch}/${dir}`,
     namespace: site,
     issues: `${site}/issues`,
     releases: `${site}/releases`,
     sponsor: `https://github.com/sponsors/${owner}`,
     meta: `${raw}/dist/${slug}/${slug}.meta.js`,
     install: `${raw}/dist/${slug}/${slug}.user.js`,
-    rawFile: (path: string): string => `${raw}/${branch}/${slug}/${path}`
+    rawFile: (path: string): string => `${raw}/${branch}/${dir}/${path}`
   } as const
 }
