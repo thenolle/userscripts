@@ -1,5 +1,8 @@
 import { App } from './core/app'
 import { fetchSpy } from './core/fetch-spy'
+import { configureUi } from '@nolly/ai'
+import { uiMarker } from './core/dom'
+import { findComposerActions } from './locate'
 import { BatchRunnerModule } from './modules/batch-runner'
 import { CodeBlocksModule } from './modules/code-blocks'
 import { CommandPaletteModule } from './modules/command-palette'
@@ -17,23 +20,24 @@ import { UsageStatusModule } from './modules/usage-status'
 import { PromptQueueModule } from './modules/prompt-queue'
 import { RecallModule } from './modules/recall'
 
+configureUi({ id: 'better-perplexity', title: 'Better Perplexity', version: __VERSION__, marker: uiMarker, composerActions: findComposerActions })
 fetchSpy.install()
 
 new App()
-	.register((context) => new PromptLibraryModule(context))
-	.register((context) => new SelectionToolbarModule(context))
-	.register((context) => new MaxWidthModule(context))
-	.register((context) => new EnterAsNewlineModule(context))
-	.register((context) => new CodeBlocksModule(context))
-	.register((context) => new MessageSplitterModule(context))
-	.register((context) => new BatchRunnerModule(context))
-	.register((context) => new DraftGuardModule(context))
-	.register((context) => new CommandPaletteModule(context))
-	.register((context) => new ExporterModule(context))
-	.register((context) => new UsageStatusModule(context))
-	.register((context) => new GlobalSettingsModule(context))
-	.register((context) => new TutorialModule(context))
-	.register((context) => new UpdatesModule(context))
-	.register((context) => new PromptQueueModule(context))
-	.register((context) => new RecallModule(context))
-	.start()
+  .register((context) => new PromptLibraryModule(context))
+  .register((context) => new SelectionToolbarModule(context))
+  .register((context) => new MaxWidthModule(context))
+  .register((context) => new EnterAsNewlineModule(context))
+  .register((context) => new CodeBlocksModule(context))
+  .register((context) => new MessageSplitterModule(context))
+  .register((context) => new BatchRunnerModule(context))
+  .register((context) => new DraftGuardModule(context))
+  .register((context) => new CommandPaletteModule(context))
+  .register((context) => new ExporterModule(context))
+  .register((context) => new UsageStatusModule(context))
+  .register((context) => new GlobalSettingsModule(context))
+  .register((context) => new TutorialModule(context))
+  .register((context) => new UpdatesModule(context))
+  .register((context) => new PromptQueueModule(context))
+  .register((context) => new RecallModule(context))
+  .start()

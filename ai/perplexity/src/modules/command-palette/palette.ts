@@ -1,6 +1,6 @@
 import { type Command, createElement } from '@nolly/core'
 import { storage } from '../../core/storage'
-import { createDialog } from '../../ui/dialog'
+import { createDialog } from '@nolly/ai'
 import { fuzzyScore } from './fuzzy'
 import { ensurePaletteStyles } from './styles'
 

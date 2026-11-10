@@ -1,4 +1,4 @@
-import { copyText } from '../../core/clipboard'
+import { copyText } from '@nolly/ai'
 import { Feature, type MenuEntry } from '@nolly/core'
 import { isOwnUi } from '../../core/dom'
 import { isGenerating } from '../../core/generation'

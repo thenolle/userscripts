@@ -1,5 +1,5 @@
 import { findComposer, writeComposer } from '../../core/composer'
-import { copyText } from '../../core/clipboard'
+import { copyText } from '@nolly/ai'
 import { Feature, type FeatureCommand, type MenuEntry } from '@nolly/core'
 import { toggleShortcutDialog } from './dialog'
 import { togglePalette } from './palette'

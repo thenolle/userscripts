@@ -1,7 +1,7 @@
 import { createElement } from '@nolly/core'
 import { logger } from '../../core/logger'
-import { createButton, createSwitch } from '../../ui/controls'
-import { createDialog } from '../../ui/dialog'
+import { createButton, createSwitch } from '@nolly/ai'
+import { createDialog } from '@nolly/ai'
 import { DEFAULT_SHORTCUTS, SHORTCUT_OPTIONS, describeShortcuts, type Modifier, type ShortcutSettings } from './shortcuts'
 
 const DIALOG_ID = 'better-perplexity-enter-dialog'

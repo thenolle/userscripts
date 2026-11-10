@@ -12,8 +12,11 @@ Shared runtime, utilities and build tooling for every userscript in this reposit
 This is a library. It is bundled into each userscript and is not installed on its own.
 
 ## Quick start
+
 ```sh
 bun scripts/new-userscript.ts my-script "My Script"
 ```
+
+Pass a third argument to create it inside a parent folder, for example `ai`.
 
 Then read [Getting started](getting-started/) and the [API reference](api/).

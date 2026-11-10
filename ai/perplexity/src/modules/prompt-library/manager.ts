@@ -1,7 +1,7 @@
-import { copyText } from '../../core/clipboard'
+import { copyText } from '@nolly/ai'
 import { createElement } from '@nolly/core'
-import { createButton, createTextArea } from '../../ui/controls'
-import { createDialog } from '../../ui/dialog'
+import { createButton, createTextArea } from '@nolly/ai'
+import { createDialog } from '@nolly/ai'
 import type { Prompt, PromptStore } from './store'
 import { ensureSlashStyles } from './styles'
 

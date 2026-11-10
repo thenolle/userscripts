@@ -1,6 +1,6 @@
 import { createElement } from '@nolly/core'
-import { createButton, createNumberField, createSelectField, createSwitch } from '../../ui/controls'
-import { createDialog } from '../../ui/dialog'
+import { createButton, createNumberField, createSelectField, createSwitch } from '@nolly/ai'
+import { createDialog } from '@nolly/ai'
 import { DEFAULT_CODE_SETTINGS, type CodeBlockSettings } from './settings'
 
 const DIALOG_ID = 'better-perplexity-code-dialog'

@@ -1,5 +1,5 @@
-import { copyText } from '../../core/clipboard'
-import { saveFile } from '../../core/download'
+import { copyText } from '@nolly/ai'
+import { saveFile } from '@nolly/ai'
 import { currentThreadSlug, exportThread, fetchThreadJson } from './api'
 import { reformatCitations, stripLogo } from './citations'
 import { buildDocx } from './docx'

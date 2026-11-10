@@ -1,13 +1,14 @@
-import { attachFile, editableFrom, findComposer, isSendButton, readComposer, writeComposer } from '../../core/composer'
+import { attachFile, editableFrom, findComposer, writeComposer } from '../../core/composer'
+import { isSendButton, readComposer } from '@nolly/ai'
 import { Feature, type MenuEntry, toElement, waitFor } from '@nolly/core'
 import { isOwnUi } from '../../core/dom'
-import { estimateTokens } from '../../core/tokens'
+import { estimateTokens } from '@nolly/ai'
 import { ProgressPanel, openSplitDialog, type SplitChoice } from './dialog'
 import { SendRunner } from './runner'
 import { loadSplitterSettings, saveSplitterSettings, type SplitterSettings } from './settings'
-import { ComposerButton } from '../../ui/composer-button'
+import { ComposerButton } from '@nolly/ai'
 import { openBigTextDialog } from './big-text'
-import { isAutomating } from '../../core/automation'
+import { isAutomating } from '@nolly/ai'
 
 export class MessageSplitterModule extends Feature {
   readonly id = 'message-splitter'

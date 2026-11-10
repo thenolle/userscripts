@@ -1,6 +1,6 @@
 import { createElement } from '@nolly/core'
-import { markUi } from '../core/dom'
-import { findComposerActions } from '../locate'
+import { markUi, uiConfig } from './config'
+import type { ComposerActions } from './config'
 import { createIcon, type IconName } from './icons'
 import { ensureUiStyles } from './styles'
 import { Tooltip } from './tooltip'
@@ -11,6 +11,7 @@ export interface ComposerButtonOptions {
 }
 
 const CONFIG_BUTTON = '.bp-config-button'
+const NO_ACTIONS: ComposerActions = { first: null, submit: null }
 
 export class ComposerButton {
   readonly element = markUi(createElement('button'))
@@ -32,7 +33,7 @@ export class ComposerButton {
   }
 
   mount(): void {
-    const { first, submit } = findComposerActions()
+    const { first, submit } = uiConfig().composerActions?.() ?? NO_ACTIONS
     const chained = (this.options.after ?? []).map((id) => document.querySelector<HTMLElement>(`.bp-cb-${id}`)).find(Boolean)
     const anchor = chained ?? document.querySelector<HTMLElement>(CONFIG_BUTTON) ?? first
     if (!anchor && !submit) {

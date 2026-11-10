@@ -1,8 +1,9 @@
-import { logger } from '../../core/logger'
+import { isSynthetic } from '@nolly/ai'
 import { Feature, type MenuEntry } from '@nolly/core'
+import { logger } from '../../core/logger'
 import { ConfigButton } from './config-button'
 import { toggleShortcutsDialog } from './dialog'
-import { getEditableTarget, insertNewline, isComposing, isSynthetic, sendMessage } from './keyboard'
+import { getEditableTarget, insertNewline, isComposing, sendMessage } from './keyboard'
 import { describeShortcuts, hasModifier, loadShortcuts, matchesShortcut, saveShortcuts, type ShortcutSettings } from './shortcuts'
 
 export class EnterAsNewlineModule extends Feature {

@@ -1,12 +1,23 @@
+import { configureUi } from '@nolly/ai'
 import { App } from './app'
+import { uiMarker } from './dom'
 import { DiagnosticsFeature } from './features/diagnostics'
-import { responseSpy } from './network'
-import { ChatSession } from './session'
+import { HeaderButtonFeature } from './features/header-button'
+import { findAttachButton, findPrimaryAction } from './locate'
+import './runtime'
+import { installTheme } from './theme'
 
-responseSpy.install()
+configureUi({
+	id: 'better-chatgpt',
+	title: 'Better ChatGPT',
+	version: __VERSION__,
+	marker: uiMarker,
+	composerActions: () => ({ first: findAttachButton(), submit: findPrimaryAction()?.element ?? null })
+})
 
-const session = new ChatSession(responseSpy)
+installTheme()
 
 new App()
-	.register((context) => new DiagnosticsFeature(context, session))
+	.register((context) => new HeaderButtonFeature(context))
+	.register((context) => new DiagnosticsFeature(context))
 	.start()

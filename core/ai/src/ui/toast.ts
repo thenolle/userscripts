@@ -1,5 +1,5 @@
 import { createElement, injectStyle } from '@nolly/core'
-import { markUi } from '../core/dom'
+import { markUi, uiConfig } from './config'
 import { createButton } from './controls'
 import { ensureUiStyles } from './styles'
 
@@ -17,7 +17,7 @@ const CSS = `
 
 export const showToast = (message: string, actions: readonly ToastAction[] = [], duration = 8_000): (() => void) => {
   ensureUiStyles()
-  injectStyle('better-perplexity-toast-styles', CSS)
+  injectStyle(`${uiConfig().id}-toast-styles`, CSS)
   const toast = markUi(createElement('div', 'bp-toast bp-themed'))
   const dismiss = (): void => toast.remove()
   toast.appendChild(createElement('div', undefined, message))
@@ -27,10 +27,10 @@ export const showToast = (message: string, actions: readonly ToastAction[] = [],
       row.appendChild(
         createButton(action.label, {
           primary: action.primary,
-					onClick: () => {
-						if (!action.keepOpen) dismiss()
-						action.onClick()
-					}
+          onClick: () => {
+            if (!action.keepOpen) dismiss()
+            action.onClick()
+          }
         })
       )
     }

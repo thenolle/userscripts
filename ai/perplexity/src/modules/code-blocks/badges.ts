@@ -1,5 +1,5 @@
 import { createElement } from '@nolly/core'
-import { createIcon } from '../../ui/icons'
+import { createIcon } from '@nolly/ai'
 
 type Badge = readonly [label: string, background: string, color: string]
 

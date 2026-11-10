@@ -1,7 +1,5 @@
+import { dispatchEnter, findSendButton } from '@nolly/ai'
 import { toElement } from '@nolly/core'
-import { dispatchEnter, findSendButton } from '../../core/synthetic-keys'
-
-export { isSynthetic } from '../../core/synthetic-keys'
 
 const EDITABLE_SELECTOR = 'textarea, [contenteditable="true"], [contenteditable="plaintext-only"]'
 

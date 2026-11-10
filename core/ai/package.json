@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "license": "PolyForm-Strict-1.0.0",
-  "userscript": { "kind": "library" },
+	"userscript": { "kind": "library", "slug": "core-ai" },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/thenolle/userscripts.git",

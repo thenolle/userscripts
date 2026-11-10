@@ -59,9 +59,9 @@ No analytics and no server of its own. The script talks to Perplexity from your 
 
 ## Built on the shared core
 
-Better Perplexity is built on [`@nolly/core`](../core/README.md), the shared runtime used by every userscript in this repository. The core provides the feature lifecycle, storage, logging, DOM helpers, HTTP, menus, style injection and the page request observer. Better Perplexity keeps only what is specific to Perplexity: the modules, the composer and selector logic, and the UI.
+Better Perplexity is built on [`@nolly/core`](../../core/README.md), the shared runtime, and on [`@nolly/ai`](../../core/ai/README.md), the code shared with the other AI-chat scripts (composer handling, key synthesis, generation detection). Better Perplexity keeps only what is specific to Perplexity: the modules, the selectors and the UI.
 
-You do not install the core separately. It is bundled into `better-perplexity.user.js` at build time, so the installed script has no extra dependencies. See [Architecture](docs/architecture/) for details.
+You do not install either package separately. Both are bundled into `better-perplexity.user.js` at build time, so the installed script has no extra dependencies. See [Architecture](docs/architecture/) for details.
 
 ## Development
 
@@ -69,14 +69,14 @@ The repository is a Bun workspace. Install once at the repository root, then wor
 
 ```bash
 bun install          # at the repository root
-cd better-perplexity
+cd ai/perplexity
 bun run dev          # unminified, rebuilds on change
 bun run typecheck
 bun run build        # minified userscript in dist/
 ```
 
-Building needs the `core/` folder next to `better-perplexity/`. See [CONTRIBUTING.md](../CONTRIBUTING.md).
+Building needs the `core/` and `core/ai/` folders at the repository root. See [CONTRIBUTING.md](../../CONTRIBUTING.md).
 
 ## License
 
-[PolyForm Strict License 1.0.0](../LICENSE).
+[PolyForm Strict License 1.0.0](../../LICENSE).

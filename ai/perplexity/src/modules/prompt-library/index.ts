@@ -1,7 +1,7 @@
 import { findComposer, writeComposer } from '../../core/composer'
 import { Feature, type MenuEntry, type ScriptContext } from '@nolly/core'
 import { storage } from '../../core/storage'
-import { ComposerButton } from '../../ui/composer-button'
+import { ComposerButton } from '@nolly/ai'
 import { toggleShortcutDialog } from '../command-palette/dialog'
 import { matchesShortcut, type Shortcut } from '../command-palette/shortcut'
 import { toggleManager } from './manager'

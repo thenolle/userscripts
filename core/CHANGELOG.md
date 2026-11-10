@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+
+- `repoUrls` accepts an optional `dir` for scripts that live in a nested folder.
+
 ## 1.0.2
 
 ### Added

@@ -1,7 +1,7 @@
 import { createElement } from '@nolly/core'
 import { markUi } from '../../core/dom'
-import { createButton } from '../../ui/controls'
-import { ensureUiStyles } from '../../ui/styles'
+import { createButton } from '@nolly/ai'
+import { ensureUiStyles } from '@nolly/ai'
 import type { BatchPhase, BatchResult } from './runner'
 
 const CSS_ID = 'better-perplexity-batch-styles'

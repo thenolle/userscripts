@@ -1,6 +1,6 @@
 import { notify, notifyPermission } from '@nolly/core'
 import { storage } from '../../core/storage'
-import { showToast } from '../../ui/toast'
+import { showToast } from '@nolly/ai'
 import { LIMITS, LIMIT_KEYS } from './definitions'
 import type { UsageService } from './service'
 import type { LimitKey } from './types'

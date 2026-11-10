@@ -1,3 +1,108 @@
+export const THEME_CSS = `
+.bp-themed {
+  --bp-bg: hsl(0 0% 100%);
+  --bp-fg: hsl(240 10% 3.9%);
+  --bp-muted: hsl(240 3.8% 46.1%);
+  --bp-border: hsl(240 5.9% 90%);
+  --bp-accent: hsl(240 4.8% 95.9%);
+  --bp-track: hsl(240 5% 78%);
+  --bp-ring: hsl(240 5% 64.9%);
+  --bp-green: hsl(142 71% 40%);
+  --bp-yellow: hsl(38 92% 45%);
+  --bp-red: hsl(0 84% 55%);
+}
+
+@media (prefers-color-scheme: dark) {
+  .bp-themed {
+    --bp-bg: hsl(240 10% 5%);
+    --bp-fg: hsl(0 0% 98%);
+    --bp-muted: hsl(240 5% 64.9%);
+    --bp-border: hsl(240 3.7% 17%);
+    --bp-accent: hsl(240 3.7% 13%);
+    --bp-track: hsl(240 3.7% 28%);
+    --bp-green: hsl(142 71% 45%);
+    --bp-yellow: hsl(38 92% 50%);
+    --bp-red: hsl(0 84% 60%);
+  }
+}
+`
+
+export const DIALOG_CSS = `
+.bp-dialog {
+  width: min(var(--bp-width, 560px), calc(100vw - 32px));
+  max-width: none;
+  max-height: min(86vh, 820px);
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--bp-border);
+  border-radius: 14px;
+  background: var(--bp-bg);
+  color: var(--bp-fg);
+  box-shadow: 0 24px 60px -12px rgb(0 0 0 / 35%);
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.bp-dialog[open] { display: flex; flex-direction: column; animation: bp-dialog-in 160ms ease-out; }
+.bp-dialog::backdrop { background: rgb(0 0 0 / 55%); backdrop-filter: blur(6px); animation: bp-fade-in 160ms ease-out; }
+.bp-dialog *, .bp-dialog *::before, .bp-dialog *::after { box-sizing: border-box; }
+
+@keyframes bp-dialog-in { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes bp-fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .bp-dialog[open], .bp-dialog::backdrop { animation: none; }
+}
+
+.bp-dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--bp-border);
+}
+
+.bp-dialog-title { margin: 0; font-size: 16px; font-weight: 600; letter-spacing: -.02em; }
+.bp-dialog-description { margin: 3px 0 0; color: var(--bp-muted); font-size: 12px; }
+.bp-dialog-body { flex: 1; min-height: 0; padding: 16px 20px; overflow-y: auto; overscroll-behavior: contain; }
+
+.bp-dialog-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 20px;
+  border-top: 1px solid var(--bp-border);
+}
+
+.bp-dialog-footer:empty { display: none; }
+
+.bp-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--bp-muted);
+  font: inherit;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.bp-icon-button:hover { background: var(--bp-accent); color: var(--bp-fg); }
+
+@media (max-width: 520px) {
+  .bp-dialog-header, .bp-dialog-body, .bp-dialog-footer { padding-right: 14px; padding-left: 14px; }
+}
+`
+
 export const CONTROLS_CSS = `
 .bp-button {
   display: inline-flex;
@@ -179,4 +284,35 @@ textarea.bp-input { width: 100%; min-height: 64px; resize: vertical; font-family
 
 .bp-header-btn:hover { background: var(--bp-accent); }
 .bp-header-btn:focus-visible { outline: 2px solid var(--bp-fg); outline-offset: 2px; }
+`
+
+export const TOOLTIP_CSS = `
+.bp-tooltip {
+  position: fixed;
+  inset: auto;
+  width: max-content;
+  max-width: min(300px, calc(100vw - 16px));
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  border: 1px solid var(--bp-border);
+  border-radius: 12px;
+  background: var(--bp-bg);
+  color: var(--bp-fg);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 22%);
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.5;
+  pointer-events: none;
+}
+
+.bp-tooltip:popover-open { animation: bp-tooltip-in 120ms ease-out; }
+.bp-tooltip *, .bp-tooltip *::before, .bp-tooltip *::after { box-sizing: border-box; }
+.bp-tooltip-body { padding: 12px 14px; }
+
+@keyframes bp-tooltip-in { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .bp-tooltip:popover-open { animation: none; }
+}
 `

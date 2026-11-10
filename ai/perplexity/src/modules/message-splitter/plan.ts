@@ -1,4 +1,4 @@
-import { estimateTokens } from '../../core/tokens'
+import { estimateTokens } from '@nolly/ai'
 import { splitText } from './splitter'
 
 export interface PartTemplates {

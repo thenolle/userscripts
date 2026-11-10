@@ -1,5 +1,5 @@
 import { createElement } from '@nolly/core'
-import { createDialog } from '../../ui/dialog'
+import { createDialog } from '@nolly/ai'
 import { fuzzyScore } from '../command-palette/fuzzy'
 import { ensurePaletteStyles } from '../command-palette/styles'
 import type { Prompt, PromptStore } from './store'

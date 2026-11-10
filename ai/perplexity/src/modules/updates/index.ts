@@ -2,7 +2,7 @@ import { Feature, Updater, type MenuEntry } from '@nolly/core'
 import { logger } from '../../core/logger'
 import { storage } from '../../core/storage'
 import { URLS } from '../../repo'
-import { showToast } from '../../ui/toast'
+import { showToast } from '@nolly/ai'
 
 export { isNewerVersion as isNewer } from '@nolly/core'
 

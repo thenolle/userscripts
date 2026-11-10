@@ -1,30 +1,30 @@
 import { Feature, getPageWindow } from '@nolly/core'
-import type { FeatureCommand, ScriptContext } from '@nolly/core'
+import type { FeatureCommand } from '@nolly/core'
 import { chatgptAdapter } from '../adapter'
-import type { ChatSession } from '../session'
+import { sendPrompt } from '../kit'
+import { session } from '../runtime'
 
 export class DiagnosticsFeature extends Feature {
-	readonly id = 'diagnostics'
-	readonly name = 'Diagnostics'
-	readonly description = 'Reports the detected ChatGPT layout and live session state in the console.'
+  readonly id = 'diagnostics'
+  readonly name = 'Diagnostics'
+  readonly description = 'Adds betterChatgptDump() and betterChatgptSend(text) to the page console.'
 
-	constructor(context: ScriptContext, private readonly session: ChatSession) {
-		super(context)
-	}
+  run(): void {}
 
-	run(): void { }
+  override onEnable(): void {
+    const page = getPageWindow() as unknown as Record<string, unknown> | null
+    if (page) {
+      page['betterChatgptDump'] = () => this.dump()
+      page['betterChatgptSend'] = (text: string) => sendPrompt(text)
+    }
+    this.context.logger.info('Diagnostics ready: betterChatgptDump() and betterChatgptSend(text).')
+  }
 
-	override onEnable(): void {
-		const page = getPageWindow() as unknown as Record<string, unknown> | null
-		if (page) page['betterChatgptDump'] = () => this.dump()
-		this.context.logger.info('Diagnostics ready. Run betterChatgptDump() in the console.')
-	}
+  override commands(): FeatureCommand[] {
+    return [{ id: 'diagnostics.dump', title: 'Dump page diagnostics', keywords: 'debug layout selectors session', run: () => this.context.logger.info(this.dump()) }]
+  }
 
-	override commands(): FeatureCommand[] {
-		return [{ id: 'diagnostics.dump', title: 'Dump page diagnostics', keywords: 'debug layout selectors session', run: () => void this.context.logger.info(this.dump()) }]
-	}
-
-	private dump(): string {
-		return JSON.stringify({ page: chatgptAdapter.describePage(), session: this.session.snapshot() }, null, 2)
-	}
+  private dump(): string {
+    return JSON.stringify({ page: chatgptAdapter.describePage(), session: session.snapshot() }, null, 2)
+  }
 }

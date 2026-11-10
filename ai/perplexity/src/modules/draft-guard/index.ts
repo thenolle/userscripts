@@ -1,4 +1,5 @@
-import { findComposer, isSendButton, readComposer, writeComposer } from '../../core/composer'
+import { findComposer, writeComposer } from '../../core/composer'
+import { isSendButton, readComposer } from '@nolly/ai'
 import { Feature, type MenuEntry, type ScriptContext, toElement } from '@nolly/core'
 import { fetchSpy } from '../../core/fetch-spy'
 import { storage } from '../../core/storage'

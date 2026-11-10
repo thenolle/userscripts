@@ -1,6 +1,6 @@
 import { Userscript } from '@nolly/core'
 import { CONFIG, OBSERVER_OPTIONS } from '../config'
-import { toggleSettingsDialog } from '../ui/settings-dialog'
+import { toggleSettingsDialog } from '@nolly/ai'
 import { uiMarker } from './dom'
 
 export class App extends Userscript {

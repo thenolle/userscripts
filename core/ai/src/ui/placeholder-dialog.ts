@@ -1,9 +1,8 @@
-import type { Field } from '../core/placeholders'
 import { createElement } from '@nolly/core'
+import type { Field } from '../placeholders'
+import { uiConfig } from './config'
 import { createButton } from './controls'
 import { createDialog } from './dialog'
-
-const DIALOG_ID = 'better-perplexity-fields-dialog'
 
 export interface AskOptions {
   title: string
@@ -12,8 +11,9 @@ export interface AskOptions {
 }
 
 export const askFields = (fields: readonly Field[], { title, description, confirm = 'Continue' }: AskOptions): Promise<Record<string, string> | null> => new Promise((resolve) => {
-  document.getElementById(DIALOG_ID)?.remove()
-  const ui = createDialog({ id: DIALOG_ID, title, description, width: 540 })
+  const dialogId = `${uiConfig().id}-fields-dialog`
+  document.getElementById(dialogId)?.remove()
+  const ui = createDialog({ id: dialogId, title, description, width: 540 })
   const values: Record<string, string> = Object.fromEntries(fields.map((field) => [field.key, field.value ?? '']))
   let settled = false
   const finish = (result: Record<string, string> | null): void => {

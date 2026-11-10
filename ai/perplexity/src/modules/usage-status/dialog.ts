@@ -1,6 +1,6 @@
 import { createElement } from '@nolly/core'
-import { createButton, createDataRow, createSection } from '../../ui/controls'
-import { createDialog } from '../../ui/dialog'
+import { createButton, createDataRow, createSection } from '@nolly/ai'
+import { createDialog } from '@nolly/ai'
 import { createStatusBar, createTimerBlock } from './components'
 import { LIMITS, LIMIT_KEYS, SETTINGS_FIELDS, SOURCE_LABELS, STATUS_LABELS } from './definitions'
 import { getStatus } from './format'

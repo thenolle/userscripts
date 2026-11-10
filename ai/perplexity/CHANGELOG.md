@@ -2,6 +2,11 @@
 
 All notable changes to Better Perplexity are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+- Internal: composer, synthetic keys and generation detection moved to the shared `@nolly/ai` package. The script moved to `ai/perplexity`; install URLs and storage keys are unchanged.
+- Fixed: the batch runner was registered twice.
+
 ## [1.0.5-hotfix.1] - 2026-11-09
 
 ### Fixed

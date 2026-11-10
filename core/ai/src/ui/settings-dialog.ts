@@ -1,16 +1,17 @@
 import { createElement, type Feature } from '@nolly/core'
+import { uiConfig } from './config'
 import { createButton, createSection, createSwitch } from './controls'
 import { createDialog } from './dialog'
 
-const DIALOG_ID = 'better-perplexity-settings-dialog'
-
 export const toggleSettingsDialog = (modules: readonly Feature[], onChange: () => void): void => {
-  const existing = document.getElementById(DIALOG_ID)
+  const { id, title, version } = uiConfig()
+  const dialogId = `${id}-settings-dialog`
+  const existing = document.getElementById(dialogId)
   if (existing instanceof HTMLDialogElement) {
     existing.close()
     return
   }
-  const ui = createDialog({ id: DIALOG_ID, title: 'Better Perplexity', description: `Version ${__VERSION__}`, width: 480 })
+  const ui = createDialog({ id: dialogId, title, description: `Version ${version}`, width: 480 })
   const render = (): void => {
     const sections = modules.map((module) => {
       const section = createSection(module.name)
