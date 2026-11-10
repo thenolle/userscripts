@@ -1,4 +1,4 @@
-import { storage } from '../../core/storage'
+import type { ScriptStorage } from '@nolly/core'
 
 export type Modifier = 'ctrl' | 'alt' | 'meta' | 'shift'
 export type ShortcutSettings = Record<Modifier, boolean>
@@ -20,13 +20,13 @@ export const SHORTCUT_OPTIONS: readonly ShortcutOption[] = [
 
 export const DEFAULT_SHORTCUTS: Readonly<ShortcutSettings> = { ctrl: true, alt: false, meta: true, shift: false }
 
-export const loadShortcuts = (): ShortcutSettings => {
+export const loadShortcuts = (storage: ScriptStorage): ShortcutSettings => {
   const saved = storage.get<Partial<ShortcutSettings>>(STORAGE_KEY, DEFAULT_SHORTCUTS)
   const entries = SHORTCUT_OPTIONS.map(({ key }) => [key, typeof saved?.[key] === 'boolean' ? saved[key] : DEFAULT_SHORTCUTS[key]])
   return Object.fromEntries(entries) as ShortcutSettings
 }
 
-export const saveShortcuts = (settings: ShortcutSettings): void => storage.set(STORAGE_KEY, settings)
+export const saveShortcuts = (storage: ScriptStorage, settings: ShortcutSettings): void => storage.set(STORAGE_KEY, settings)
 
 export const matchesShortcut = (event: KeyboardEvent, settings: ShortcutSettings): boolean => {
   const pressed = SHORTCUT_OPTIONS.filter(({ flag }) => event[flag])

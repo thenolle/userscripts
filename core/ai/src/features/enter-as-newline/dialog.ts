@@ -1,17 +1,19 @@
 import { createElement } from '@nolly/core'
-import { logger } from '../../core/logger'
-import { createButton, createSwitch, createDialog } from '@nolly/ai'
-import { DEFAULT_SHORTCUTS, SHORTCUT_OPTIONS, describeShortcuts, type Modifier, type ShortcutSettings } from './shortcuts'
+import type { Logger } from '@nolly/core'
+import { createButton, createSwitch } from '../../ui/controls'
+import { uiConfig } from '../../ui/config'
+import { createDialog } from '../../ui/dialog'
+import { DEFAULT_SHORTCUTS, SHORTCUT_OPTIONS, describeShortcuts } from './shortcuts'
+import type { Modifier, ShortcutSettings } from './shortcuts'
 
-const DIALOG_ID = 'better-perplexity-enter-dialog'
-
-export const toggleShortcutsDialog = (current: ShortcutSettings, onSave: (settings: ShortcutSettings) => void): void => {
-  const existing = document.getElementById(DIALOG_ID)
+export const toggleShortcutsDialog = (current: ShortcutSettings, onSave: (settings: ShortcutSettings) => void, logger: Logger): void => {
+  const dialogId = `${uiConfig().id}-enter-dialog`
+  const existing = document.getElementById(dialogId)
   if (existing instanceof HTMLDialogElement) {
     existing.close()
     return
   }
-  const ui = createDialog({ id: DIALOG_ID, title: 'Enter as Newline', description: 'Choose which keyboard shortcuts send your message.', width: 440 })
+  const ui = createDialog({ id: dialogId, title: 'Enter as Newline', description: 'Choose which keyboard shortcuts send your message.', width: 440 })
   const draft: ShortcutSettings = { ...current }
   const summary = createElement('p', 'bp-hint', describeShortcuts(draft))
   const stack = createElement('div', 'bp-stack')

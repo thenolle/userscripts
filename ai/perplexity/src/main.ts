@@ -1,6 +1,8 @@
 import { App } from './core/app'
 import { fetchSpy } from './core/fetch-spy'
 import { configureUi } from '@nolly/ai'
+import { EnterAsNewlineFeature } from '@nolly/ai'
+import { storage } from './core/storage'
 import { uiMarker } from './core/dom'
 import { findComposerActions } from './locate'
 import { BatchRunnerModule } from './modules/batch-runner'
@@ -24,20 +26,21 @@ configureUi({ id: 'better-perplexity', title: 'Better Perplexity', version: __VE
 fetchSpy.install()
 
 new App()
-  .register((context) => new PromptLibraryModule(context))
-  .register((context) => new SelectionToolbarModule(context))
-  .register((context) => new MaxWidthModule(context))
-  .register((context) => new EnterAsNewlineModule(context))
-  .register((context) => new CodeBlocksModule(context))
-  .register((context) => new MessageSplitterModule(context))
-  .register((context) => new BatchRunnerModule(context))
-  .register((context) => new DraftGuardModule(context))
-  .register((context) => new CommandPaletteModule(context))
-  .register((context) => new ExporterModule(context))
-  .register((context) => new UsageStatusModule(context))
-  .register((context) => new GlobalSettingsModule(context))
-  .register((context) => new TutorialModule(context))
-  .register((context) => new UpdatesModule(context))
-  .register((context) => new PromptQueueModule(context))
-  .register((context) => new RecallModule(context))
-  .start()
+	.register((context) => new PromptLibraryModule(context))
+	.register((context) => new SelectionToolbarModule(context))
+	.register((context) => new MaxWidthModule(context))
+	.register((context) => new EnterAsNewlineModule(context))
+	.register((context) => new CodeBlocksModule(context))
+	.register((context) => new MessageSplitterModule(context))
+	.register((context) => new BatchRunnerModule(context))
+	.register((context) => new DraftGuardModule(context))
+	.register((context) => new CommandPaletteModule(context))
+	.register((context) => new ExporterModule(context))
+	.register((context) => new UsageStatusModule(context))
+	.register((context) => new GlobalSettingsModule(context))
+	.register((context) => new TutorialModule(context))
+	.register((context) => new UpdatesModule(context))
+	.register((context) => new PromptQueueModule(context))
+	.register((context) => new RecallModule(context))
+	.register((context) => new EnterAsNewlineFeature(context, { storage }))
+	.start()

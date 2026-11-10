@@ -29,6 +29,7 @@ html.light .bp-themed {
 
 .bp-tip-mode { font-weight: 600; }
 .bp-tip-sub { color: var(--bp-muted); }
+.bp-tip-foot { margin-top: 4px; color: var(--bp-muted); font-size: 11px; }
 `
 
 export const installTheme = (): void => injectStyle('better-chatgpt-theme', CSS)

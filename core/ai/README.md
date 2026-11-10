@@ -10,3 +10,4 @@ Platform-agnostic building blocks for AI-chat userscripts such as Better Perplex
 - A streaming response observer and an incremental Server-Sent Events parser.
 - Placeholders, token estimates, selection memory, clipboard and file download helpers.
 - A UI kit: dialogs, toasts, tooltips, controls, icons, the settings dialog and the composer button. Call `configureUi` once before using it.
+- Feature modules that need only an adapter: Enter as Newline.

@@ -1,6 +1,7 @@
 import type { ConversationRef, PlatformAdapter } from '@nolly/ai'
 import { isOwnUi } from './dom'
 import { findAttachButton, findComposerForm, findHeaderSlot, findModeToggles, findPrimaryAction, findSendButton, findSidebar, findStopButton, labelOf, locateEditable, rejectEditable } from './locate'
+import { countTurns } from './messages'
 
 const CHAT_PATH = /^\/(?:g\/g-p-[0-9a-f]+[^/]*\/)?c\/([^/?#]+)/
 const PROJECT_PATH = /^\/g\/(g-p-[0-9a-f]+)/
@@ -43,6 +44,7 @@ export const chatgptAdapter: PlatformAdapter = {
 		attach: brief(findAttachButton()),
 		modeToggles: findModeToggles().map(({ element }) => brief(element)),
 		headerSlot: findHeaderSlot() !== null,
-		sidebar: findSidebar() !== null
+		sidebar: findSidebar() !== null,
+		turns: countTurns(),
 	})
 }

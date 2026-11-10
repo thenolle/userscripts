@@ -4,3 +4,4 @@
 
 - Initial release: adapter contract, composer kit, generation kit, response spy and SSE parser.
 - Added placeholders, tokens, selection, clipboard, download, prompt sender and the UI kit (moved from Better Perplexity).
+- Added Enter as Newline with configurable send shortcuts and file budget in diagnostics.

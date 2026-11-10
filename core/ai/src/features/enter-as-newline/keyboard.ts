@@ -1,12 +1,14 @@
-import { dispatchEnter, findSendButton } from '@nolly/ai'
 import { toElement } from '@nolly/core'
+import { dispatchEnter, findSendButton } from '../../keys'
 
 const EDITABLE_SELECTOR = 'textarea, [contenteditable="true"], [contenteditable="plaintext-only"]'
 
-export const getEditableTarget = (event: Event): HTMLElement | null => {
+export type EditableFilter = (editable: HTMLElement) => boolean
+
+export const getEditableTarget = (event: Event, reject: EditableFilter = () => false): HTMLElement | null => {
   const origin = event.composedPath()[0] ?? event.target
   const editable = toElement(origin)?.closest<HTMLElement>(EDITABLE_SELECTOR)
-  if (!editable?.isConnected) return null
+  if (!editable?.isConnected || reject(editable)) return null
   return editable instanceof HTMLTextAreaElement || editable.isContentEditable ? editable : null
 }
 
@@ -39,6 +41,6 @@ export const insertNewline = (editable: HTMLElement): void => {
   if (dispatchEnter(editable, true)) insertNewlineManually(editable)
 }
 
-export const sendMessage = (editable: HTMLElement): void => {
+export const defaultSend = (editable: HTMLElement): void => {
   if (dispatchEnter(editable, false)) findSendButton(editable)?.click()
 }
