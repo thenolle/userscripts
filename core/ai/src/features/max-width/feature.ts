@@ -122,6 +122,13 @@ export class MaxWidthFeature extends Feature {
 		})
 		const outermost = candidates.filter((element) => !candidates.some((other) => other !== element && other.contains(element)))
 		for (const element of candidates) this.apply(element, { 'box-sizing': 'border-box', 'min-width': '0', 'max-width': '100%' })
+		for (const [element, properties] of this.touched) {
+			if (!outermost.includes(element) && properties.has('padding-inline-start')) {
+				this.styles.restore(element, ['padding-inline-start', 'padding-inline-end'])
+				properties.delete('padding-inline-start')
+				properties.delete('padding-inline-end')
+			}
+		}
 		for (const element of outermost) this.apply(element, { 'padding-inline-start': GUTTER, 'padding-inline-end': GUTTER })
 	}
 

@@ -71,15 +71,19 @@ const locate = (): { parent: HTMLElement; after: HTMLElement | null } | null => 
 	})
 	const lastMode = modes.at(-1)
 	if (lastMode) {
-		let anchor = lastMode
-		for (let depth = 0; depth < 4; depth++) {
-			const parent = anchor.parentElement
-			if (!parent || parent === root) break
+		let parent = lastMode.parentElement
+		while (parent && root.contains(parent)) {
+			const containsEveryMode = modes.every((mode) => parent!.contains(mode))
 			const display = getComputedStyle(parent).display
-			if (display === 'flex' || display === 'inline-flex') return { parent, after: anchor }
-			anchor = parent
+			const layoutRow = display === 'flex' || display === 'inline-flex'
+			if (containsEveryMode && layoutRow) {
+				let anchor: HTMLElement = lastMode
+				while (anchor.parentElement && anchor.parentElement !== parent) anchor = anchor.parentElement
+				return { parent, after: anchor }
+			}
+			if (parent === root) break
+			parent = parent.parentElement
 		}
-		if (lastMode.parentElement) return { parent: lastMode.parentElement, after: lastMode }
 	}
 	const first = actions?.first
 	if (first?.isConnected && root.contains(first) && first.parentElement) return { parent: first.parentElement, after: first }

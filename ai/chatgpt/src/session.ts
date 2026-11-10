@@ -7,6 +7,7 @@ import { interpret } from './stream'
 import type { ChatEvent } from './stream'
 import { QuotaLedger } from '@nolly/ai'
 import { storage } from './storage'
+import type { QuotaReport } from '@nolly/ai'
 
 export type SessionEvent = 'generation-start' | 'generation-end' | 'conversation' | 'model' | 'limits' | 'usage' | 'plan' | 'user-message'
 
@@ -53,6 +54,10 @@ export class ChatSession {
 			usage: this.usage,
 			limits: this.limits
 		}
+	}
+
+	getQuotaReports(): QuotaReport[] {
+		return this.quotaLedger.reports(Date.now(), `chatgpt:${this.plan ?? 'unidentified'}`)
 	}
 
 	private emit(event: SessionEvent): void {

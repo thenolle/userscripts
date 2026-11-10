@@ -33,3 +33,9 @@ Open Help and select Code blocks. The tour highlights the block and its toolbar.
 ## Verification
 
 Copy a selection containing blank lines, tabs and nested indentation into a plain-text editor. Verify the result before using copied code in a project.
+
+## Themes and language badges
+
+Code panels follow the site's explicit light/dark theme, with a GitHub-like syntax palette. Language badges retain their language-associated colors. Badges are typographic representations, not official logo artwork.
+
+Additional filename labels and conservative content signatures improve detection. New language labels may use an approximate syntax palette or plain text; the original source remains authoritative.

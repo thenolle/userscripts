@@ -15,8 +15,8 @@ import { UsageService } from './service'
 
 export class UsageStatusModule extends Feature {
 	readonly id = 'usage-status'
-	readonly name = 'Usage Status'
-	readonly description = 'Display account usage and limits directly in the Perplexity header, with refill alerts and pace.'
+	readonly name = 'Usage Quota V2'
+	readonly description = 'Reported allowances and observation-based recovery estimates in one usage feature.'
 
 	private readonly service = new UsageService()
 	private readonly dialog = new UsageDialog(this.service, () => this.context.openSettings())

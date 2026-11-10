@@ -1,4 +1,5 @@
-import { Tooltip, createButton, createDataRow, createDialog, createSection, ensureUiStyles, markUi, showToast, uiConfig } from '@nolly/ai'
+import { Tooltip, createButton, createDataRow, createDialog, createQuotaPanel, ensureUiStyles, markUi, quotaSummary, showToast, uiConfig } from '@nolly/ai'
+import type { QuotaPanel } from '@nolly/ai'
 import { Feature, createElement, injectStyle } from '@nolly/core'
 import type { MenuEntry, ScriptContext } from '@nolly/core'
 import { placeTool } from '../header-tools'
@@ -34,12 +35,13 @@ const expired = (iso: string | null): boolean => {
 
 export class UsageFeature extends Feature {
 	readonly id = 'usage-status'
-	readonly name = 'Usage Status'
+	readonly name = 'Usage Quota V2'
 	readonly description = 'Shows reported tool allowances without inventing a chat-message quota.'
 
 	private readonly pill = markUi(createElement('button', `${PILL_BUTTON_CLASS} bp-usage-pill bp-themed`))
 	private readonly label = createElement('span')
 	private readonly tooltip: Tooltip
+	private panel: QuotaPanel | null = null
 
 	constructor(context: ScriptContext) {
 		super(context)
@@ -101,6 +103,8 @@ export class UsageFeature extends Feature {
 		const entry = session.limit(this.primary)
 		const stale = entry ? expired(entry.resetAfter) : false
 		this.label.textContent = entry ? `${labelOf(entry.feature)} ${stale ? '—' : entry.remaining}` : 'Tool usage'
+		const report = session.getQuotaReports().find((item) => item.key === this.primary) ?? null
+		this.pill.title = quotaSummary(report)
 		this.pill.dataset['level'] = !entry || stale ? 'ok' : entry.remaining <= 0 ? 'empty' : entry.remaining <= LOW ? 'low' : 'ok'
 		this.tooltip.refresh()
 	}
@@ -127,29 +131,8 @@ export class UsageFeature extends Feature {
 		return list
 	}
 
-	private body(): HTMLElement[] {
-		const limits = createSection('Reported tool allowances')
-		limits.appendChild(this.rows())
-		const explanation = createElement('p', 'bp-hint', 'These are tool counters returned by ChatGPT, not a verified total chat-message allowance. Totals are not supplied. Counts refresh when ChatGPT returns new data; elapsed reset times do not imply a confirmed refill.')
-		const nodes = [limits, explanation]
-		if (session.maxFileMb !== null) {
-			const files = createSection('Reported attachment ceiling')
-			files.appendChild(createDataRow('General file ceiling', `${session.maxFileMb} MB`))
-			files.appendChild(createElement('p', 'bp-hint', 'File-type and account restrictions can be lower.'))
-			nodes.push(files)
-		}
-		if (session.usage) nodes.push(createElement('p', 'bp-hint', 'The separate /wham/usage window is excluded because it has not been established as the quota for this chat.'))
-		return nodes
-	}
-
 	private renderOpenDialog(): void {
-		const dialog = document.getElementById(this.dialogId)
-		if (!(dialog instanceof HTMLDialogElement) || !dialog.open) return
-		const body = dialog.querySelector<HTMLElement>('.bp-dialog-body')
-		if (!body) return
-		const top = body.scrollTop
-		body.replaceChildren(...this.body())
-		body.scrollTop = top
+		this.panel?.refresh()
 	}
 
 	private open(): void {
@@ -158,8 +141,16 @@ export class UsageFeature extends Feature {
 			existing.close()
 			return
 		}
-		const ui = createDialog({ id: this.dialogId, title: 'Usage', description: session.plan ? `Reported plan: ${session.plan}` : 'Plan not reported', width: 600 })
-		ui.body.append(...this.body())
+		const ui = createDialog({ id: this.dialogId, title: this.name, description: session.plan ? `Reported plan: ${session.plan}` : 'Plan not reported', width: 760 })
+		this.panel = createQuotaPanel(() => session.getQuotaReports())
+		const panel = this.panel
+		ui.body.appendChild(panel.element)
+		if (session.maxFileMb !== null) ui.body.appendChild(createDataRow('API-reported general attachment ceiling', `${session.maxFileMb} MB · type-specific restrictions may be lower`))
+		ui.body.appendChild(createElement('p', 'bp-hint', 'ChatGPT history is currently separated by reported plan, not a verified account id. Do not mix accounts in the same userscript storage. The unrelated /wham usage window is not treated as this chat’s quota.'))
+		ui.dialog.addEventListener('close', () => {
+			panel.destroy()
+			if (this.panel === panel) this.panel = null
+		}, { once: true })
 		ui.footer.append(createButton('Close', { primary: true, onClick: ui.close }))
 		ui.show()
 	}

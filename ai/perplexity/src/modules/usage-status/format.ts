@@ -22,7 +22,7 @@ export const formatAgo = (milliseconds: number): string => {
 export const getStatus = (remaining: number | null, total: number | null): Status => {
   if (remaining === null) return 'unavailable'
   if (remaining <= 0) return 'empty'
-  if (!total) return 'healthy'
+  if (!total) return 'reported'
   const ratio = remaining / total
   if (ratio > 0.6) return 'healthy'
   return ratio > 0.25 ? 'low' : 'critical'

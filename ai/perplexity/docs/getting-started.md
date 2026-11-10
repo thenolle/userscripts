@@ -31,4 +31,4 @@ Click the **?** button in the header for guided tours. Each tour highlights real
 Open the settings dialog (the sliders button). Every feature is a module with its own switch and its own settings. Disabled modules stay completely idle.
 
 > [!NOTE]
-> The header buttons attach to the usage badge. If you disable **Usage Status**, those buttons disappear, but every action is still in the command palette.
+> The header buttons attach to the usage badge. If you disable **Usage Quota V2**, those buttons disappear, but every action is still in the command palette.
