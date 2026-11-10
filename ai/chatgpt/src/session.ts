@@ -5,6 +5,8 @@ import { parseFileLimitMb, parseJson, parseLimits, parseUsage } from './payloads
 import type { LimitProgress, UsageSnapshot } from './payloads'
 import { interpret } from './stream'
 import type { ChatEvent } from './stream'
+import { QuotaLedger } from '@nolly/ai'
+import { storage } from './storage'
 
 export type SessionEvent = 'generation-start' | 'generation-end' | 'conversation' | 'model' | 'limits' | 'usage' | 'plan' | 'user-message'
 
@@ -20,6 +22,7 @@ export class ChatSession {
 
 	private readonly limitMap = new Map<string, LimitProgress>()
 	private readonly listeners = new Set<(event: SessionEvent) => void>()
+	private readonly quotaLedger = new QuotaLedger(storage)
 	private parser = new SseParser()
 
 	constructor(spy: ResponseSpy) {
@@ -61,7 +64,12 @@ export class ChatSession {
 	}
 
 	private mergeLimits(limits: readonly LimitProgress[]): void {
-		for (const limit of limits) this.limitMap.set(limit.feature, limit)
+		const now = Date.now()
+		for (const limit of limits) {
+			this.limitMap.set(limit.feature, limit)
+			const resetAt = limit.resetAfter ? Date.parse(limit.resetAfter) : Number.NaN
+			this.quotaLedger.observe(`chatgpt:${this.plan ?? 'unidentified'}`, limit.feature, limit.feature.replace(/_/g, ' '), limit.remaining, null, Number.isFinite(resetAt) ? resetAt : null, now)
+		}
 		this.emit('limits')
 	}
 

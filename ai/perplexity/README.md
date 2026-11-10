@@ -17,6 +17,7 @@ Updates arrive automatically. The script also checks on its own and offers to up
 | Feature           | What you get                                                                                                                    |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | Usage status      | Reported remaining counts per mode in the header, hover summary and details dialog; totals and reset schedules are not invented |
+| Quota Insights    | Persistent counter observations, observed capacity lower bounds, last net increase and conditional recovery scenarios           |
 | Code Blocks V2    | Language badges, syntax colours, line numbers, wrap, fold, download, indentation-safe selection copy                            |
 | Big messages      | Paste any amount of text; split into parts or attach as a file only when needed                                                 |
 | Prompt library    | Your prompts plus community prompts, with a form for placeholders                                                               |
