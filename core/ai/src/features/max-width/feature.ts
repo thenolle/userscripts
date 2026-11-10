@@ -5,112 +5,134 @@ import { StyleManager } from './style-manager'
 
 const SIDEBAR_KEY = 'max-width:remove-sidebar'
 const DEFAULT_CONSTRAINED = 'main [class*="max-w-"], main [style*="max-width"]'
-const OVERLAYS = '[role="dialog"], [role="menu"], [role="listbox"], [role="tooltip"], dialog, [data-radix-popper-content-wrapper]'
-const MIN_CONSTRAINT = 480
+const EXCLUDED = ['header', 'pre', 'code', '[data-code-block]', '[role="dialog"]', '[role="menu"]', '[role="listbox"]', '[role="tooltip"]', 'dialog', '[data-radix-popper-content-wrapper]'].join(', ')
+
 const SCAN_INTERVAL = 1_200
+const GUTTER = '12px'
 
 export interface Target {
-  readonly xpath?: string
-  readonly selector?: string
+	readonly xpath?: string
+	readonly selector?: string
 }
 
 export interface HideRule extends Target {
-  readonly id: string
+	readonly id: string
 }
 
 export interface LayoutRule extends Target {
-  readonly styles: Readonly<Record<string, string>>
+	readonly styles: Readonly<Record<string, string>>
 }
 
 export interface SidebarOption {
-  readonly rule: HideRule
-  readonly label: string
-  readonly defaultRemoved: boolean
+	readonly rule: HideRule
+	readonly label: string
+	readonly defaultRemoved: boolean
 }
 
 export interface MaxWidthOptions {
-  readonly storage: ScriptStorage
-  readonly hidden?: readonly HideRule[]
-  readonly layout?: readonly LayoutRule[]
-  readonly sidebar?: SidebarOption
-  readonly constrained?: string
+	readonly storage: ScriptStorage
+	readonly hidden?: readonly HideRule[]
+	readonly layout?: readonly LayoutRule[]
+	readonly sidebar?: SidebarOption
+	readonly constrained?: string
 }
 
 const resolveTarget = ({ xpath, selector }: Target): HTMLElement | null => {
-  if (xpath) return getElement(xpath)
-  return selector ? document.querySelector<HTMLElement>(selector) : null
+	if (xpath) return getElement(xpath)
+	return selector ? document.querySelector<HTMLElement>(selector) : null
 }
 
-const labelOf = (rule: HideRule): string => rule.xpath ?? rule.selector ?? rule.id
+const safeTarget = (element: HTMLElement): boolean => element.isConnected && !isOwnUi(element) && !element.closest(EXCLUDED) && element.closest('main') !== null
 
 export class MaxWidthFeature extends Feature {
-  readonly id = 'max-width'
-  readonly name = 'Max Width'
-  readonly description = 'Remove width restrictions and expand the interface.'
+	readonly id = 'max-width'
+	readonly name = 'Max Width'
+	readonly description = 'Use the available content width without overflowing the page or removing its side padding.'
 
-  private readonly styles = new StyleManager()
-  private readonly touched = new Set<HTMLElement>()
-  private scannedAt = 0
+	private readonly styles = new StyleManager()
+	private readonly touched = new Map<HTMLElement, Set<string>>()
+	private scannedAt = 0
 
-  constructor(context: ScriptContext, private readonly options: MaxWidthOptions) {
-    super(context)
-  }
+	constructor(context: ScriptContext, private readonly options: MaxWidthOptions) {
+		super(context)
+	}
 
-  get removeSidebar(): boolean {
-    return this.options.storage.get(SIDEBAR_KEY, this.options.sidebar?.defaultRemoved ?? false)
-  }
+	get removeSidebar(): boolean {
+		return this.options.storage.get(SIDEBAR_KEY, this.options.sidebar?.defaultRemoved ?? false)
+	}
 
-  set removeSidebar(value: boolean) {
-    this.options.storage.set(SIDEBAR_KEY, value)
-  }
+	set removeSidebar(value: boolean) {
+		this.options.storage.set(SIDEBAR_KEY, value)
+	}
 
-  run(): void {
-    const active = this.enabled
-    for (const rule of this.options.hidden ?? []) this.syncHidden(rule, active)
-    if (this.options.sidebar) this.syncHidden(this.options.sidebar.rule, active && this.removeSidebar)
-    for (const rule of this.options.layout ?? []) {
-      const element = resolveTarget(rule)
-      if (!element) continue
-      if (active) this.styles.apply(element, rule.styles)
-      else this.styles.restore(element, Object.keys(rule.styles))
-    }
-    this.expand(active)
-  }
+	run(): void {
+		const active = this.enabled
+		for (const rule of this.options.hidden ?? []) this.syncHidden(rule, active)
+		if (this.options.sidebar) this.syncHidden(this.options.sidebar.rule, active && this.removeSidebar)
+		if (!active) {
+			this.restore()
+			return
+		}
+		for (const rule of this.options.layout ?? []) {
+			const element = resolveTarget(rule)
+			if (!element || !safeTarget(element)) continue
+			this.apply(element, { ...rule.styles, 'box-sizing': 'border-box', 'min-width': '0', 'max-width': '100%' })
+		}
+		this.expand()
+	}
 
-  override menuEntries(): MenuEntry[] {
-    const { sidebar } = this.options
-    return sidebar ? [{ label: `${this.removeSidebar ? 'Show' : 'Remove'} ${sidebar.label}`, action: () => this.toggleSidebar(sidebar) }] : []
-  }
+	override onDisable(): void {
+		this.restore()
+		for (const rule of this.options.hidden ?? []) this.syncHidden(rule, false)
+		if (this.options.sidebar) this.syncHidden(this.options.sidebar.rule, false)
+	}
 
-  private expand(active: boolean): void {
-    if (!active) {
-      for (const element of this.touched) this.styles.restore(element, ['max-width'])
-      this.touched.clear()
-      return
-    }
-    const now = Date.now()
-    if (now - this.scannedAt < SCAN_INTERVAL) return
-    this.scannedAt = now
-    for (const element of this.touched) if (!element.isConnected) this.touched.delete(element)
-    for (const element of document.querySelectorAll<HTMLElement>(this.options.constrained ?? DEFAULT_CONSTRAINED)) {
-      if (this.touched.has(element) || isOwnUi(element) || element.closest(OVERLAYS)) continue
-      const limit = Number.parseFloat(getComputedStyle(element).maxWidth)
-      if (!Number.isFinite(limit) || limit < MIN_CONSTRAINT) continue
-      if (element.getBoundingClientRect().width < limit * 0.9) continue
-      this.styles.apply(element, { 'max-width': '100%' })
-      this.touched.add(element)
-    }
-  }
+	override menuEntries(): MenuEntry[] {
+		const sidebar = this.options.sidebar
+		return sidebar ? [{
+			label: `${this.removeSidebar ? 'Show' : 'Remove'} ${sidebar.label}`,
+			action: () => {
+				this.removeSidebar = !this.removeSidebar
+				this.context.refreshMenu()
+				this.context.requestUpdate()
+			}
+		}] : []
+	}
 
-  private syncHidden(rule: HideRule, hidden: boolean): void {
-    const element = resolveTarget(rule)
-    if (element) this.styles.setHidden(element, hidden, labelOf(rule))
-  }
+	private apply(element: HTMLElement, values: Readonly<Record<string, string>>): void {
+		const properties = this.touched.get(element) ?? new Set<string>()
+		for (const property of Object.keys(values)) properties.add(property)
+		this.touched.set(element, properties)
+		this.styles.apply(element, values)
+	}
 
-  private toggleSidebar(sidebar: SidebarOption): void {
-    this.removeSidebar = !this.removeSidebar
-    this.context.logger.info(`${sidebar.label} removal ${this.removeSidebar ? 'enabled' : 'disabled'}.`)
-    this.context.refreshMenu()
-    this.context.requestUpdate()
-  }
+	private expand(): void {
+		const now = Date.now()
+		if (now - this.scannedAt < SCAN_INTERVAL) return
+		this.scannedAt = now
+		for (const element of this.touched.keys()) {
+			if (!element.isConnected) this.touched.delete(element)
+		}
+		const candidates = [...document.querySelectorAll<HTMLElement>(this.options.constrained ?? DEFAULT_CONSTRAINED)].filter((element) => {
+			if (!safeTarget(element)) return false
+			const rect = element.getBoundingClientRect()
+			if (rect.width < 320) return false
+			const maximum = Number.parseFloat(getComputedStyle(element).maxWidth)
+			return this.touched.has(element) || Number.isFinite(maximum) && maximum >= 480
+		})
+		const outermost = candidates.filter((element) => !candidates.some((other) => other !== element && other.contains(element)))
+		for (const element of candidates) this.apply(element, { 'box-sizing': 'border-box', 'min-width': '0', 'max-width': '100%' })
+		for (const element of outermost) this.apply(element, { 'padding-inline-start': GUTTER, 'padding-inline-end': GUTTER })
+	}
+
+	private syncHidden(rule: HideRule, hidden: boolean): void {
+		const element = resolveTarget(rule)
+		if (element) this.styles.setHidden(element, hidden, rule.xpath ?? rule.selector ?? rule.id)
+	}
+
+	private restore(): void {
+		for (const [element, properties] of this.touched) this.styles.restore(element, [...properties])
+		this.touched.clear()
+		this.scannedAt = 0
+	}
 }

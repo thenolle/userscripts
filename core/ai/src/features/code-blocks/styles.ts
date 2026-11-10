@@ -1,5 +1,6 @@
 import { injectStyle } from '@nolly/core'
 import { uiConfig } from '../../ui/config'
+import { ensureCodeTheme } from './theme'
 
 const CSS = `
 .bp-code-v2 {
@@ -133,4 +134,7 @@ const CSS = `
 }
 `
 
-export const ensureCodeStyles = (): void => injectStyle(`${uiConfig().id}-code-v2-styles`, CSS)
+export const ensureCodeStyles = (): void => {
+	injectStyle(`${uiConfig().id}-code-v2-styles`, CSS)
+	ensureCodeTheme()
+}
