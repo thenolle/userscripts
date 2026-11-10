@@ -6,6 +6,7 @@ All notable changes to Better Perplexity are documented here. The format follows
 
 - Internal: composer, synthetic keys and generation detection moved to the shared `@nolly/ai` package. The script moved to `ai/perplexity`; install URLs and storage keys are unchanged.
 - Internal: Enter as Newline now comes from the shared package.
+- Internal: Draft Guard now comes from the shared package.
 - Fixed: the batch runner was registered twice.
 
 ## [1.0.5-hotfix.1] - 2026-11-09

@@ -10,3 +10,5 @@ export const OBSERVER_OPTIONS: MutationObserverInit = {
   attributes: true,
   attributeFilter: ['class', 'aria-label', 'aria-expanded', 'aria-selected', 'aria-hidden', 'aria-pressed', 'data-state', 'hidden']
 }
+
+export const MESSAGE_TOKEN_LIMIT = 34_000
