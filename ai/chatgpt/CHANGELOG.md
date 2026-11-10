@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.0] - 2026-11-10
+
+### Added
+
+- **Tutorial:** guided tours for every feature, started from the “?” button in the header.
+
+### Fixed
+
+- **Header buttons:** the settings, usage, download and help buttons now sit after ChatGPT's own buttons in the same row, with the same size and hover as the native ones.
+- **Export:** finds the messages in the current ChatGPT layout and converts the new answer format (lists, tables, source chips, bold text) to Markdown.
+
 ## [1.0.0] - 2026-11-10
 
 - Exporter built from the conversation view (Markdown, text, Word, PDF, JSON) and update checker.

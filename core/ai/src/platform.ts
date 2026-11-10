@@ -3,6 +3,7 @@ import type { ComposerKit } from './composer'
 import type { GenerationKit } from './generation'
 import type { PromptSender } from './prompt'
 import type { ExportSource } from './features/exporter/source'
+import type { TutorialSource } from './features/tutorial/source'
 
 export interface ReleaseInfo {
 	readonly name: string
@@ -19,12 +20,13 @@ export interface Platform {
 	readonly logger: Logger
 	readonly composer: ComposerKit
 	readonly generation: GenerationKit
-	readonly sendPrompt: PromptSender
-	readonly onSend: (listener: () => void) => () => void
-	readonly threadOf: (pathname: string) => string | null
 	readonly promptsUrl: string
 	readonly exporter: ExportSource
 	readonly release: ReleaseInfo
+	readonly tutorial: TutorialSource
+	readonly sendPrompt: PromptSender
+	readonly onSend: (listener: () => void) => () => void
+	readonly threadOf: (pathname: string) => string | null
 	readonly codeBlockRoot?: (pre: HTMLElement) => HTMLElement | null
 }
 

@@ -1,4 +1,4 @@
-import { BatchRunnerFeature, CodeBlocksFeature, CommandPaletteFeature, DraftGuardFeature, EnterAsNewlineFeature, ExporterFeature, MaxWidthFeature, MessageSplitterFeature, PromptLibraryFeature, PromptQueueFeature, RecallFeature, SelectionToolbarFeature, UpdatesFeature, configurePlatform, configureUi, loadSplitterSettings } from '@nolly/ai'
+import { BatchRunnerFeature, CodeBlocksFeature, CommandPaletteFeature, DraftGuardFeature, EnterAsNewlineFeature, ExporterFeature, MaxWidthFeature, MessageSplitterFeature, PromptLibraryFeature, PromptQueueFeature, RecallFeature, SelectionToolbarFeature, TutorialFeature, UpdatesFeature, configurePlatform, configureUi, loadSplitterSettings } from '@nolly/ai'
 import { App } from './core/app'
 import { composerKit, findComposer, writeComposer } from './core/composer'
 import { sendPrompt } from './core/dispatch'
@@ -13,7 +13,7 @@ import { exportSource } from './export-source'
 import { findComposerActions } from './locate'
 import { GlobalSettingsModule } from './modules/global-settings'
 import { ALWAYS_HIDDEN, LAYOUT_RULES, RIGHT_SIDEBAR } from './modules/max-width/rules'
-import { TutorialModule } from './modules/tutorial'
+import { tutorialSource } from './tutorial-source'
 import { UsageStatusModule } from './modules/usage-status'
 import { URLS } from './repo'
 
@@ -31,7 +31,8 @@ configurePlatform({
 	threadOf,
 	promptsUrl: URLS.prompts,
 	exporter: exportSource,
-	release: { name: 'Better Perplexity', slug: 'better-perplexity', version: __VERSION__, metaUrl: URLS.meta, installUrl: URLS.install, releasesUrl: URLS.releases }
+	release: { name: 'Better Perplexity', slug: 'better-perplexity', version: __VERSION__, metaUrl: URLS.meta, installUrl: URLS.install, releasesUrl: URLS.releases },
+	tutorial: tutorialSource
 })
 fetchSpy.install()
 
@@ -48,7 +49,7 @@ new App()
 	.register((context) => new ExporterFeature(context))
 	.register((context) => new UsageStatusModule(context))
 	.register((context) => new GlobalSettingsModule(context))
-	.register((context) => new TutorialModule(context))
+	.register((context) => new TutorialFeature(context))
 	.register((context) => new UpdatesFeature(context))
 	.register((context) => new PromptQueueFeature(context))
 	.register((context) => new RecallFeature(context))
