@@ -1,5 +1,5 @@
 import { findComposer } from './core/composer'
-import { loadPromptShortcut, loadShortcut, tour, type Tour } from '@nolly/ai'
+import { contextPacksTour, loadPromptShortcut, loadShortcut, tour, type Tour } from '@nolly/ai'
 
 const { click, closed, escape, find, info, inside, point, press, wait } = tour
 
@@ -119,4 +119,13 @@ const palette: Tour = {
   ]
 }
 
-export const TOURS: readonly Tour[] = [gettingStarted, longMessages, prompts, batch, codeBlocks, exporting, selection, palette]
+const contextPacks: Tour = {
+  id: 'context-packs',
+  title: 'Context packs',
+  summary: 'Turn useful excerpts into a source-labelled briefing.',
+  get steps() {
+    return contextPacksTour().steps
+  }
+}
+
+export const TOURS: readonly Tour[] = [gettingStarted, longMessages, prompts, batch, codeBlocks, exporting, selection, palette, contextPacks]

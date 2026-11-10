@@ -8,9 +8,11 @@ Platform-agnostic building blocks for AI-chat userscripts such as Better Perplex
 - **Kits.** Composer (find, write, send, attach) and generation (detect, wait for the answer), plus a prompt sender built on them.
 - **Network helpers.** A streaming response observer and an incremental Server-Sent Events parser.
 - **A UI kit.** Dialogs, toasts, tooltips, controls, icons, the settings dialog and the composer button.
-- **Features** that need only the registry: Enter as Newline, Draft Guard, Message Splitter, Prompt Library, Command Palette, Message Queue, Recall, Batch Runner, Selection Toolbar, Max Width, Code Block Pro, Exporter, Update Checker and Tutorial.
+- **Features** that need only the registry: Enter as Newline, Draft Guard, Message Splitter, Prompt Library, Command Palette, Message Queue, Recall, Batch Runner, Selection Toolbar, Max Width, Code Block Pro, Context Packs, Exporter, Update Checker and Tutorial.
 
 This is a library. It is bundled into each userscript and is not installed on its own.
+
+New shared features must include a walkthrough in each platform's tutorial list and a guide in each platform's docs folder.
 
 ## Adding a site
 

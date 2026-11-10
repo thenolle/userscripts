@@ -5,6 +5,22 @@
 - Fixed a remaining registry-refactor reference that prevented typechecking.
 - Dialog positioning is explicitly enforced on the modal element.
 
+## [1.1.1] - 2026-11-10
+
+### Added
+
+- Context Packs: explicitly save selected excerpts with source URLs, select relevant sources, preview a briefing, and append it to the composer without sending.
+- Guided Context Packs tutorial and dedicated documentation.
+
+### Fixed
+
+- Shared placeholder expansion only substitutes explicitly provided values.
+- Included the shared dialog positioning and Enter as Newline registry-reference repairs.
+
+### Documentation
+
+- Documented Context Packs privacy, storage limits, manual transfer and temporary-chat persistence.
+
 ## [1.1.0] - 2026-11-10
 
 ### Added
@@ -36,3 +52,4 @@
 
 [1.0.0]: https://github.com/thenolle/userscripts/releases/tag/better-chatgpt-v1.0.0  
 [1.1.0]: https://github.com/thenolle/userscripts/releases/tag/better-chatgpt-v1.1.0
+[1.1.1]: https://github.com/thenolle/userscripts/releases/tag/better-chatgpt-v1.1.1

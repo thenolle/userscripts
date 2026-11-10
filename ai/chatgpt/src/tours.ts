@@ -1,4 +1,4 @@
-import { loadPromptShortcut, loadShortcut, tour } from '@nolly/ai'
+import { contextPacksTour, loadPromptShortcut, loadShortcut, tour } from '@nolly/ai'
 import type { Tour } from '@nolly/ai'
 import { composerKit } from './kit'
 
@@ -125,4 +125,13 @@ const palette: Tour = {
   ]
 }
 
-export const TOURS: readonly Tour[] = [gettingStarted, usage, longMessages, prompts, batch, codeBlocks, exporting, selection, palette]
+const contextPacks: Tour = {
+  id: 'context-packs',
+  title: 'Context packs',
+  summary: 'Turn useful excerpts into a source-labelled briefing.',
+  get steps() {
+    return contextPacksTour().steps
+  }
+}
+
+export const TOURS: readonly Tour[] = [gettingStarted, usage, longMessages, prompts, batch, codeBlocks, exporting, selection, palette, contextPacks]

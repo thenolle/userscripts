@@ -31,6 +31,7 @@ Updates arrive automatically. The script also checks on its own and offers to up
 | Update checker    | Checks on load and every few minutes, tells you once per version, remembers skipped versions         |
 | Message Queue     | Type ahead: queue follow-ups while an answer generates; they send one by one                         |
 | Recall            | Search everything you sent, reuse it in one key, walk back through it with the arrow keys            |
+| Context Packs     | Save sourced excerpts from conversations and assemble a previewable briefing for your next task      |
 
 ## Shortcuts
 
@@ -50,6 +51,8 @@ Prompts are loaded from [`prompts/library.json`](prompts/library.json) and cache
 ## Privacy
 
 No analytics and no server of its own. The script talks to Perplexity from your own session, and to `raw.githubusercontent.com` for update checks and community prompts. Drafts, prompts and settings stay in your userscript manager's storage.
+
+Context Packs stores only excerpts you explicitly save, with their source URL and timestamp. Saved excerpts persist locally even if they originated in a temporary chat. Libraries are separate for each userscript; copying a briefing is the manual transfer mechanism.
 
 ## Troubleshooting
 

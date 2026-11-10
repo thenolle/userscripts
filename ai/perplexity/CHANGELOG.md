@@ -22,6 +22,26 @@ All notable changes to Better Perplexity are documented here. The format follows
 - Distinguished an unknown subscription tier from subscription activity.
 - Made pace labels describe observed counter units and withheld short-history depletion estimates.
 
+## [1.1.1] - 2026-11-10
+
+### Added
+
+- Context Packs: explicitly save selected excerpts with source URLs, select relevant sources, preview a briefing, and append it to the composer without sending.
+- Guided Context Packs tutorial and dedicated documentation.
+
+### Fixed
+
+- Shared placeholder expansion only substitutes explicitly provided values.
+- Included the shared dialog positioning and Enter as Newline registry-reference repairs.
+- Refill predictions require evidence and expire rather than remaining indefinitely overdue.
+- Reset timestamps are scoped to their counter.
+- Subscription activity is distinguished from an unidentified tier.
+- Pace describes observed counter units and withholds short-history depletion estimates.
+
+### Documentation
+
+- Documented Context Packs privacy, storage limits, manual transfer and temporary-chat persistence.
+
 ## [1.0.5-hotfix.1] - 2026-11-09
 
 ### Fixed
@@ -123,3 +143,4 @@ First public release.
 [1.0.5]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.5  
 [1.0.5-hotfix.1]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.5-hotfix.1
 [1.1.0]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.1.0
+[1.1.1]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.1.1

@@ -2,6 +2,7 @@ import {
   BatchRunnerFeature,
   CodeBlocksFeature,
   CommandPaletteFeature,
+  ContextPacksFeature,
   DraftGuardFeature,
   EnterAsNewlineFeature,
   ExporterFeature,
@@ -73,4 +74,5 @@ new App()
   .register((context) => new UpdatesFeature(context))
   .register((context) => new PromptQueueFeature(context))
   .register((context) => new RecallFeature(context))
+  .register((context) => new ContextPacksFeature(context))
   .start()
