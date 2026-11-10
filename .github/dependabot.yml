@@ -11,7 +11,10 @@ updates:
         patterns: ['*']
 
   - package-ecosystem: bun
-    directory: /better-perplexity
+    directories:
+      - /core
+      - /core/ai
+      - /ai/*
     schedule:
       interval: weekly
     commit-message:

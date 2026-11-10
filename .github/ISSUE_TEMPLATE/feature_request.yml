@@ -7,7 +7,7 @@ body:
     id: script
     attributes:
       label: Userscript
-      options: [Better Perplexity, A new userscript]
+      options: [Better Perplexity, Better ChatGPT, A new userscript]
     validations:
       required: true
   - type: textarea

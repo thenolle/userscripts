@@ -16,38 +16,38 @@ jobs:
   discover:
     runs-on: ubuntu-latest
     outputs:
-      scripts: ${{ steps.find.outputs.scripts }}
+      packages: ${{ steps.find.outputs.packages }}
     steps:
       - uses: actions/checkout@v7
       - id: find
         run: |
-          scripts=$(find . -mindepth 2 -maxdepth 2 -name package.json -printf '%h\n' | sed 's|^\./||' | sort | jq -R -s -c 'split("\n")[:-1]')
-          echo "scripts=$scripts" >> "$GITHUB_OUTPUT"
+          packages=$(jq -c '[.workspaces[] | {dir: ., name: gsub("/"; "-")}]' package.json)
+          echo "packages=$packages" >> "$GITHUB_OUTPUT"
 
   check:
     needs: discover
-    if: needs.discover.outputs.scripts != '[]'
+    if: needs.discover.outputs.packages != '[]'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        script: ${{ fromJson(needs.discover.outputs.scripts) }}
+        package: ${{ fromJson(needs.discover.outputs.packages) }}
     defaults:
       run:
-        working-directory: ${{ matrix.script }}
+        working-directory: ${{ matrix.package.dir }}
     steps:
       - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: bun run typecheck
       - run: bun run validate:prompts
-        if: hashFiles(format('{0}/prompts/library.json', matrix.script)) != ''
+        if: hashFiles(format('{0}/prompts/library.json', matrix.package.dir)) != ''
       - name: Build
         run: |
           if jq -e '.scripts.build' package.json >/dev/null; then bun run build; fi
       - uses: actions/upload-artifact@v7
-        if: hashFiles(format('{0}/dist/*', matrix.script)) != ''
+        if: hashFiles(format('{0}/dist/*', matrix.package.dir)) != ''
         with:
-          name: ${{ matrix.script }}
-          path: ${{ matrix.script }}/dist/*
+          name: ${{ matrix.package.name }}
+          path: ${{ matrix.package.dir }}/dist/*
           if-no-files-found: error

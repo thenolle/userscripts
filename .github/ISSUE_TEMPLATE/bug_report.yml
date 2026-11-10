@@ -10,7 +10,7 @@ body:
     id: script
     attributes:
       label: Userscript
-      options: [Better Perplexity]
+      options: [Better Perplexity, Better ChatGPT]
     validations:
       required: true
   - type: input
@@ -56,7 +56,7 @@ body:
     id: console
     attributes:
       label: Console output
-      description: Lines starting with [Better Perplexity] from the browser console (F12). Remove anything private.
+      description: Lines from the script in the browser console (F12), starting with its name. Remove anything private.
       render: shell
   - type: checkboxes
     id: checks

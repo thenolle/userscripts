@@ -24,13 +24,15 @@ jobs:
       - id: find
         run: |
           scripts='[]'
-          for file in */package.json; do
-            dir=$(dirname "$file")
+          for dir in $(jq -r '.workspaces[]' package.json); do
+            file="$dir/package.json"
             kind=$(jq -r '.userscript.kind // "script"' "$file")
             if [ "$kind" = "library" ]; then continue; fi
+            slug=$(jq -r '.userscript.slug // empty' "$file")
+            slug=${slug:-$(basename "$dir")}
             version=$(jq -r .version "$file")
-            if ! git rev-parse -q --verify "refs/tags/${dir}-v${version}" >/dev/null; then
-              scripts=$(jq -c --arg dir "$dir" --arg version "$version" '. + [{dir: $dir, version: $version}]' <<<"$scripts")
+            if ! git rev-parse -q --verify "refs/tags/${slug}-v${version}" >/dev/null; then
+              scripts=$(jq -c --arg dir "$dir" --arg slug "$slug" --arg version "$version" '. + [{dir: $dir, slug: $slug, version: $version}]' <<<"$scripts")
             fi
           done
           echo "scripts=$scripts" >> "$GITHUB_OUTPUT"
@@ -65,8 +67,8 @@ jobs:
       - name: Create GitHub release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ matrix.script.dir }}-v${{ matrix.script.version }}
-          name: ${{ matrix.script.dir }} v${{ matrix.script.version }}
+          tag_name: ${{ matrix.script.slug }}-v${{ matrix.script.version }}
+          name: ${{ matrix.script.slug }} v${{ matrix.script.version }}
           body_path: ${{ runner.temp }}/notes.md
           target_commitish: ${{ github.sha }}
           files: |
@@ -77,6 +79,7 @@ jobs:
         run: |
           set -euo pipefail
           dir='${{ matrix.script.dir }}'
+          slug='${{ matrix.script.slug }}'
           version='${{ matrix.script.version }}'
           out="$RUNNER_TEMP/dist-out"
           mkdir -p "$out"
@@ -90,12 +93,12 @@ jobs:
             git checkout --orphan dist
             git rm -rf . >/dev/null 2>&1 || true
           fi
-          mkdir -p "$dir"
-          cp "$out"/* "$dir"/
-          git add "$dir"
+          mkdir -p "$slug"
+          cp "$out"/* "$slug"/
+          git add "$slug"
           if git diff --cached --quiet; then
             echo 'Nothing new to publish.'
           else
-            git commit -m "release($dir): v$version"
+            git commit -m "release($slug): v$version"
             git push origin dist
           fi

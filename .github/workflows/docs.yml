@@ -4,11 +4,17 @@ on:
   push:
     branches: [master]
     paths:
+      - 'package.json'
       - '*/README.md'
       - '*/CHANGELOG.md'
       - '*/docs/**'
       - '*/prompts/**'
       - '*/package.json'
+      - '*/*/README.md'
+      - '*/*/CHANGELOG.md'
+      - '*/*/docs/**'
+      - '*/*/prompts/**'
+      - '*/*/package.json'
       - '.github/workflows/docs.yml'
   repository_dispatch:
     types: [website-updated]
