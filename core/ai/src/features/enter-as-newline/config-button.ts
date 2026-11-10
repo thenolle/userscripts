@@ -2,6 +2,7 @@ import { createElement, injectStyle } from '@nolly/core'
 import { markUi, uiConfig } from '../../ui/config'
 import { ensureUiStyles } from '../../ui/styles'
 import { Tooltip } from '../../ui/tooltip'
+import { mountComposerTool, unmountComposerTool } from '../../ui/composer-toolbar'
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
 
@@ -31,7 +32,6 @@ const createIcon = (): SVGSVGElement => {
 export class ConfigButton {
   readonly element = markUi(createElement('button', 'bp-config-button'))
   private readonly tooltip: Tooltip
-  private appliedClass = ''
 
   constructor(onClick: () => void, describe: () => string) {
     ensureUiStyles()
@@ -50,27 +50,11 @@ export class ConfigButton {
   }
 
   mount(): void {
-    const { first, submit } = uiConfig().composerActions?.() ?? { first: null, submit: null }
-    if (!first && !submit) {
-      this.unmount()
-      return
-    }
-    if (first) this.syncClass(first)
-    const placed = first ? first.nextElementSibling === this.element : submit?.previousElementSibling === this.element
-    if (placed) return
-    if (first) first.insertAdjacentElement('afterend', this.element)
-    else submit?.insertAdjacentElement('beforebegin', this.element)
-  }
+		if (!mountComposerTool(this.element, 'config')) this.tooltip.hide()
+	}
 
-  unmount(): void {
-    this.tooltip.hide()
-    this.element.remove()
-  }
-
-  private syncClass(reference: HTMLElement): void {
-    const next = `${reference.className} bp-config-button`
-    if (next === this.appliedClass) return
-    this.element.className = next
-    this.appliedClass = next
-  }
+	unmount(): void {
+		this.tooltip.hide()
+		unmountComposerTool(this.element, 'config')
+	}
 }
