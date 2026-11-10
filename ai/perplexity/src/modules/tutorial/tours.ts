@@ -1,7 +1,5 @@
 import { findComposer } from '../../core/composer'
-import { loadShortcut } from '../command-palette/shortcut'
-import { loadPromptShortcut } from '../prompt-library/shortcut'
-import type { Shortcut } from '../command-palette/shortcut'
+import { loadPromptShortcut, loadShortcut, type Shortcut } from '@nolly/ai'
 import type { Step } from './engine'
 
 export interface Tour {
