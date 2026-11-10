@@ -37,3 +37,13 @@ Choose how sources appear: parenthesized links, inline links, domain names, a nu
 ## PDF workflow
 
 PDF saving uses the browser print dialog. The preview contains selectable text, linked contents, styled sections, code panels and tables. See [PDF reports](pdf-reports.md) for colors, page numbers and limitations.
+
+## Export failures
+
+If export fails, the dialog reports the request and transport error. The browser console also logs “Conversation export failed”.
+
+The exporter tries its existing session API with sandbox fetch, then page fetch where available. Requests have a timeout. If the first identifier fails, a thread-detail lookup may supply the thread UUID.
+
+Raw JSON is a separate thread request, not a guaranteed offline fallback. If both requests fail, include their status messages in a bug report. Do not include tokens or private thread contents.
+
+The exporter does not disable CORS, CSP, subresource integrity, browser tracking protection or site access restrictions.

@@ -13,3 +13,7 @@ Open the browser console on chatgpt.com and run `betterChatgptDump()`. It prints
 - **Export finds no messages:** ChatGPT changed how it marks messages. The dump shows `page.turns`; if both counts are 0 while messages are on screen, report it.
 - **Limits are empty:** send a message or reload the page.
 - **Update check failed (404):** the first release has not been published yet.
+
+## Code and table fixes in 1.1.2
+
+Code with no recognized language is displayed using the plain-text fallback. Markdown table exports escape backslashes and pipes; the shared document parser preserves those cell contents.

@@ -50,6 +50,6 @@ export const guessLanguage = (text: string): string | null => {
   const typed = TYPESCRIPT_SIGNALS.filter((pattern) => pattern.test(sample)).length
   const javascript = scores.get('javascript') ?? 0
   if (typed >= 1 && javascript + typed * 3 >= MIN_SCORE) scores.set('typescript', javascript + typed * 3)
-  const [[bestLanguage, bestScore]] = [...scores.entries()].sort(([, a], [, b]) => b - a)
-  return bestLanguage && bestScore >= MIN_SCORE ? bestLanguage : null
+  const best = [...scores.entries()].sort(([, a], [, b]) => b - a)[0]
+  return best && best[1] >= MIN_SCORE ? best[0] : null
 }
