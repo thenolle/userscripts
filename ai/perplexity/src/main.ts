@@ -17,6 +17,7 @@ import {
 	configurePlatform,
 	configureUi,
 	AnswerDiffFeature,
+	SendWhenReadyFeature,
 } from '@nolly/ai'
 import { App } from './core/app'
 import { composerKit } from './core/composer'
@@ -77,4 +78,5 @@ new App()
 	.register((context) => new RecallFeature(context))
 	.register((context) => new ContextPacksFeature(context))
 	.register((context) => new AnswerDiffFeature(context))
+	.register((context) => new SendWhenReadyFeature(context))
 	.start()

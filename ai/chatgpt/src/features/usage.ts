@@ -1,4 +1,4 @@
-import { Tooltip, createButton, createDataRow, createDialog, createQuotaPanel, ensureUiStyles, markUi, quotaSummary, showToast, uiConfig } from '@nolly/ai'
+import { Tooltip, createButton, createDataRow, createDialog, createQuotaPanel, ensureUiStyles, LEVEL_GLYPH, LEVEL_LABEL, markUi, quotaLevel, quotaSummary, showToast, uiConfig } from '@nolly/ai'
 import type { QuotaPanel } from '@nolly/ai'
 import { Feature, createElement, injectStyle } from '@nolly/core'
 import type { MenuEntry, ScriptContext } from '@nolly/core'
@@ -9,7 +9,6 @@ import { storage } from '../storage'
 
 const PRIMARY_KEY = 'usage-status:primary'
 const LAST_KEY = 'usage-status:last'
-const LOW = 2
 
 const LABELS: Readonly<Record<string, string>> = {
 	reason: 'Reasoning tool',
@@ -46,7 +45,7 @@ export class UsageFeature extends Feature {
 	constructor(context: ScriptContext) {
 		super(context)
 		ensureUiStyles()
-		injectStyle(`${uiConfig().id}-usage-styles`, `.bp-usage-pill[data-level='low'] { color: var(--bp-yellow); }.bp-usage-pill[data-level='empty'] { color: var(--bp-red); }`)
+		injectStyle(`${uiConfig().id}-usage-styles`, `.bp-usage-pill[data-level='ok'] { color: var(--bp-green); }.bp-usage-pill[data-level='warning'] { color: var(--bp-yellow); }.bp-usage-pill[data-level='critical'], .bp-usage-pill[data-level='empty'] { color: var(--bp-red); }`)
 		this.pill.type = 'button'
 		this.pill.setAttribute('aria-label', 'Usage status')
 		this.pill.appendChild(this.label)
@@ -102,10 +101,11 @@ export class UsageFeature extends Feature {
 	private update(): void {
 		const entry = session.limit(this.primary)
 		const stale = entry ? expired(entry.resetAfter) : false
-		this.label.textContent = entry ? `${labelOf(entry.feature)} ${stale ? '—' : entry.remaining}` : 'Tool usage'
-		const report = session.getQuotaReports().find((item) => item.key === this.primary) ?? null
-		this.pill.title = quotaSummary(report)
-		this.pill.dataset['level'] = !entry || stale ? 'ok' : entry.remaining <= 0 ? 'empty' : entry.remaining <= LOW ? 'low' : 'ok'
+		const level = entry && !stale ? quotaLevel(entry.remaining, null) : 'unknown'
+		const text = entry ? `${labelOf(entry.feature)} ${stale ? '—' : entry.remaining}` : 'Tool usage'
+		this.label.textContent = level === 'unknown' ? text : `${LEVEL_GLYPH[level]} ${text}`
+		this.pill.dataset['level'] = level
+		this.pill.setAttribute('aria-label', `Usage status: ${text}, ${LEVEL_LABEL[level]}`)
 		this.tooltip.refresh()
 	}
 
@@ -126,7 +126,8 @@ export class UsageFeature extends Feature {
 		}
 		for (const limit of session.limits) {
 			const value = expired(limit.resetAfter) ? `Last reported: ${limit.remaining} · ${resetText(limit.resetAfter)}` : `${limit.remaining} remaining · ${resetText(limit.resetAfter)}`
-			list.appendChild(createDataRow(labelOf(limit.feature), value))
+			const report = session.getQuotaReports().find((item) => item.key === limit.feature) ?? null
+			list.appendChild(createDataRow(labelOf(limit.feature), `${value} · ${quotaSummary(report)}`))
 		}
 		return list
 	}
@@ -142,7 +143,7 @@ export class UsageFeature extends Feature {
 			return
 		}
 		const ui = createDialog({ id: this.dialogId, title: this.name, description: session.plan ? `Reported plan: ${session.plan}` : 'Plan not reported', width: 760 })
-		this.panel = createQuotaPanel(() => session.getQuotaReports())
+		this.panel = createQuotaPanel(() => session.getQuotaReports(), { activeKey: () => this.primary })
 		const panel = this.panel
 		ui.body.appendChild(panel.element)
 		if (session.maxFileMb !== null) ui.body.appendChild(createDataRow('API-reported general attachment ceiling', `${session.maxFileMb} MB · type-specific restrictions may be lower`))

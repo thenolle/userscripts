@@ -19,12 +19,12 @@ export const MODE_MAP: readonly { readonly match: RegExp; readonly key: LimitKey
 ]
 
 export const STATUS_LABELS: Readonly<Record<Status, string>> = {
-	healthy: 'Healthy',
-	low: 'Low',
+	healthy: 'OK',
+	low: 'Warning',
 	critical: 'Critical',
 	empty: 'Empty',
-	unavailable: 'Unavailable',
-	reported: 'Reported',
+	unavailable: 'Unknown',
+	reported: 'Reported'
 }
 
 export const SETTINGS_FIELDS: readonly SettingField[] = [

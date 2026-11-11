@@ -1,46 +1,43 @@
 ---
 title: Usage Quota V2
-description: Reported counts, capacity evidence and recovery scenarios in one usage feature.
+description: One card per limit with status, refill estimates and full-recovery time.
 section: Guides
 order: 25
 ---
 
 # Usage Quota V2
 
-Click the usage control in the header. The main usage dialog now contains the observation engine previously shown separately as Quota Insights.
+Click the usage control in the header. Each limit has its own card.
 
-## Reported counts and capacity
+## Status colours
 
-A known count is labelled Reported even when capacity is unknown.
+- Green with a check: OK.
+- Yellow with an exclamation mark: Warning.
+- Red with a cross: Critical or Empty.
+- Grey with a question mark: Unknown.
 
-API-reported capacity is shown separately from the observed maximum. An observed maximum is only a lower bound. It does not prove the account's maximum allowance.
+With a reported capacity, a limit is Warning at 40% or less and Critical at 15% or less. Without one, 3 or fewer units is Warning and 1 or fewer is Critical. A count of 0 is Empty.
 
-## Recovery calculations
+## Next +1, +5 and Full
 
-The dialog shows the last observed net increase, comparable sampling time, net recovery, net spending and conditional recovery scenarios.
+Each card shows when the next unit, five units, and a full refill are expected, as a countdown and a clock time with a margin when one is known.
 
-You can choose a recovery horizon. When sufficient observations exist, the same engine supplies +1, +5, recovery within that horizon and full-recovery scenarios.
+The basis is printed under the times. The sources are used in this order:
 
-Full recovery requires an explicit API capacity. A reset timestamp alone does not establish the refill amount.
+1. The reset time reported by the site's API.
+2. Your observed refill cadence, when refills have been regular.
+3. Your average observed recovery rate.
 
-## Interpretation
+When none applies, the card says Learning, Stale or Overdue. It never invents a countdown.
 
-Rate scenarios assume no additional spending and an unchanged observed net recovery rate. They are not guarantees or calibrated confidence intervals.
+## What Full means
 
-Long gaps, hidden spending, cap changes and activity in other clients affect the calculation. Unknown results are not replaced with invented countdowns.
+If the site reports a capacity, Full means that capacity. Otherwise it means the highest level you have seen, and the card says so.
 
-## Storage and account scope
+## Accuracy
 
-Existing quota observations are preserved.
+These are estimates from this device's observations. Refills can be irregular, spending changes the timing, and activity in other tabs or apps is invisible here. The estimate improves with more time open on the site.
 
-Perplexity reports are requested using its current account/tier namespace. ChatGPT currently partitions by reported plan rather than a verified account id. Avoid mixing ChatGPT accounts in the same userscript storage.
+## Account scope
 
-## Tutorial
-
-Open Help and choose Usage Quota V2. There is no separate Quota Insights module to enable.
-
-## Recovery cards
-
-The dialog displays +1, +5 and full-recovery cards. When evidence supports a scenario, each card shows a relative duration and an estimated local clock time. These are conditional rate scenarios, not guaranteed server refill deadlines.
-
-Change the recovery horizon to inspect projected recovery within a selected number of minutes. Expand the evidence section for observations, sampled duration and net counter changes.
+Perplexity history is separated by account and tier. ChatGPT history is separated by reported plan, so avoid mixing ChatGPT accounts in one userscript storage.

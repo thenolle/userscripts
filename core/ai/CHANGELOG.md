@@ -1,6 +1,10 @@
 # Changelog
 # Changelog
 
+## [0.2.4] - 2026-11-11
+
+- Send When Ready and quota cards: new feature, status levels, forecast engine and card panel.
+
 ## [0.2.3] - 2026-11-10
 
 ### Code wrapping and Answer Diff update

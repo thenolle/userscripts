@@ -2,6 +2,25 @@
 
 All notable changes to Better Perplexity are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.5] - 2026-11-11
+
+### Added
+
+- Send When Ready: hold a message and send it at a chosen time, or when a quota counter has units again, after a 10-second countdown.
+- 25 new library prompts for decisions, debugging, code review, research, writing and planning.
+
+### Changed
+
+- Usage Quota V2 now shows one card per limit with a status label, meter, 24-hour history, and Next +1, +5 and Full estimates.
+- Usage status uses green for OK, yellow for Warning and red for Critical or Empty, with a text label and a symbol so colour is never the only cue.
+- Estimates use the API reset time first, then observed refill cadence, then average recovery rate, and always show their basis.
+
+### Fixed
+
+- Critical limits in the usage dialog were drawn yellow; they are now red.
+- Usage polling speeds up near an expected refill to narrow the timing uncertainty.
+- Language guessing no longer contains a no-op expression in its JSON fallback.
+
 ## [1.2.4] - 2026-11-10
 
 ### Added

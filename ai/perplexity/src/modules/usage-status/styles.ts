@@ -113,8 +113,8 @@ const USAGE_CSS = `
 
 .bp-usage-dialog .bp-dot { width: 7px; height: 7px; flex-shrink: 0; border-radius: 50%; background: var(--bp-muted); }
 .bp-usage-dialog .bp-dot.healthy { background: var(--bp-green); }
-.bp-usage-dialog .bp-dot.low, .bp-usage-dialog .bp-dot.critical { background: var(--bp-yellow); }
-.bp-usage-dialog .bp-dot.empty { background: var(--bp-red); }
+.bp-usage-dialog .bp-dot.low { background: var(--bp-yellow); }
+.bp-usage-dialog .bp-dot.critical, .bp-usage-dialog .bp-dot.empty { background: var(--bp-red); }
 
 .bp-usage-dialog .bp-details { margin-bottom: 8px; border: 1px solid var(--bp-border); border-radius: 12px; }
 .bp-usage-dialog .bp-details-summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 14px; cursor: pointer; font-weight: 600; list-style: none; }
@@ -165,6 +165,18 @@ const USAGE_CSS = `
 
 .bp-badge.reported { color: var(--bp-muted); background: var(--bp-accent); }
 .bp-dot.reported { background: var(--bp-muted); }
+
+.bp-usage-indicator[data-status='low'] .bp-usage-dot { border-radius: 2px; transform: rotate(45deg); }
+.bp-usage-indicator[data-status='critical'] .bp-usage-dot,
+.bp-usage-indicator[data-status='empty'] .bp-usage-dot { border-radius: 2px; }
+.bp-usage-indicator[data-status='healthy'] .bp-usage-trigger,
+.bp-usage-indicator[data-status='low'] .bp-usage-trigger,
+.bp-usage-indicator[data-status='critical'] .bp-usage-trigger,
+.bp-usage-indicator[data-status='empty'] .bp-usage-trigger { border-color: color-mix(in srgb, var(--bp-dot) 45%, var(--bp-border)); }
+.bp-usage-indicator[data-status='healthy'] .bp-usage-trigger,
+.bp-usage-indicator[data-status='low'] .bp-usage-trigger,
+.bp-usage-indicator[data-status='critical'] .bp-usage-trigger,
+.bp-usage-indicator[data-status='empty'] .bp-usage-trigger { background: color-mix(in srgb, var(--bp-dot) 8%, var(--bp-bg)); }
 `
 
 export const ensureUsageStyles = (): void => injectStyle('better-perplexity-usage-styles', USAGE_CSS)

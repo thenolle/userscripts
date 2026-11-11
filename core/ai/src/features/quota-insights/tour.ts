@@ -4,23 +4,11 @@ import { info } from '../tutorial/steps'
 export const createQuotaTour = (): Tour => ({
 	id: 'quota-insights',
 	title: 'Usage Quota V2',
-	summary: 'Reported allowances and recovery calculations in the main usage dialog.',
+	summary: 'One card per limit, with refill and full-recovery times.',
 	steps: [
-		info(
-			'One usage feature',
-			'Open the header usage control. The observation engine is now integrated into this dialog rather than being a separate Quota Insights module.'
-		),
-		info(
-			'Counts are not capacity',
-			'A known remaining count is labelled Reported. The observed maximum is a lower bound; only an explicit API capacity supports a full-recovery scenario.'
-		),
-		info(
-			'Recovery scenarios',
-			'The same ledger supplies last net increase, net recovery rate, +1, +5 and recovery within your selected horizon when sufficient evidence exists.'
-		),
-		info(
-			'Assumptions stay visible',
-			'Rate scenarios assume no extra spending and an unchanged observed recovery rate. Unknown capacity and insufficient evidence remain explicitly unknown.'
-		)
+		info('One card per limit', 'Each limit has its own card: remaining count, status, a meter and your last 24 hours.'),
+		info('Colour and text', 'Green is OK, yellow is Warning, red is Critical or Empty. Every status also has a label and a symbol, so colour is never the only cue.'),
+		info('Next +1, +5 and Full', 'These times use the API reset time when supplied, then your observed refill cadence, then your average recovery rate. The basis is shown under the times.'),
+		info('Honest unknowns', 'Without a reported capacity, “Full” targets the highest level seen, and the card says so. Cards show Learning, Stale or Overdue instead of inventing a countdown.')
 	]
 })

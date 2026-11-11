@@ -95,3 +95,7 @@ The header usage dialog combines reported allowances, capacity evidence and obse
 ## Answer Diff
 
 Compare two answers or code revisions locally, inspect exact text changes, and explicitly save a reusable baseline. Nothing is sent automatically. See [Answer diff](docs/answer-diff.md).
+
+## Send When Ready
+
+Hold a message and send it at a chosen time, or when a quota counter has units again. See [Send when ready](docs/send-when-ready.md).

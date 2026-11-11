@@ -17,6 +17,7 @@ import {
 	configurePlatform,
 	configureUi,
 	AnswerDiffFeature,
+	SendWhenReadyFeature,
 } from '@nolly/ai'
 import { App } from './app'
 import { fileBudget } from './budget'
@@ -95,5 +96,6 @@ whenReady(() => {
 		.register((context) => new RecallFeature(context))
 		.register((context) => new ContextPacksFeature(context))
 		.register((context) => new AnswerDiffFeature(context))
+		.register((context) => new SendWhenReadyFeature(context))
 		.start()
 })

@@ -1,8 +1,13 @@
 import { createElement, injectStyle } from '@nolly/core'
-import type { QuotaReport } from '../quota'
+import { LEVEL_GLYPH, LEVEL_LABEL, QUOTA_STALE_MS } from '../quota'
+import type { Forecast, QuotaReport } from '../quota'
 import { uiConfig } from './config'
-import { createDataRow, createNumberField } from './controls'
+import { createDataRow } from './controls'
 import { ensureUiStyles } from './styles'
+
+export interface QuotaPanelOptions {
+	readonly activeKey?: () => string | null
+}
 
 export interface QuotaPanel {
 	readonly element: HTMLElement
@@ -10,184 +15,248 @@ export interface QuotaPanel {
 	destroy(): void
 }
 
+const CSS = `
+.bp-qc-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.bp-qc {
+	--qc: var(--bp-muted);
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	min-width: 0;
+	padding: 16px;
+	border: 1px solid var(--bp-border);
+	border-inline-start: 4px solid var(--qc);
+	border-radius: 12px;
+	background: var(--bp-bg);
+	color: var(--bp-fg);
+}
+.bp-qc[data-level='ok'] { --qc: var(--bp-green); }
+.bp-qc[data-level='warning'] { --qc: var(--bp-yellow); }
+.bp-qc[data-level='critical'], .bp-qc[data-level='empty'] { --qc: var(--bp-red); }
+.bp-qc[data-active='true'] { box-shadow: 0 0 0 2px color-mix(in srgb, var(--qc) 35%, transparent); }
+.bp-qc-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.bp-qc-title { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.bp-qc-title h3 { margin: 0; overflow: hidden; font-size: 14px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.bp-qc-now { padding: 1px 6px; border-radius: 999px; background: var(--bp-accent); color: var(--bp-muted); font-size: 10px; }
+.bp-qc-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 3px 9px;
+	border: 1px solid color-mix(in srgb, var(--qc) 45%, transparent);
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--qc) 14%, var(--bp-bg));
+	color: var(--bp-fg);
+	font-size: 11px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+.bp-qc-glyph { display: inline-grid; place-items: center; width: 14px; height: 14px; border-radius: 50%; background: var(--qc); color: #fff; font-size: 10px; line-height: 1; }
+.bp-qc[data-level='warning'] .bp-qc-glyph { color: #1f1300; }
+.bp-qc-count { font-size: 38px; font-weight: 650; line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.bp-qc-of { margin-inline-start: 6px; color: var(--bp-muted); font-size: 15px; font-weight: 400; letter-spacing: 0; }
+.bp-qc-sub { margin-top: 6px; color: var(--bp-muted); font-size: 12px; line-height: 1.5; }
+.bp-qc-meter { height: 8px; overflow: hidden; border-radius: 999px; background: var(--bp-accent); }
+.bp-qc-meter > span { display: block; height: 100%; border-radius: inherit; background: var(--qc); transition: width 240ms ease; }
+.bp-qc-times { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.bp-qc-time { min-width: 0; padding: 10px; border: 1px solid var(--bp-border); border-radius: 10px; background: var(--bp-accent); }
+.bp-qc-time[data-tone='good'] { border-color: color-mix(in srgb, var(--bp-green) 45%, var(--bp-border)); }
+.bp-qc-time-label { color: var(--bp-muted); font-size: 11px; }
+.bp-qc-time-main { margin-top: 4px; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.bp-qc-time-note { margin-top: 3px; color: var(--bp-muted); font-size: 11px; line-height: 1.4; }
+.bp-qc-basis { color: var(--bp-muted); font-size: 11px; line-height: 1.5; }
+.bp-qc-spark { display: block; width: 100%; height: 34px; color: var(--qc); }
+.bp-qc-more summary { cursor: pointer; color: var(--bp-muted); font-size: 12px; }
+.bp-qc-more .bp-data-list { margin-top: 8px; }
+.bp-qc-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding: 12px 14px; border: 1px solid var(--bp-border); border-radius: 12px; background: var(--bp-accent); font-size: 12px; }
+.bp-qc-summary .bp-qc { padding: 0; border: 0; background: transparent; }
+@media (max-width: 560px) { .bp-qc-times { grid-template-columns: 1fr; } .bp-qc-list { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .bp-qc-meter > span { transition: none; } }
+`
+
 export const quotaDuration = (milliseconds: number): string => {
-	if (!Number.isFinite(milliseconds)) return 'Unknown'
-	const minutes = Math.max(0, Math.ceil(milliseconds / 60_000))
-	if (minutes < 60) return `${minutes}m`
-	const hours = Math.floor(minutes / 60)
-	if (hours < 48) return `${hours}h ${minutes % 60}m`
+	if (!Number.isFinite(milliseconds)) return 'unknown'
+	const total = Math.max(0, Math.ceil(milliseconds / 60_000))
+	if (total < 60) return `${total}m`
+	const hours = Math.floor(total / 60)
+	if (hours < 48) return `${hours}h ${String(total % 60).padStart(2, '0')}m`
 	return `${Math.floor(hours / 24)}d ${hours % 24}h`
+}
+
+const clock = (at: number, now: number): string => {
+	const date = new Date(at)
+	const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+	return date.toDateString() === new Date(now).toDateString() ? time : `${date.toLocaleDateString([], { weekday: 'short' })} ${time}`
+}
+
+const marginOf = (forecast: Forecast, at: number, now: number): number => forecast.marginMs + forecast.relativeError * Math.max(0, at - now)
+
+interface Cell {
+	readonly main: string
+	readonly note: string
+	readonly good?: boolean
+}
+
+const etaCell = (forecast: Forecast, at: number, now: number): Cell => {
+	const margin = marginOf(forecast, at, now)
+	const wait = at - now
+	return {
+		main: wait <= 30_000 ? 'any moment' : `in ${quotaDuration(wait)}`,
+		note: `≈ ${clock(at, now)}${margin >= 60_000 ? ` ± ${quotaDuration(margin)}` : ''}`
+	}
+}
+
+const cellsOf = (report: QuotaReport, now: number): readonly [Cell, Cell, Cell] => {
+	const stale = now - report.observedAt > QUOTA_STALE_MS
+	const missing = report.target === null ? null : Math.max(0, report.target - report.remaining)
+	const forecast = report.forecast
+	const learning: Cell = { main: 'Learning', note: 'Needs about 30 minutes of sampling and 3 observed refills.' }
+	const state = (): Cell | null => {
+		if (missing === 0) return { main: 'Full', note: report.targetKind === 'observed-peak' ? 'At the highest level seen.' : 'At the reported capacity.', good: true }
+		if (stale) return { main: 'Stale', note: 'Waiting for fresh data.' }
+		if (forecast?.overdue) return { main: 'Overdue', note: 'No increase at the usual time.' }
+		return null
+	}
+	const blocked = state()
+	const unit = (units: number): Cell => {
+		if (blocked) return blocked
+		if (missing !== null && missing < units) return { main: '—', note: 'More than the missing amount.' }
+		const entry = forecast?.plus.find((item) => item.units === units)
+		if (forecast && entry) return etaCell(forecast, entry.at, now)
+		if (forecast?.source === 'api-reset') return { main: 'Unknown', note: 'The API gives a reset time, not the amount.' }
+		return learning
+	}
+	const full = (): Cell => {
+		if (blocked) return blocked
+		if (forecast && forecast.fullAt !== null) return etaCell(forecast, forecast.fullAt, now)
+		if (report.target === null) return { main: 'Unknown', note: 'No capacity reported and no higher level seen yet.' }
+		return forecast?.source === 'api-reset' ? { main: 'Unknown', note: 'Refill amount not reported.' } : learning
+	}
+	return [unit(1), unit(5), full()]
 }
 
 export const quotaSummary = (report: QuotaReport | null): string => {
 	if (!report) return 'Collecting quota observations'
-	if (Date.now() - report.observedAt > 5 * 60_000) return 'Last reported count · awaiting fresh observations'
-	if (report.cap !== null && report.remaining >= report.cap) return 'At the API-reported capacity'
-	const one = report.scenarios.find((scenario) => scenario.units === 1)
-	if (one) return `+1 in ~${quotaDuration(one.estimatedMs)} · rate scenario`
-	return report.lastIncrease ? `Last net recovery +${report.lastIncrease.units} · ${quotaDuration(Date.now() - report.lastIncrease.to)} ago` : `${report.observations} observations · learning recovery`
+	const now = Date.now()
+	if (now - report.observedAt > QUOTA_STALE_MS) return 'Last reported · waiting for fresh data'
+	if (report.target !== null && report.remaining >= report.target) return 'Full'
+	const forecast = report.forecast
+	if (forecast?.nextAt != null) {
+		const next = `Next +1 ${forecast.nextAt - now <= 30_000 ? 'any moment' : `in ${quotaDuration(forecast.nextAt - now)}`}`
+		return forecast.fullAt !== null ? `${next} · Full in ${quotaDuration(forecast.fullAt - now)}` : next
+	}
+	return forecast?.overdue ? 'Refill overdue · waiting for an increase' : 'Learning refill pattern'
 }
 
-const CSS = `
-.bp-quota-list { display: grid; gap: 18px; }
-.bp-quota-card {
-	padding: 18px;
-	border: 1px solid var(--bp-border);
-	border-radius: 10px;
-	background: var(--bp-bg);
+const cell = (label: string, content: Cell): HTMLElement => {
+	const element = createElement('div', 'bp-qc-time')
+	if (content.good) element.dataset['tone'] = 'good'
+	element.append(createElement('div', 'bp-qc-time-label', label), createElement('div', 'bp-qc-time-main', content.main), createElement('div', 'bp-qc-time-note', content.note))
+	return element
 }
-.bp-quota-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.bp-quota-head h3 { margin: 0; font-size: 14px; font-weight: 600; }
-.bp-quota-count { margin: 14px 0 4px; font-size: 36px; line-height: 1.1; font-weight: 650; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
-.bp-quota-caption { color: var(--bp-muted); font-size: 12px; line-height: 1.5; }
-.bp-quota-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
-.bp-quota-metric { min-width: 0; padding: 12px; border: 1px solid var(--bp-border); border-radius: 8px; background: var(--bp-accent); }
-.bp-quota-metric-label { color: var(--bp-muted); font-size: 11px; }
-.bp-quota-metric-value { margin-top: 6px; font-size: 17px; line-height: 1.3; font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-.bp-quota-metric-note { margin-top: 5px; color: var(--bp-muted); font-size: 11px; line-height: 1.5; }
-.bp-quota-horizon { margin-top: 10px; padding: 12px; border: 1px dashed var(--bp-border); border-radius: 8px; }
-.bp-quota-evidence { margin-top: 12px; }
-.bp-quota-evidence summary { cursor: pointer; color: var(--bp-muted); font-size: 12px; }
-.bp-quota-evidence .bp-data-list { margin-top: 10px; }
-.bp-quota-progress { height: 6px; margin-top: 12px; background: var(--bp-accent); border-radius: 999px; overflow: hidden; }
-.bp-quota-progress > span { display: block; height: 100%; background: var(--bp-green); }
-.bp-quota-card[data-state='empty'] .bp-quota-count { color: var(--bp-red); }
-.bp-quota-card[data-state='low'] .bp-quota-count { color: var(--bp-yellow); }
-@media (max-width: 560px) {
-	.bp-quota-grid { grid-template-columns: 1fr; }
-	.bp-quota-card { padding: 14px; }
-}
-`
 
-const metric = (label: string, value: string, note: string): HTMLElement => {
-	const card = createElement('div', 'bp-quota-metric')
-	card.append(
-		createElement('div', 'bp-quota-metric-label', label),
-		createElement('div', 'bp-quota-metric-value', value),
-		createElement('div', 'bp-quota-metric-note', note)
+const sparkline = (report: QuotaReport): SVGSVGElement | null => {
+	if (report.history.length < 2) return null
+	const ns = 'http://www.w3.org/2000/svg'
+	const first = report.history[0]!
+	const last = report.history.at(-1)!
+	const span = Math.max(1, last[0] - first[0])
+	const top = Math.max(1, report.target ?? 0, report.peak)
+	const points = report.history.map(([at, value]) => `${(((at - first[0]) / span) * 100).toFixed(2)},${(30 - (value / top) * 28).toFixed(2)}`).join(' ')
+	const svg = document.createElementNS(ns, 'svg')
+	svg.setAttribute('viewBox', '0 0 100 32')
+	svg.setAttribute('preserveAspectRatio', 'none')
+	svg.setAttribute('aria-hidden', 'true')
+	svg.setAttribute('class', 'bp-qc-spark')
+	const line = document.createElementNS(ns, 'polyline')
+	for (const [name, value] of Object.entries({ points, fill: 'none', stroke: 'currentColor', 'stroke-width': '1.6', 'vector-effect': 'non-scaling-stroke', 'stroke-linejoin': 'round' })) line.setAttribute(name, value)
+	svg.appendChild(line)
+	return svg
+}
+
+const buildCard = (report: QuotaReport, now: number, active: boolean, expanded: Set<string>): HTMLElement => {
+	const id = `${report.scope}:${report.key}`
+	const stale = now - report.observedAt > QUOTA_STALE_MS
+	const card = createElement('section', 'bp-qc')
+	card.dataset['level'] = report.level
+	card.dataset['active'] = String(active)
+	const title = createElement('div', 'bp-qc-title')
+	title.appendChild(createElement('h3', undefined, report.label))
+	if (active) title.appendChild(createElement('span', 'bp-qc-now', 'Selected'))
+	const pill = createElement('span', 'bp-qc-pill')
+	pill.append(createElement('span', 'bp-qc-glyph', LEVEL_GLYPH[report.level]), document.createTextNode(LEVEL_LABEL[report.level]))
+	const head = createElement('div', 'bp-qc-head')
+	head.append(title, pill)
+	const count = createElement('div', 'bp-qc-count', report.remaining.toLocaleString())
+	if (report.cap !== null) count.appendChild(createElement('span', 'bp-qc-of', `/ ${report.cap}`))
+	const basis = report.cap !== null ? 'API-reported capacity' : report.peak > report.remaining ? `capacity not reported · highest seen ${report.peak}` : 'capacity not reported'
+	const age = stale ? ` · last reported ${quotaDuration(now - report.observedAt)} ago` : ''
+	const main = createElement('div')
+	main.append(count, createElement('div', 'bp-qc-sub', `remaining · ${basis}${age}`))
+	card.append(head, main)
+	if (report.target !== null) {
+		const percent = Math.max(0, Math.min(100, report.remaining / report.target * 100))
+		const meter = createElement('div', 'bp-qc-meter')
+		meter.setAttribute('role', 'meter')
+		meter.setAttribute('aria-label', `${report.label} remaining`)
+		meter.setAttribute('aria-valuemin', '0')
+		meter.setAttribute('aria-valuemax', String(report.target))
+		meter.setAttribute('aria-valuenow', String(report.remaining))
+		const fill = createElement('span')
+		fill.style.width = `${percent.toFixed(1)}%`
+		meter.appendChild(fill)
+		card.appendChild(meter)
+	}
+	const [one, five, full] = cellsOf(report, now)
+	const grid = createElement('div', 'bp-qc-times')
+	grid.append(cell('Next +1', one), cell('+5 back', five), cell(report.target === null ? 'Fully refilled' : `Full (${report.target})`, full))
+	card.appendChild(grid)
+	if (report.forecast && !stale) card.appendChild(createElement('div', 'bp-qc-basis', `Basis: ${report.forecast.basis}`))
+	const spark = sparkline(report)
+	if (spark) card.appendChild(spark)
+	const details = createElement('details', 'bp-qc-more')
+	details.open = expanded.has(id)
+	details.appendChild(createElement('summary', undefined, 'Evidence and assumptions'))
+	const rows = createElement('div', 'bp-data-list')
+	rows.append(
+		createDataRow('Last observation', new Date(report.observedAt).toLocaleString()),
+		createDataRow('Saved observations', String(report.observations)),
+		createDataRow('Comparable sampling', quotaDuration(report.sampledMs)),
+		createDataRow('Refill intervals seen', String(report.positiveIntervals)),
+		createDataRow('Recovered · spent (sampled)', `${report.netRecovered} · ${report.netSpent}`),
+		createDataRow('API reset time', report.resetAt === null ? 'Not supplied' : new Date(report.resetAt).toLocaleString())
 	)
+	if (report.lastIncrease) rows.appendChild(createDataRow('Last increase', `+${report.lastIncrease.units} · ${quotaDuration(now - report.lastIncrease.to)} ago`))
+	details.append(rows, createElement('p', 'bp-hint', 'Times are estimates from this device’s observations. They assume no extra spending. “Full” targets the API capacity, or the highest level seen when no capacity is reported.'))
+	details.addEventListener('toggle', () => {
+		if (details.open) expanded.add(id)
+		else expanded.delete(id)
+	})
+	card.appendChild(details)
 	return card
 }
 
-const eta = (milliseconds: number, now: number): string => {
-	const date = new Date(now + milliseconds)
-	return Number.isFinite(date.getTime()) ? `Scenario time: ${date.toLocaleString()}` : 'Time exceeds the supported date range'
-}
-
-export const createQuotaPanel = (getReports: () => readonly QuotaReport[]): QuotaPanel => {
+export const createQuotaPanel = (getReports: () => readonly QuotaReport[], options: QuotaPanelOptions = {}): QuotaPanel => {
 	ensureUiStyles()
-	injectStyle(`${uiConfig().id}-quota-cards`, CSS)
-	const element = createElement('div', 'bp-stack')
+	injectStyle(`${uiConfig().id}-quota-cards-v3`, CSS)
+	const element = createElement('div', 'bp-qc-list')
 	element.dataset['usageQuotaV2'] = ''
-	const results = createElement('div', 'bp-quota-list')
 	const expanded = new Set<string>()
-	let horizon = 60
 	let destroyed = false
 	const render = (): void => {
 		if (destroyed) return
 		const now = Date.now()
-		const reports = getReports()
+		const activeKey = options.activeKey?.() ?? null
+		const reports = [...getReports()].sort((a, b) => Number(b.key === activeKey) - Number(a.key === activeKey))
 		if (!reports.length) {
-			results.replaceChildren(createElement('div', 'bp-empty', 'Waiting for quota observations. Use the platform normally or refresh its usage data.'))
+			element.replaceChildren(createElement('div', 'bp-empty', 'Waiting for quota observations. Use the site normally or refresh usage data.'))
 			return
 		}
-		results.replaceChildren(...reports.map((report) => {
-			const identity = `${report.scope}:${report.key}`
-			const stale = now - report.observedAt > 5 * 60_000
-			const rateAvailable = !stale && report.recoveryPerHour !== null
-			const missing = report.cap === null ? null : Math.max(0, report.cap - report.remaining)
-			const state = stale ? 'stale' : report.remaining === 0 ? 'empty' : report.cap !== null && report.remaining / report.cap <= 0.1 ? 'low' : 'reported'
-			const card = createElement('section', 'bp-quota-card')
-			card.dataset['state'] = state
-			const head = createElement('div', 'bp-quota-head')
-			head.append(
-				createElement('h3', undefined, report.label),
-				createElement('span', `bp-badge ${state === 'empty' ? 'empty' : state === 'low' ? 'low' : ''}`, stale ? 'Last reported' : state === 'empty' ? 'Empty' : state === 'low' ? 'Low' : 'Reported')
-			)
-			card.append(
-				head,
-				createElement('div', 'bp-quota-count', report.remaining.toLocaleString()),
-				createElement('div', 'bp-quota-caption', report.cap === null ? `remaining · capacity unknown · observed maximum ≥ ${report.peak}` : `remaining of ${report.cap} API-reported capacity`)
-			)
-			if (report.cap !== null && report.cap > 0) {
-				const bar = createElement('div', 'bp-quota-progress')
-				const fill = createElement('span')
-				fill.style.width = `${Math.max(0, Math.min(100, report.remaining / report.cap * 100))}%`
-				if (state === 'empty') fill.style.background = 'var(--bp-red)'
-				if (state === 'low') fill.style.background = 'var(--bp-yellow)'
-				bar.appendChild(fill)
-				card.appendChild(bar)
-			}
-			const grid = createElement('div', 'bp-quota-grid')
-			for (const units of [1, 5]) {
-				const scenario = rateAvailable ? report.scenarios.find((entry) => entry.units === units) : null
-				grid.appendChild(metric(
-					`Recover +${units}`,
-					scenario ? `~${quotaDuration(scenario.estimatedMs)}` : missing !== null && missing < units ? 'Not applicable' : stale ? 'Stale data' : 'Learning',
-					scenario ? eta(scenario.estimatedMs, now) : missing !== null && missing < units ? 'Exceeds the missing allowance.' : 'More usable recovery observations are needed.'
-				))
-			}
-			grid.appendChild(metric(
-				'Full recovery',
-				report.fullMs === 0 ? 'Full' : report.fullMs !== null && rateAvailable ? `~${quotaDuration(report.fullMs)}` : report.cap === null ? 'Cap unknown' : 'Learning',
-				report.fullMs === 0 ? 'At the API-reported capacity.' : report.fullMs !== null && rateAvailable ? eta(report.fullMs, now) : 'Requires both capacity and usable recovery evidence.'
-			))
-			card.appendChild(grid)
-			const horizonCard = createElement('div', 'bp-quota-horizon')
-			const projected = rateAvailable ? report.recoveryPerHour! * horizon / 60 : null
-			const bounded = projected === null ? null : missing === null ? projected : Math.min(missing, projected)
-			horizonCard.append(
-				createElement('div', 'bp-quota-metric-label', `Recovery within ${horizon} minutes`),
-				createElement('div', 'bp-quota-metric-value', bounded === null ? 'Learning recovery rate' : `~${Math.max(0, bounded).toFixed(1)} units`),
-				createElement('div', 'bp-quota-metric-note', report.recoveryPerHour !== null && !stale ? `Observed net recovery: ~${report.recoveryPerHour.toFixed(2)} units/hour.` : 'No unsupported countdown is substituted.')
-			)
-			card.appendChild(horizonCard)
-			if (report.resetAt !== null) card.appendChild(createElement('p', 'bp-hint', `API-reported reset: ${new Date(report.resetAt).toLocaleString()}. The refill amount is not assumed.`))
-			const details = createElement('details', 'bp-quota-evidence')
-			details.open = expanded.has(identity)
-			details.appendChild(createElement('summary', undefined, 'Observation evidence and assumptions'))
-			const rows = createElement('div', 'bp-data-list')
-			rows.append(
-				createDataRow('Last observation', new Date(report.observedAt).toLocaleString()),
-				createDataRow('Saved observations', String(report.observations)),
-				createDataRow('Comparable sampling', quotaDuration(report.sampledMs)),
-				createDataRow('Positive intervals', String(report.positiveIntervals)),
-				createDataRow('Net recovered · sampled intervals', String(report.netRecovered)),
-				createDataRow('Net spent · sampled intervals', String(report.netSpent))
-			)
-			if (report.lastIncrease) rows.appendChild(createDataRow('Last net increase', `+${report.lastIncrease.units} · ${quotaDuration(now - report.lastIncrease.to)} ago`))
-			details.append(
-				rows,
-				createElement('p', 'bp-hint', 'Recovery times are conditional rate scenarios, not guaranteed refill events. They assume no further spending and an unchanged observed rate. Capacity is never inferred from a plateau.')
-			)
-			details.addEventListener('toggle', () => {
-				if (!details.isConnected) return
-				if (details.open) expanded.add(identity)
-				else expanded.delete(identity)
-			})
-			card.appendChild(details)
-			return card
-		}))
+		element.replaceChildren(...reports.map((report) => buildCard(report, now, report.key === activeKey, expanded)))
 	}
-	const horizonControl = createNumberField({
-		label: 'Recovery horizon · minutes',
-		value: horizon,
-		min: 1,
-		max: 10_080,
-		step: 1,
-		onChange: (value) => {
-			horizon = Math.round(value)
-			render()
-		}
-	})
-	element.append(
-		horizonControl.wrapper,
-		createElement('p', 'bp-hint', 'Recovery cards use the quota observation ledger. Unknown capacity, stale data and insufficient evidence remain explicit.'),
-		results
-	)
 	const timer = window.setInterval(() => {
 		if (element.isConnected) render()
-	}, 15_000)
+	}, 10_000)
 	render()
 	return {
 		element,

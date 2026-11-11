@@ -44,7 +44,7 @@ export const guessLanguage = (text: string): string | null => {
 			JSON.parse(text)
 			return 'json'
 		} catch {
-			sample.length
+			void 0
 		}
 	}
 	const shebang = SHEBANG.exec(sample)?.[1]

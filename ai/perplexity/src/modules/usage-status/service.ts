@@ -5,15 +5,15 @@ import { hasSignInPrompt } from '../../locate'
 import { UsageApi } from './api'
 import { findCap } from './caps'
 import { LIMITS, LIMIT_KEYS } from './definitions'
-import { formatDuration, getStatus } from './format'
+import { formatDuration } from './format'
 import { ModeDetector } from './mode'
 import type { Send } from './model'
 import { resolvePlan } from './plan'
 import { findResetTimestamp } from './server-reset'
 import { ResetTracker } from './tracker'
-import { QuotaLedger, quotaSummary } from '@nolly/ai'
-import type { QuotaReport } from '@nolly/ai'
-import type { ActiveUsage, ApiDiagnostics, Forecast, FreeQueriesInfo, LimitKey, Plan, RateLimitResponse, SettingsResponse, Pace } from './types'
+import { QuotaLedger, quotaLevel, quotaSummary } from '@nolly/ai'
+import type { QuotaLevel, QuotaReport } from '@nolly/ai'
+import type { ActiveUsage, ApiDiagnostics, Forecast, FreeQueriesInfo, LimitKey, Plan, RateLimitResponse, SettingsResponse, Pace, Status } from './types'
 
 type Listener = () => void
 
@@ -23,6 +23,13 @@ const SEND_TTL = 14 * 86_400_000
 const MAX_SENDS = 50
 const LEARN_WINDOW = 120_000
 const DEDUPE_WINDOW = 1_500
+const STATUS_OF: Readonly<Record<QuotaLevel, Status>> = {
+	ok: 'healthy',
+	warning: 'low',
+	critical: 'critical',
+	empty: 'empty',
+	unknown: 'unavailable'
+}
 
 const loadSends = (): Send[] => {
 	const now = Date.now()
@@ -46,6 +53,7 @@ export class UsageService {
 	private lastUsedKey: LimitKey | null = storage.get<LimitKey | null>(LAST_KEY, null)
 	private readonly listeners = new Set<Listener>()
 	private readonly quotaLedger = new QuotaLedger(storage)
+	private reportCache: { at: number; value: QuotaReport[] } | null = null
 
 	constructor(
 		private readonly api = new UsageApi(),
@@ -56,7 +64,11 @@ export class UsageService {
 	}
 
 	getQuotaReports(): QuotaReport[] {
-		return this.quotaLedger.reports(Date.now(), this.namespace())
+		const now = Date.now()
+		if (this.reportCache && now - this.reportCache.at < 1_000) return this.reportCache.value
+		const value = this.quotaLedger.reports(now, this.namespace())
+		this.reportCache = { at: now, value }
+		return value
 	}
 
 	subscribe(listener: Listener): () => void {
@@ -184,8 +196,7 @@ export class UsageService {
 
 	formatForecast(key: LimitKey | null): string {
 		if (!key) return 'No counter identified for this mode'
-		const report = this.getQuotaReports().find((entry) => entry.key === key) ?? null
-		return quotaSummary(report)
+		return quotaSummary(this.getQuotaReports().find((report) => report.key === key) ?? null)
 	}
 
 	getFreeQueries(): FreeQueriesInfo | null {
@@ -217,7 +228,7 @@ export class UsageService {
 			freeFallback,
 			period: mode.key ? LIMITS[mode.key].period : 'Unknown',
 			reset: this.formatForecast(mode.key),
-			status: freeFallback ? 'low' : remaining === null ? 'unavailable' : remaining <= 0 ? 'empty' : total === null ? 'reported' : getStatus(remaining, total)
+			status: freeFallback ? 'low' : STATUS_OF[quotaLevel(remaining, total)]
 		}
 	}
 
@@ -261,7 +272,11 @@ export class UsageService {
 			const distance = forecast.next - now
 			return distance <= Math.min(2 * forecast.margin + 60_000, span) && distance >= -span
 		})
-		return expected ? CONFIG.usage.focusInterval : CONFIG.usage.refreshInterval
+		const imminent = this.getQuotaReports().some((report) => {
+			const next = report.forecast?.nextAt
+			return next != null && Math.abs(next - now) <= Math.min((report.forecast?.marginMs ?? 0) + 60_000, span)
+		})
+		return expected || imminent ? CONFIG.usage.focusInterval : CONFIG.usage.refreshInterval
 	}
 
 	private namespace(): string {
@@ -272,6 +287,7 @@ export class UsageService {
 	}
 
 	private observe(rate: RateLimitResponse): void {
+		this.reportCache = null
 		const now = Date.now()
 		for (const key of LIMIT_KEYS) {
 			const value = rate[key]

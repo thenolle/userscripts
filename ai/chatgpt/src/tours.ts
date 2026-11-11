@@ -1,4 +1,4 @@
-import { createAnswerDiffTour, createPdfTour, createQuotaTour } from '@nolly/ai'
+import { createAnswerDiffTour, createPdfTour, createQuotaTour, createSendWhenReadyTour } from '@nolly/ai'
 import { contextPacksTour, loadPromptShortcut, loadShortcut, tour } from '@nolly/ai'
 import type { Tour } from '@nolly/ai'
 import { composerKit } from './kit'
@@ -146,4 +146,4 @@ const contextPacks: Tour = {
   }
 }
 
-export const TOURS: readonly Tour[] = [gettingStarted, usage, longMessages, prompts, batch, codeBlocks, exporting, selection, palette, contextPacks, createPdfTour(), createQuotaTour(), createAnswerDiffTour()]
+export const TOURS: readonly Tour[] = [gettingStarted, usage, longMessages, prompts, batch, codeBlocks, exporting, selection, palette, contextPacks, createPdfTour(), createQuotaTour(), createAnswerDiffTour(), createSendWhenReadyTour()]

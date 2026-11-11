@@ -7,7 +7,7 @@
     },
     "ai/chatgpt": {
       "name": "@nolly/ai-chatgpt",
-      "version": "1.2.4",
+      "version": "1.2.5",
       "dependencies": {
         "@nolly/ai": "workspace:*",
         "@nolly/core": "workspace:*",
@@ -19,7 +19,7 @@
     },
     "ai/perplexity": {
       "name": "@nolly/ai-perplexity",
-      "version": "1.2.4",
+      "version": "1.2.5",
       "dependencies": {
         "@nolly/ai": "workspace:*",
         "@nolly/core": "workspace:*",
@@ -39,7 +39,7 @@
     },
     "core/ai": {
       "name": "@nolly/ai",
-      "version": "0.2.3",
+      "version": "0.2.4",
       "dependencies": {
         "@nolly/core": "workspace:*",
       },
