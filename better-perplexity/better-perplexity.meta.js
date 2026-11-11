@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Better Perplexity
 // @namespace   https://github.com/thenolle/userscripts
-// @version     1.2.4
+// @version     1.2.5
 // @description Layout, code blocks, prompts, batch runs, exports and usage tracking for Perplexity.
 // @author      Nolly
 // @license     PolyForm-Strict-1.0.0
