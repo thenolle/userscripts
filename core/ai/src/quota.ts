@@ -327,6 +327,12 @@ export class QuotaLedger {
 		return Object.values(database.counters).filter((counter) => counter.scope === wanted).flatMap((counter) => compute(counter, now) ?? [])
 	}
 
+	peak(scope: string, key: string, now = Date.now()): number {
+		const counter = this.read().counters[JSON.stringify([scope, key])]
+		if (!counter) return 0
+		return counter.points.reduce((best, point) => (now - point.at <= MAX_AGE ? Math.max(best, point.remaining) : best), 0)
+	}
+
 	private read(): Database {
 		const raw = this.storage.get<unknown>(KEY, null)
 		if (!raw || typeof raw !== 'object') return { activeScope: '', counters: {} }

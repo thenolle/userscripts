@@ -101,7 +101,7 @@ export class UsageFeature extends Feature {
 	private update(): void {
 		const entry = session.limit(this.primary)
 		const stale = entry ? expired(entry.resetAfter) : false
-		const level = entry && !stale ? quotaLevel(entry.remaining, null) : 'unknown'
+		const level = entry && !stale ? quotaLevel(entry.remaining, session.capacity(entry.feature).total) : 'unknown'
 		const text = entry ? `${labelOf(entry.feature)} ${stale ? '—' : entry.remaining}` : 'Tool usage'
 		this.label.textContent = level === 'unknown' ? text : `${LEVEL_GLYPH[level]} ${text}`
 		this.pill.dataset['level'] = level
@@ -125,7 +125,9 @@ export class UsageFeature extends Feature {
 			return list
 		}
 		for (const limit of session.limits) {
-			const value = expired(limit.resetAfter) ? `Last reported: ${limit.remaining} · ${resetText(limit.resetAfter)}` : `${limit.remaining} remaining · ${resetText(limit.resetAfter)}`
+			const total = session.capacity(limit.feature).total
+			const count = total === null ? `${limit.remaining}` : `${limit.remaining} of ${total}`
+			const value = expired(limit.resetAfter) ? `Last reported: ${limit.remaining} · ${resetText(limit.resetAfter)}` : `${count} remaining · ${resetText(limit.resetAfter)}`
 			const report = session.getQuotaReports().find((item) => item.key === limit.feature) ?? null
 			list.appendChild(createDataRow(labelOf(limit.feature), `${value} · ${quotaSummary(report)}`))
 		}

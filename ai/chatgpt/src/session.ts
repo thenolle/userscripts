@@ -1,13 +1,12 @@
-import { SseParser } from '@nolly/ai'
-import type { ResponseEvent, ResponseSpy } from '@nolly/ai'
+import { QuotaLedger, SseParser, resolveCapacity } from '@nolly/ai'
+import type { Capacity, QuotaReport, ResponseEvent, ResponseSpy } from '@nolly/ai'
+import { chatgptDefault } from './capacity'
 import { ENDPOINTS, pathOf } from './endpoints'
 import { parseFileLimitMb, parseJson, parseLimits, parseUsage } from './payloads'
 import type { LimitProgress, UsageSnapshot } from './payloads'
 import { interpret } from './stream'
 import type { ChatEvent } from './stream'
-import { QuotaLedger } from '@nolly/ai'
 import { storage } from './storage'
-import type { QuotaReport } from '@nolly/ai'
 
 export type SessionEvent = 'generation-start' | 'generation-end' | 'conversation' | 'model' | 'limits' | 'usage' | 'plan' | 'user-message'
 
@@ -57,15 +56,7 @@ export class ChatSession {
 	}
 
 	getQuotaReports(): QuotaReport[] {
-		return this.quotaLedger.reports(Date.now(), `chatgpt:${this.plan ?? 'unidentified'}`)
-	}
-
-	private emit(event: SessionEvent): void {
-		for (const listener of this.listeners) {
-			try {
-				listener(event)
-			} catch { }
-		}
+		return this.quotaLedger.reports(Date.now(), this.scope)
 	}
 
 	private mergeLimits(limits: readonly LimitProgress[]): void {
@@ -73,9 +64,26 @@ export class ChatSession {
 		for (const limit of limits) {
 			this.limitMap.set(limit.feature, limit)
 			const resetAt = limit.resetAfter ? Date.parse(limit.resetAfter) : Number.NaN
-			this.quotaLedger.observe(`chatgpt:${this.plan ?? 'unidentified'}`, limit.feature, limit.feature.replace(/_/g, ' '), limit.remaining, null, Number.isFinite(resetAt) ? resetAt : null, now)
+			this.quotaLedger.observe(this.scope, limit.feature, limit.feature.replace(/_/g, ' '), limit.remaining, this.capacity(limit.feature).total, Number.isFinite(resetAt) ? resetAt : null, now)
 		}
 		this.emit('limits')
+	}
+
+	private get scope(): string {
+		return `chatgpt:${this.plan ?? 'unidentified'}`
+	}
+
+	capacity(feature: string): Capacity {
+		return resolveCapacity({
+			reported: null,
+			remaining: this.limit(feature)?.remaining ?? null,
+			observedPeak: this.quotaLedger.peak(this.scope, feature),
+			fallback: chatgptDefault(this.plan, feature)
+		})
+	}
+
+	private emit(event: SessionEvent): void {
+		for (const listener of this.listeners) try { listener(event) } catch { }
 	}
 
 	private setPlan(plan: string | null): void {

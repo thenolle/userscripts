@@ -1,4 +1,4 @@
-import type { LimitDefinition, LimitKey, SettingField, Status } from './types'
+import type { LimitDefinition, LimitKey, Plan, SettingField, Status } from './types'
 
 const DAY = 86_400_000
 
@@ -10,6 +10,19 @@ export const LIMITS: Readonly<Record<LimitKey, LimitDefinition>> = {
 }
 
 export const LIMIT_KEYS = Object.keys(LIMITS) as LimitKey[]
+
+export const PLAN_DEFAULTS: Readonly<Record<Plan, Readonly<Record<LimitKey, number | null>>>> = {
+	free: { remaining_pro: 3, remaining_research: 1, remaining_agentic_research: null, remaining_labs: null },
+	paid: {
+		remaining_pro: LIMITS.remaining_pro.total,
+		remaining_research: LIMITS.remaining_research.total,
+		remaining_agentic_research: LIMITS.remaining_agentic_research.total,
+		remaining_labs: LIMITS.remaining_labs.total
+	},
+	unknown: { remaining_pro: null, remaining_research: null, remaining_agentic_research: null, remaining_labs: null }
+}
+
+export const windowFor = (key: LimitKey, plan: Plan): number => (plan === 'free' && key === 'remaining_pro' ? DAY : LIMITS[key].window)
 
 export const MODE_MAP: readonly { readonly match: RegExp; readonly key: LimitKey }[] = [
 	{ match: /deep\s*research|research/i, key: 'remaining_research' },

@@ -2,6 +2,13 @@
 
 All notable changes to Better Perplexity are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [1.3.0] - 2026-11-12
+
+- Usage totals now resolve as API cap, then plan default, then observed peak.
+- Added Free defaults (3 Pro Searches per day, 1 Research query per month) and a daily Pro Search window for Free.
+- Paid keeps the 200 Pro Search default and adapts upward when a higher allowance is observed.
+- Requires `@nolly/ai` 0.2.5 and `@nolly/core` 1.0.4.
+
 ## [1.2.5] - 2026-11-11
 
 ### Added
@@ -250,9 +257,13 @@ First public release.
 [1.0.3]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.3  
 [1.0.4]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.4  
 [1.0.5]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.5  
-[1.0.5-hotfix.1]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.5-hotfix.1
-[1.1.0]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.1.0
-[1.1.1]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.1.1
-[1.1.2]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.1.2
-[1.2.0]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.2.0
-[1.2.1]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.2.1
+[1.0.5-hotfix.1]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.0.5-hotfix.1  
+[1.1.0]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.1.0  
+[1.1.1]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.1.1  
+[1.1.2]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.1.2  
+[1.2.0]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.2.0  
+[1.2.1]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.2.1  
+[1.2.2]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.2.2  
+[1.2.4]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.2.4  
+[1.2.5]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.2.5  
+[1.3.0]: https://github.com/thenolle/userscripts/releases/tag/better-perplexity-v1.3.0

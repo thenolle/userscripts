@@ -4,15 +4,15 @@ import { storage } from '../../core/storage'
 import { hasSignInPrompt } from '../../locate'
 import { UsageApi } from './api'
 import { findCap } from './caps'
-import { LIMITS, LIMIT_KEYS } from './definitions'
 import { formatDuration } from './format'
 import { ModeDetector } from './mode'
 import type { Send } from './model'
 import { resolvePlan } from './plan'
 import { findResetTimestamp } from './server-reset'
 import { ResetTracker } from './tracker'
-import { QuotaLedger, quotaLevel, quotaSummary } from '@nolly/ai'
-import type { QuotaLevel, QuotaReport } from '@nolly/ai'
+import { LIMITS, LIMIT_KEYS, PLAN_DEFAULTS, windowFor } from './definitions'
+import { QuotaLedger, quotaLevel, quotaSummary, resolveCapacity } from '@nolly/ai'
+import type { Capacity, CapacitySource, QuotaLevel, QuotaReport } from '@nolly/ai'
 import type { ActiveUsage, ApiDiagnostics, Forecast, FreeQueriesInfo, LimitKey, Plan, RateLimitResponse, SettingsResponse, Pace, Status } from './types'
 
 type Listener = () => void
@@ -29,6 +29,11 @@ const STATUS_OF: Readonly<Record<QuotaLevel, Status>> = {
 	critical: 'critical',
 	empty: 'empty',
 	unknown: 'unavailable'
+}
+const SOURCE_OF: Readonly<Record<CapacitySource, 'api' | 'configured' | 'learned'>> = {
+	api: 'api',
+	default: 'configured',
+	observed: 'learned'
 }
 
 const loadSends = (): Send[] => {
@@ -163,15 +168,23 @@ export class UsageService {
 		return typeof value === 'number' && Number.isFinite(value) ? value : null
 	}
 
+	capacity(key: LimitKey | null): Capacity {
+		if (!key) return { total: null, source: null }
+		return resolveCapacity({
+			reported: findCap(this.rate, key),
+			remaining: this.getRemaining(key),
+			observedPeak: this.quotaLedger.peak(this.namespace(), key),
+			fallback: PLAN_DEFAULTS[this.getPlan()][key]
+		})
+	}
+
 	resolveTotal(key: LimitKey | null): number | null {
-		if (!key) return null
-		const cap = findCap(this.rate, key)
-		const remaining = this.getRemaining(key)
-		return cap !== null && (remaining === null || cap >= remaining) ? cap : null
+		return this.capacity(key).total
 	}
 
 	totalSource(key: LimitKey | null): 'api' | 'configured' | 'learned' | null {
-		return this.resolveTotal(key) === null ? null : 'api'
+		const { source } = this.capacity(key)
+		return source === null ? null : SOURCE_OF[source]
 	}
 
 	formatTotal(key: LimitKey | null): string | null {
@@ -184,7 +197,7 @@ export class UsageService {
 		const now = Date.now()
 		const result = this.tracker.forecast(key, {
 			now,
-			prior: LIMITS[key].window,
+			prior: windowFor(key, this.getPlan()),
 			serverReset: findResetTimestamp(this.rate, key)
 		})
 		if (!result) return null
@@ -237,8 +250,7 @@ export class UsageService {
 		if (!key || remaining === null) return null
 		const now = Date.now()
 		const day = 86_400_000
-		const recent = this.tracker.history(key)
-			.filter((time) => Number.isFinite(time) && time <= now && now - time <= 7 * day)
+		const recent = this.tracker.history(key).filter((time) => Number.isFinite(time) && time <= now && now - time <= 7 * day)
 		if (recent.length < 10) return null
 		const span = now - Math.min(...recent)
 		if (span < day) return null
@@ -256,11 +268,7 @@ export class UsageService {
 		if (!pace) return null
 		const rate = pace.perDay >= 10 ? String(Math.round(pace.perDay)) : pace.perDay.toFixed(1)
 		const remaining = this.getRemaining(key)
-		const tail = remaining === 0
-			? ' · no units remaining'
-			: pace.emptyInMs === null
-				? ' · more history needed for a depletion estimate'
-				: ` · roughly ${formatDuration(pace.emptyInMs)} at that rate, excluding refills`
+		const tail = remaining === 0 ? ' · no units remaining' : pace.emptyInMs === null ? ' · more history needed for a depletion estimate' : ` · roughly ${formatDuration(pace.emptyInMs)} at that rate, excluding refills`
 		return `Observed counter use: ~${rate} units/day over ${pace.days.toFixed(1)}d${tail}`
 	}
 
@@ -292,7 +300,7 @@ export class UsageService {
 		for (const key of LIMIT_KEYS) {
 			const value = rate[key]
 			if (typeof value !== 'number' || !Number.isFinite(value)) continue
-			this.quotaLedger.observe(this.namespace(), key, LIMITS[key].label, value, findCap(rate, key), findResetTimestamp(rate, key), now)
+			this.quotaLedger.observe(this.namespace(), key, LIMITS[key].label, value, this.capacity(key).total, findResetTimestamp(rate, key), now)
 			const { drop } = this.tracker.observe(key, value, now, this.sends)
 			if (drop > 0 && now - this.lastSentAt < LEARN_WINDOW) {
 				this.lastUsedKey = key

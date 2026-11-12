@@ -1,5 +1,9 @@
 # Changelog
-# Changelog
+
+## [0.2.5] - 2026-11-12
+
+- Added `resolveCapacity`: API cap, then plan default, then observed peak, so higher plans adapt automatically.
+- Added `QuotaLedger.peak()` to read the highest remaining value seen for a counter.
 
 ## [0.2.4] - 2026-11-11
 

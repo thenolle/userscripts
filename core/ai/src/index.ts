@@ -1,5 +1,6 @@
 export * from './adapter'
 export * from './automation'
+export * from './capacity'
 export * from './clipboard'
 export * from './composer'
 export * from './download'
