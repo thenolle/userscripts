@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.4] - 2026-11-12
+
+- Added `isFiniteNumber` and `isPositiveNumber` numeric guards.
+
 ## [1.0.3] - 2026-11-10
 
 ### Export and reliability
